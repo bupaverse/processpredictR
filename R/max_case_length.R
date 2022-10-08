@@ -1,7 +1,16 @@
+#' Calculate the maximum length of a case / number of activities in the longest trace in an event log
+#'
+#'(WIP)
+#'
+#'@param log An object of class log
+#'@return An integer number of the maximum case length (longest trace) in an event log
+#'
+#'@export
 max_case_length <- function(log) {
   UseMethod("max_case_length")
 }
 
+#'@export
 max_case_length.log <- function(log) {
   log %>%
     trace_length() %>%

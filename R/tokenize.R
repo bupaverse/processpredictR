@@ -1,3 +1,13 @@
+#' Tokenize prefix (feature) and outcome (target) of a processed dataframe to fit the transformer model
+#'
+#' (WIP)
+#'
+#'
+#' @param processed_df A processed dataframe (= processed event log)
+#' @param activities A character vector of unique activity labels from an event log
+#' @return A list of tokens token_x and token_y
+#'
+#'@export
 tokenize <- function(processed_df, activities) {
   #activities <- as.character(activity_labels(log))
   outcomes <- processed_df$outcome %>% unique()

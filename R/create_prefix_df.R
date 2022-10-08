@@ -10,6 +10,7 @@ create_prefix_df <- function(log) {
   UseMethod("create_prefix_df")
 }
 
+#' @export
 create_prefix_df.log <- function(log) {
   traces_per_case <- case_list(log, .keep_trace_list = TRUE) %>%
     mutate(ith_case = row_number()) %>%
