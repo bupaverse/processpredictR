@@ -21,6 +21,7 @@ Config/reticulate:
   )
 Imports: 
     bupaR,
+    edeaR,
     dplyr,
     forcats,
     magrittr,
