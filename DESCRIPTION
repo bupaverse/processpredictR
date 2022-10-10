@@ -22,13 +22,13 @@ Config/reticulate:
 Imports: 
     bupaR,
     edeaR,
+    eventdataR,
     dplyr,
     forcats,
     magrittr,
-    readr,
-    reshape2,
     reticulate,
-    stringr,
-    tidyr
+    tidyr, 
+    purrr, 
+    stringr
 Roxygen: list(markdown = TRUE)
 Config/testthat/edition: 3

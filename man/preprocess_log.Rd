@@ -8,6 +8,8 @@ preprocess_log(log, ...)
 }
 \arguments{
 \item{log}{An object of class log}
+
+\item{...}{A named character vector to assign outcome labels to the end activities}
 }
 \description{
 (WIP)

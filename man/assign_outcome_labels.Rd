@@ -6,6 +6,11 @@
 \usage{
 assign_outcome_labels(prefix_df, ...)
 }
+\arguments{
+\item{prefix_df}{A dataframe with prefixes and last activity column from create_prefix_df function}
+
+\item{...}{A named character vector to assign outcome labels to the end activities}
+}
 \description{
 (WIP)
 }
