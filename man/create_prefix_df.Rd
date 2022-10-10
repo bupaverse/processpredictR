@@ -16,6 +16,7 @@ a dataframe
 Create a dataframe with prefixes
 }
 \examples{
+library(eventdataR)
 create_prefix_df(patients)
 
 }

@@ -3,8 +3,10 @@
 #' @name processpredictR
 
 #' @importFrom edeaR end_activities
+#' @import bupaR
+#' @import dplyr
+#' @import tidyr
 
-# of importeer volledig package: vb: @import bupaR
 
 
 

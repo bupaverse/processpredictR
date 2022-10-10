@@ -3,6 +3,7 @@
 #' @param log An object of class log
 #' @return a dataframe
 #' @examples
+#' library(eventdataR)
 #' create_prefix_df(patients)
 #'
 #' @export
