@@ -19,7 +19,7 @@ create_prefix_df.log <- function(log) {
   case_prefix <- traces_per_case %>%
     group_by(ith_case, case_id) %>%
     #group_by(across(c(5, 1))) %>%
-    summarise(prefix = accumulate(traces_per_case$trace_list[[ith_case]], paste, sep = " - "),
+    summarise(prefix = purrr::accumulate(traces_per_case$trace_list[[ith_case]], paste, sep = " - "),
               current_activity = traces_per_case$trace_list[[ith_case]],
               traces = traces_per_case$trace_list[ith_case]) %>%
     mutate(k = row_number() - 1,

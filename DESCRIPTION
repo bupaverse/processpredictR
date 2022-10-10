@@ -29,3 +29,5 @@ Imports:
     reticulate,
     stringr,
     tidyr
+Roxygen: list(markdown = TRUE)
+Config/testthat/edition: 3
