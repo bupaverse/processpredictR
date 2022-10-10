@@ -13,10 +13,10 @@ RoxygenNote: 7.2.1
 Config/reticulate:
   list(
     packages = list(
-      list(package = "tensorflow"),
-      list(package = "keras"),
-      list(package = "numpy", 
-      list(package = "pandas"))
+      list(package = "tensorflow", pip = TRUE),
+      list(package = "keras", pip = TRUE),
+      list(package = "numpy", pip = TRUE, 
+      list(package = "pandas", pip = TRUE))
     )
   )
 Imports: 

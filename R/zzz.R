@@ -1,5 +1,8 @@
 # global reference to scipy (will be initialized in .onLoad)
 scipy <- NULL
+tf <- NULL
+layers <- NULL
+activations <- NULL
 
 .onLoad <- function(libname, pkgname) {
   reticulate::configure_environment(pkgname)
