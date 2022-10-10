@@ -12,3 +12,9 @@ preprocess_log(log, ...)
 \description{
 (WIP)
 }
+\examples{
+acts <- patients \%>\% end_activities("activity") # look on distributions of end activities per case
+acts <- unique(acts$activity) \%>\% as.character()
+preprocess_log(patients, outcome_label1 = "Check-out", outcome_label2 = acts)
+
+}
