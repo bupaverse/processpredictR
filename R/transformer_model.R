@@ -14,7 +14,9 @@ transformer_model <- function(max_case_length, vocab_size, num_output) {
   # layers <- import("keras")$layers
   # activations <- import("keras")$activations
 
-  source_python("transformer_model.py")
+  #reticulate::py_run_file(system.file("python", "your_script.py", package = "yourpkg"))
+
+  reticulate::source_python("inst/transformer_model.py")
   get_outcome_transformer_model(max_case_length, vocab_size, num_output)
 
 }
