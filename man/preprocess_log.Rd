@@ -10,5 +10,5 @@ preprocess_log(log, ...)
 \item{log}{An object of class log}
 }
 \description{
-Prepare event log for the Transformer model fit
+(WIP)
 }

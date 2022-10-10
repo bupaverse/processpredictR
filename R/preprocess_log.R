@@ -1,6 +1,6 @@
 #' Prepare event log for the Transformer model fit
 #'
-#'
+#'(WIP)
 #'
 #' @param log An object of class log
 #'
