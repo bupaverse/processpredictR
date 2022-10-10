@@ -10,9 +10,9 @@
 #' @export
 transformer_model <- function(max_case_length, vocab_size, num_output) {
 
-  tf <- import("tensorflow")
-  layers <- import("keras")$layers
-  activations <- import("keras")$activations
+  # tf <- import("tensorflow")
+  # layers <- import("keras")$layers
+  # activations <- import("keras")$activations
 
   source_python("transformer_model.py")
   get_outcome_transformer_model(max_case_length, vocab_size, num_output)

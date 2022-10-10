@@ -10,6 +10,15 @@ License: MIT
 Encoding: UTF-8
 LazyData: true
 RoxygenNote: 7.2.1
+Config/reticulate:
+  list(
+    packages = list(
+      list(package = "tensorflow"),
+      list(package = "keras"),
+      list(package = "numpy", 
+      list(package = "pandas"))
+    )
+  )
 Imports: 
     bupaR,
     dplyr,
