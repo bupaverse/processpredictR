@@ -2,14 +2,14 @@
 scipy <- NULL
 
 .onLoad <- function(libname, pkgname) {
-  reticulate::configure_environment(pkgname)
-
-  # use superassignment to update global reference to scipy
-  scipy <<- reticulate::import("scipy", delay_load = TRUE)
-
-  tf <<- reticulate::import("tensorflow", delay_load = TRUE)
-  layers <<- reticulate::import("keras", delay_load = TRUE)$layers
-  activations <<- reticulate::import("keras", delay_load = TRUE)$activations
+  # reticulate::configure_environment(pkgname)
+  #
+  # # use superassignment to update global reference to scipy
+  # scipy <<- reticulate::import("scipy", delay_load = TRUE)
+  #
+  # tf <<- reticulate::import("tensorflow", delay_load = TRUE)
+  # layers <<- reticulate::import("keras", delay_load = TRUE)$layers
+  # activations <<- reticulate::import("keras", delay_load = TRUE)$activations
 }
 
 
