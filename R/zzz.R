@@ -7,9 +7,9 @@ scipy <- NULL
   # use superassignment to update global reference to scipy
   scipy <<- reticulate::import("scipy", delay_load = TRUE)
 
-  tf <- reticulate::import("tensorflow", delay_load = TRUE)
-  layers <- reticulate::import("keras", delay_load = TRUE)$layers
-  activations <- reticulate::import("keras", delay_load = TRUE)$activations
+  tf <<- reticulate::import("tensorflow", delay_load = TRUE)
+  layers <<- reticulate::import("keras", delay_load = TRUE)$layers
+  activations <<- reticulate::import("keras", delay_load = TRUE)$activations
 }
 
 

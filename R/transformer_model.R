@@ -16,6 +16,8 @@ transformer_model <- function(max_case_length, vocab_size, num_output) {
 
   #reticulate::py_run_file(system.file("python", "your_script.py", package = "yourpkg"))
 
+  #reticulate::repl_python() # opens python console
+
   reticulate::source_python("inst/transformer_model.py")
   get_outcome_transformer_model(max_case_length, vocab_size, num_output)
 
