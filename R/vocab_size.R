@@ -18,7 +18,7 @@ vocab_size.log <- function(log, outcome_names) {
 
   activity_names <- log %>% activity_labels() %>% as.character()
   activity_names <- c("PAD", "UNK") %>%
-    append(activities)
+    append(activity_names)
   length(unique(append(activity_names, outcome_names)))  %>% as.integer()
 
 }

@@ -1,11 +1,11 @@
 import keras as keras
 import tensorflow as tf
 
-# callback_list = [
-#         tf.keras.callbacks.TensorBoard("tensorboard", histogram_freq=1, write_graph=True),
-#         tf.keras.callbacks.CSVLogger("logs", append = True),
-#         tf.keras.callbacks.EarlyStopping(monitor='val_loss', patience=5, verbose=1)
-#         ]
+callback_list = [
+        tf.keras.callbacks.TensorBoard("tensorboard", histogram_freq=1, write_graph=True),
+        tf.keras.callbacks.CSVLogger("logs", append = True),
+        tf.keras.callbacks.EarlyStopping(monitor='val_loss', patience=5, verbose=1)
+        ]
 
 
 def compile_model(transformer_model, learning_rate):
@@ -26,7 +26,7 @@ def fit_model(transformer_model, train_token_x, train_token_y, num_epochs, batch
   batch_size=batch_size, 
   shuffle=True,
   verbose=1,
-  validation_split=0.2) #,
-  #callbacks=callback_list)
+  validation_split=0.2,
+  callbacks=callback_list)
   
   transformer_model.save(file)
