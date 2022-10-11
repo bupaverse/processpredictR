@@ -6,10 +6,12 @@
 #' @importFrom edeaR trace_length
 #' @importFrom stringr str_split
 #' @importFrom reticulate source_python
+#' @importFrom keras pad_sequences
 #' @import bupaR
 #' @import dplyr
 #' @import eventdataR
 #' @import tidyr
+
 
 
 

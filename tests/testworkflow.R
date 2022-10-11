@@ -31,7 +31,7 @@ test_model
 ## Compile and fit model
 compile_test(test_model, learning_rate = 0.001)
 
-
+fit_test(transformer_model = test_model, tokens_train = tokens_train, num_epochs = as.integer(10), batch_size = as.integer(12), file = "test_model")
 
 
 
