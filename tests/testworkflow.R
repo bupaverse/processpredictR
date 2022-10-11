@@ -26,3 +26,15 @@ maxlen <- max_case_length(patients)
 vocab <- vocab_size(patients, outcome_names = c("outcome1", "outcome2"))
 test_model <- transformer_model(max_case_length = maxlen, vocab_size = vocab, num_output = 2)
 test_model
+
+
+## Compile and fit model
+compile_test(test_model, learning_rate = 0.001)
+
+
+
+
+
+
+
+

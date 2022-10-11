@@ -8,7 +8,7 @@ callback_list = [
         ]
 
 
-def compile_model(transformer_model, learning_rate = 0.001):
+def compile_model(transformer_model, learning_rate):
   transformer_model.compile(
     optimizer=tf.keras.optimizers.Adam(learning_rate),
     loss=tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True),
