@@ -8,6 +8,8 @@
 #' @importFrom reticulate source_python
 #' @import bupaR
 #' @import dplyr
+#' @import eventdataR
+#' @import tidyr
 
 
 
