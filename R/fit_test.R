@@ -4,6 +4,7 @@
 #'
 #' @param transformer_model A defined transformer model
 #' @param tokens_train A list of train tokens, i.e. token_x, token_y
+#' @param maxlen An integer number of the maximum case length (longest trace) in an event log
 #' @param num_epochs  A number of epochs
 #' @param batch_size A batch size
 #' @param file Name of saved model (weights)

@@ -6,7 +6,7 @@
 #' @param ... A named character vector to assign outcome labels to the end activities
 #'
 #' @examples
-#' acts <- eventdataR::patients %>% edeaR::end_activities("activity") # look on distributions of end activities per case
+#' acts <- eventdataR::patients %>% edeaR::end_activities("activity")
 #' acts <- unique(acts$activity) %>% as.character()
 #' preprocess_log(eventdataR::patients, outcome_label1 = "Check-out", outcome_label2 = acts[-1])
 #'

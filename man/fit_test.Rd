@@ -4,12 +4,14 @@
 \alias{fit_test}
 \title{Fit model (test)}
 \usage{
-fit_test(transformer_model, tokens_train, num_epochs, batch_size, file)
+fit_test(transformer_model, tokens_train, maxlen, num_epochs, batch_size, file)
 }
 \arguments{
 \item{transformer_model}{A defined transformer model}
 
 \item{tokens_train}{A list of train tokens, i.e. token_x, token_y}
+
+\item{maxlen}{An integer number of the maximum case length (longest trace) in an event log}
 
 \item{num_epochs}{A number of epochs}
 
