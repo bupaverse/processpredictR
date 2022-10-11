@@ -9,8 +9,8 @@
 #' @param file Name of saved model (weights)
 #'
 #' @export
-fit_test <- function(transformer_model, tokens_train, num_epochs, batch_size, file) {
-  train_token_x <- tokens_train$token_x %>% keras::pad_sequences(maxlen = max_case_length(patients), value = 0)
+fit_test <- function(transformer_model, tokens_train, maxlen, num_epochs, batch_size, file) {
+  train_token_x <- tokens_train$token_x %>% keras::pad_sequences(maxlen = maxlen, value = 0)
   train_token_x <- train_token_x %>% reticulate::np_array(dtype = "float32")
   train_token_y <- tokens_train$token_y  %>% reticulate::np_array(dtype = "float32")
 
