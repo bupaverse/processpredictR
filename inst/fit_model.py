@@ -13,13 +13,13 @@ def compile_model(transformer_model, learning_rate = 0.001):
     optimizer=tf.keras.optimizers.Adam(learning_rate),
     loss=tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True),
     metrics=[tf.keras.metrics.SparseCategoricalAccuracy()])
-    
-# def compile_model(transformer_model, learning_rate = 0.001):
-#   transformer_model.compile(
-#     optimizer=tf.keras.optimizers.Adam(learning_rate),
-#     loss=tf.keras.losses.BinaryCrossentropy(from_logits=True),
-#     metrics=[tf.keras.metrics.BinaryAccuracy()])
-    
+#     
+# # def compile_model(transformer_model, learning_rate = 0.001):
+# #   transformer_model.compile(
+# #     optimizer=tf.keras.optimizers.Adam(learning_rate),
+# #     loss=tf.keras.losses.BinaryCrossentropy(from_logits=True),
+# #     metrics=[tf.keras.metrics.BinaryAccuracy()])
+
 def fit_model(transformer_model, train_token_x, train_token_y, num_epochs, batch_size, file):
   transformer_model.fit(train_token_x, train_token_y, 
   epochs=num_epochs,

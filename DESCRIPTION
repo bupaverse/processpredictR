@@ -29,6 +29,7 @@ Imports:
     reticulate,
     tidyr, 
     purrr, 
-    stringr
+    stringr,
+    keras
 Roxygen: list(markdown = TRUE)
 Config/testthat/edition: 3
