@@ -6,7 +6,7 @@
 #' @param learning_rate A learning rate of a model
 #'
 #' @export
-compile_test <- function(transformer_model, learning_rate) {
+transformer_compile <- function(transformer_model, learning_rate) {
 
   #compile model
   source_python("inst/fit_model.py")

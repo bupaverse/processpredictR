@@ -44,9 +44,15 @@ test_model
 ## Compile and fit model
 compile_test(test_model, learning_rate = 0.001)
 
-fit_test(transformer_model = test_model, tokens_train = tokens_train, num_epochs = as.integer(10), batch_size = as.integer(12), file = "test_model")
+fit_test(transformer_model = test_model, tokens_train = tokens_train, maxlen = maxlen, num_epochs = as.integer(10), batch_size = as.integer(12), file = "test_model")
 
 
+
+## Predict outcome labels
+tokens_test <- tokenize(processed_df = processedf_test, activities = activities_list(traffic_fines))
+tokens_test
+results <- transformer_predict(transformer_model = test_model, tokens_test = tokens_test)
+results
 
 
 
@@ -100,6 +106,9 @@ compile_test(test_model, learning_rate = 0.001)
 fit_test(transformer_model = test_model, tokens_train = tokens_train, maxlen = maxlen, num_epochs = as.integer(10), batch_size = as.integer(12), file = "test_model")
 
 
-
+tokens_test <- tokenize(processed_df = processedf_test, activities = activities_list(traffic_fines))
+tokens_test
+results <- transformer_predict(transformer_model = test_model, tokens_test = tokens_test)
+results
 
 

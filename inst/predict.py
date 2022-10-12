@@ -21,5 +21,6 @@ def predict_model(transformer_model, test_token_x, test_token_y):
         "fscore": fscore, 
         "precision": precision,
         "recall": recall}])
+  return results_model
   
   # results_model.to_csv("results_model.csv", index=False)
