@@ -32,7 +32,8 @@ create_prefix_df.log <- function(log, prediction) {
                 current_activity = traces_per_case$trace_list[[ith_case]],
                 traces = traces_per_case$trace_list[ith_case]) %>%
       mutate(k = row_number() - 1,
-             last_activity = last(current_activity)) %>%
+             last_activity = last(current_activity),
+             next_activity = lead(current_activity)) %>%
       ungroup()
 
     case_prefix
@@ -53,7 +54,7 @@ create_prefix_df.log <- function(log, prediction) {
       mutate(k = row_number() - 1,
              last_activity = last(current_activity),
              next_activity = lead(current_activity)) %>% #,
-      filter(!is.na(next_activity)) %>%
+      #filter(!is.na(next_activity)) %>%
              #next_activity = if_else(is.na(next_activity), "endpoint", next_activity)) %>%
       ungroup()
 
