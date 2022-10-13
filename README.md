@@ -8,6 +8,12 @@ Prediction tasks:
 - [ ] next time
 
 ## Example next activity prediction
+### Installation
+```r
+install.packages("https://github.com/bupaverse/processpredictR.git")
+library(processpredictR)
+```
+
 ### preprocess dataset
 ```r
 df <- create_prefix_df(traffic_fines, prediction = "next_activity")
