@@ -1,9 +1,13 @@
 # processpredictR
-Process Outcome Prediction from event log using Transformer model
+Predictions on processes from event log using Transformer model.  
+Prediction tasks:
+- [x] outcome
+- [x] next activity
+- [ ] remaining trace
+- [ ] remaining time
+- [ ] next time
 
 ## Example next activity prediction
-
-
 ### preprocess dataset
 ```r
 df <- create_prefix_df(traffic_fines, prediction = "next_activity")
@@ -17,25 +21,46 @@ df_train <- split_train_test_df(df, ratio = 0.7)$train_df
 df_test <- split_train_test_df(df, ratio = 0.7)$test_df
 ```
 
-#tokenize train dataset
+### tokenize train dataset
+```r
 tokens_train <- tokenize(df_train)
 tokens_train
+```
 
-#define transformer model
+### define transformer model
+```r
 model <- transformer_model(df)
 model
+```
 
-#compile transformer model
+### compile transformer model
+```r
 transformer_compile(transformer_model = model, learning_rate = 0.001)
+```
 
-#fit transformer model
+### fit transformer model
+```r
 history <- transformer_fit(transformer_model = model, tokens_train = tokens_train,
                 maxlen = max_case_length(df), num_epochs = 15, batch_size = 12, file = "example_model_next_activity")
+```
 
-
-#tokenize test dataset
+### tokenize test dataset
+```r
 tokens_test <- tokenize(df_test)
+```
 
-#predict on test data
+### predict on test data
+```r
 results <- transformer_predict(transformer_model = model, tokens_test = tokens_test, maxlen = max_case_length(df))
 results
+```
+
+
+
+
+
+
+
+
+
+
