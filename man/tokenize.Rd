@@ -8,8 +8,6 @@ tokenize(processed_df)
 }
 \arguments{
 \item{processed_df}{A processed dataframe (= processed event log)}
-
-\item{activities}{A character vector of unique activity labels from an event log}
 }
 \value{
 A list of tokens token_x and token_y

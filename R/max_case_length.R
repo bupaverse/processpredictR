@@ -2,7 +2,7 @@
 #'
 #'(WIP)
 #'
-#'@param log An object of class log
+#'@param log A processed dataframe from create_prefix_df()
 #'@return An integer number of the maximum case length (longest trace) in an event log
 #'
 #'@export

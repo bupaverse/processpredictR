@@ -4,7 +4,6 @@
 #'
 #'
 #' @param processed_df A processed dataframe (= processed event log)
-#' @param activities A character vector of unique activity labels from an event log
 #' @return A list of tokens token_x and token_y
 #'
 #'@export
