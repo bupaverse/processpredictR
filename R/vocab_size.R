@@ -2,23 +2,18 @@
 #'
 #'(WIP)
 #'
-#'@param log An object of a class log
-#'@param outcome_names A character vector of outcome labels
+#'@param processed_df A processed dataframe from create_prefix_df() or preprocess_log()
 #'
 #'@return an Integer number of vocabulary size to define the transformer model
 #'
 #'@export
-vocab_size <- function(log, outcome_names) {
-  UseMethod("vocab_size")
-}
-
-#'@export
-vocab_size.log <- function(log, outcome_names) {
+vocab_size <- function(processed_df) {
   # maybe calculate vocab_size using preprocess_log()
 
-  activity_names <- log %>% activity_labels() %>% as.character()
+  activity_names <- processed_df$current_activity %>% unique() %>% as.character()
   activity_names <- c("PAD", "UNK") %>%
     append(activity_names)
-  length(unique(append(activity_names, outcome_names)))  %>% as.integer()
+  outcome_names <- processed_df$next_activity %>% unique()
+  length(unique(append(activity_names, outcome_names))) +1 %>% as.integer()
 
 }

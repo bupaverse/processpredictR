@@ -4,7 +4,7 @@
 \alias{tokenize}
 \title{Tokenize prefix (feature) and outcome (target) of a processed dataframe to fit the transformer model}
 \usage{
-tokenize(processed_df, activities)
+tokenize(processed_df)
 }
 \arguments{
 \item{processed_df}{A processed dataframe (= processed event log)}

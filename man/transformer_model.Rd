@@ -4,14 +4,10 @@
 \alias{transformer_model}
 \title{Define transformer model}
 \usage{
-transformer_model(max_case_length, vocab_size, num_output)
+transformer_model(processed_df)
 }
 \arguments{
-\item{max_case_length}{An integer number which is the maximum trace length in an event log}
-
-\item{vocab_size}{An integer number which is the number of unique activities, output labels and padding keys ("PAD", "UNK")}
-
-\item{num_output}{An integer number of output labels}
+\item{processed_df}{A processed dataframe from create_prefix_df}
 }
 \value{
 A transformer model

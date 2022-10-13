@@ -4,7 +4,7 @@
 \alias{max_case_length}
 \title{Calculate the maximum length of a case / number of activities in the longest trace in an event log}
 \usage{
-max_case_length(log)
+max_case_length(processed_df)
 }
 \arguments{
 \item{log}{An object of class log}

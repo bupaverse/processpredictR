@@ -4,10 +4,12 @@
 \alias{create_prefix_df}
 \title{Create a dataframe with prefixes}
 \usage{
-create_prefix_df(log)
+create_prefix_df(log, prediction)
 }
 \arguments{
 \item{log}{An object of class log}
+
+\item{prediction}{A prediction task. A character string from c("outcome", "next_activity", "...")}
 }
 \value{
 a dataframe

@@ -15,6 +15,9 @@ transformer_fit <- function(transformer_model, tokens_train, maxlen, num_epochs,
   train_token_x <- train_token_x %>% reticulate::np_array(dtype = "float32")
   train_token_y <- tokens_train$token_y  %>% reticulate::np_array(dtype = "float32")
 
+num_epochs <- num_epochs %>% as.integer()
+batch_size <- batch_size %>% as.integer()
+
   source_python("inst/fit_model.py")
   fit_model(transformer_model, train_token_x, train_token_y, num_epochs, batch_size, file)
 

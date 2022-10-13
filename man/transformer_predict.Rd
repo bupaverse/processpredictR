@@ -4,12 +4,14 @@
 \alias{transformer_predict}
 \title{Predict model}
 \usage{
-transformer_predict(transformer_model, tokens_test)
+transformer_predict(transformer_model, tokens_test, maxlen)
 }
 \arguments{
 \item{transformer_model}{A defined transformer model}
 
 \item{tokens_test}{A list of test tokens, i.e. token_x, token_y}
+
+\item{maxlen}{An integer for longest trace}
 }
 \description{
 (WIP)

@@ -4,9 +4,10 @@
 #'
 #' @param transformer_model A defined transformer model
 #' @param tokens_test A list of test tokens, i.e. token_x, token_y
+#' @param maxlen An integer for longest trace
 #'
 #' @export
-transformer_predict <- function(transformer_model, tokens_test) {
+transformer_predict <- function(transformer_model, tokens_test, maxlen) {
 
   test_token_x <- tokens_test$token_x %>% keras::pad_sequences(maxlen = maxlen, value = 0)
   test_token_x <- test_token_x %>% reticulate::np_array(dtype = "float32")

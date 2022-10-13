@@ -6,15 +6,22 @@
 #'@return An integer number of the maximum case length (longest trace) in an event log
 #'
 #'@export
-max_case_length <- function(log) {
-  UseMethod("max_case_length")
+max_case_length <- function(processed_df) {
+
+  processed_df$traces %>% lengths() %>% max()
+
 }
 
-#'@export
-max_case_length.log <- function(log) {
-  log %>%
-    trace_length() %>%
-    max() %>% as.integer()
 
-  #processed_df$traces %>% lengths() %>% max()    #for processed_df as input
-}
+#max_case_length <- function(log) {
+#   UseMethod("max_case_length")
+# }
+#
+
+# max_case_length.log <- function(log) {
+#   log %>%
+#     trace_length() %>%
+#     max() %>% as.integer()
+#
+#   #processed_df$traces %>% lengths() %>% max()    #for processed_df as input
+# }

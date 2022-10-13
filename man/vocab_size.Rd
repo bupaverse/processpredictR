@@ -4,12 +4,10 @@
 \alias{vocab_size}
 \title{Calculate the vocabulary size, i.e. the sum of number of activities, outcome labels and padding keys}
 \usage{
-vocab_size(log, outcome_names)
+vocab_size(processed_df)
 }
 \arguments{
-\item{log}{An object of a class log}
-
-\item{outcome_names}{A character vector of outcome labels}
+\item{processed_df}{A processed dataframe from create_prefix_df() or preprocess_log()}
 }
 \value{
 an Integer number of vocabulary size to define the transformer model
