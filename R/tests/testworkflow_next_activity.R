@@ -21,7 +21,7 @@ model
 transformer_compile(transformer_model = model, learning_rate = 0.001)
 
 #fit transformer model
-history <- transformer_fit(transformer_model = model, tokens_train = tokens_train,
+transformer_fit(transformer_model = model, tokens_train = tokens_train,
                 maxlen = max_case_length(df), num_epochs = 15, batch_size = 12, file = "example_model_next_activity")
 
 
