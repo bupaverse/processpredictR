@@ -4,21 +4,32 @@
 \alias{create_prefix_df}
 \title{Create a dataframe with prefixes}
 \usage{
-create_prefix_df(log, prediction)
+create_prefix_df(log, prediction, ...)
 }
 \arguments{
-\item{log}{An object of class log}
+\item{log}{An object of class log.}
 
-\item{prediction}{A prediction task. A character string from c("outcome", "next_activity", "...")}
+\item{prediction}{A prediction task. A character string from c("outcome", "next_activity", "...").}
+
+\item{...}{Assign outcome labels to each case based on end activities. If not specified, simply defines
+outcome as last activity in a trace.}
 }
 \value{
-a dataframe
+a dataframe.
 }
 \description{
 Create a dataframe with prefixes
 }
 \examples{
 library(eventdataR)
-create_prefix_df(patients)
+create_prefix_df(patients, prediction = "outcome", outcome1 = "Check-out",
+outcome2 = c("X-Ray", "Blood test", "Triage and Assessment"))
+
+acts <- patients \%>\% edeaR::end_activities("activity")
+acts <- unique(acts$activity) \%>\% as.character()
+create_prefix_df(eventdataR::patients, prediction = "outcome", outcome_label1 = "Check-out",
+outcome_label2 = acts[-1])
+
+create_prefix_df(traffic_fines, prediction = "next_activity")
 
 }

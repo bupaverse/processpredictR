@@ -2,15 +2,15 @@
 % Please edit documentation in R/max_case_length.R
 \name{max_case_length}
 \alias{max_case_length}
-\title{Calculate the maximum length of a case / number of activities in the longest trace in an event log}
+\title{Calculate the maximum length of a case / number of activities in the longest trace in an event log.}
 \usage{
 max_case_length(processed_df)
 }
 \arguments{
-\item{log}{A processed dataframe from create_prefix_df()}
+\item{processed_df}{A preprocessed dataframe from create_prefix_df().}
 }
 \value{
-An integer number of the maximum case length (longest trace) in an event log
+An integer number of the maximum case length (longest trace) in an event log.
 }
 \description{
 (WIP)
