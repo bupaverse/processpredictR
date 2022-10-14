@@ -12,16 +12,16 @@ tokenize <- function(processed_df) {
 
   #if column exists
   if ("outcome" %in% names(processed_df)) { #temporarily works only if there is a column named outcome (after preprocess_log())
-    activities <- processed_df$current_activity %>% unique()
-    outcomes <- processed_df$outcome %>% unique()
-    values_x <- activities %>% append(as.character(outcomes))
+    activities <- processed_df$current_activity %>% unique() %>% as.character()
+    outcomes <- processed_df$outcome %>% unique() %>% as.character()
+    values_x <- activities %>% append(outcomes) %>% unique()
 
   }
 
   else if ("next_activity" %in% names(processed_df)) {
     activities <- processed_df$current_activity %>% append(processed_df$next_activity) %>% unique()
     values_x <- activities
-    outcomes <- df$next_activity %>% unique()
+    outcomes <- processed_df$next_activity %>% unique()
 
 
   }

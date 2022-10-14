@@ -1,7 +1,7 @@
 # testworkflow_next_activity ----------------------------------------------
 
 #preprocess dataset
-df <- create_prefix_df(traffic_fines, prediction = "next_activity")
+df <- create_prefix_df(patients, prediction = "outcome")
 df
 
 #split dataset into train- and test dataset
@@ -22,14 +22,14 @@ transformer_compile(transformer_model = model, learning_rate = 0.001)
 
 #fit transformer model
 transformer_fit(transformer_model = model, tokens_train = tokens_train,
-                maxlen = max_case_length(df), num_epochs = 15, batch_size = 12, file = "example_model_next_activity")
+                maxlen = max_case_length(df), num_epochs = 5, batch_size = 12, file = "example_model_next_activity")
 
 
 #tokenize test dataset
 tokens_test <- tokenize(df_test)
 
 #predict on test data
-results <- transformer_predict(transformer_model = model, tokens_test = tokens_test, maxlen = max_case_length(df))
+results <- transformer_predict(transformer_model = model, tokens_test = tokens_test, maxlen = max_case_length(df), predict_type = "y_pred")
 results
 
 
@@ -37,9 +37,17 @@ results
 
 
 
-
-
-
-
+# #Probabilities in R
+# model %>% predict(tokens_test$token_x) %>% k_argmax()
+# tokens_test$token_x %>% length()
+# tokens_test$token_y %>% length()
+#
+# model %>% predict(purrr::map(tokens_test, ~ append(testvec, .x))) %>% k_argmax()
+#
+# testvec <- c()
+#
+# testvec <- purrr::map(tokens_test$token_x, ~ append(testvec, .x))
+#
+# testvec
 
 
