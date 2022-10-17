@@ -61,6 +61,11 @@ results <- transformer_predict(transformer_model = model, tokens_test = tokens_t
 results
 ```
 
+### visualize with tensorboard
+```r
+tensorboard(log_dir = "tensorboard/")
+```
+
 
 
 
