@@ -29,17 +29,28 @@ transformer_fit(transformer_model = model, tokens_train = tokens_train,
 tokens_test <- tokenize(df_test)
 
 #predict on test data
-results <- transformer_predict(transformer_model = model, tokens_test = tokens_test, maxlen = max_case_length(df), predict_type = "metrics")
+results <- transformer_predict(transformer_model = model, tokens_test = tokens_test, maxlen = max_case_length(df), predict_type = "y_pred")
 results
 
-# visualize with tensorboard
+#visualize with tensorboard
 tensorboard(log_dir = "tensorboard/")
 
 
 
+#example
+# given a case with a following trace of activities up until now, what is the most likely next activity?
+# to
+
+ex_trace <- c("Registration", "Triage and Assessment", "MRI SCAN")
+
+create_vocabulary(df, type = "outcomes") -> results
+
+as.data.frame(results) %>%
+  left_join(voc_outs)
 
 
 
+voc_outs
 
 
 # #Probabilities in R

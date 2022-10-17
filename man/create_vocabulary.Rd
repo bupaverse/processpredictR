@@ -4,10 +4,12 @@
 \alias{create_vocabulary}
 \title{Create a vocabulary, i.e. c("PAD", "UNK"), activities, outcome labels}
 \usage{
-create_vocabulary(processed_df)
+create_vocabulary(processed_df, type = "both")
 }
 \arguments{
 \item{processed_df}{A processed dataframe}
+
+\item{type}{A type of vocabulary c("both", "activities", "outcomes")}
 }
 \value{
 a character vector of unique elements
