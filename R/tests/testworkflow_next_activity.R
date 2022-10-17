@@ -1,7 +1,7 @@
 # testworkflow_next_activity ----------------------------------------------
 
 #preprocess dataset
-df <- create_prefix_df(patients, prediction = "outcome")
+df <- create_prefix_df(patients, prediction = "next_activity")
 df
 
 #split dataset into train- and test dataset
@@ -29,8 +29,13 @@ transformer_fit(transformer_model = model, tokens_train = tokens_train,
 tokens_test <- tokenize(df_test)
 
 #predict on test data
-results <- transformer_predict(transformer_model = model, tokens_test = tokens_test, maxlen = max_case_length(df), predict_type = "y_pred")
+results <- transformer_predict(transformer_model = model, tokens_test = tokens_test, maxlen = max_case_length(df), predict_type = "metrics")
 results
+
+# visualize with tensorboard
+tensorboard(log_dir = "tensorboard/")
+
+
 
 
 
