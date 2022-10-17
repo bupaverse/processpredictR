@@ -84,7 +84,6 @@ tokenize <- function(processed_df) {
 
     list(token_x = token_x, token_y = token_y)
 
-
   }
 
 }

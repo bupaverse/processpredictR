@@ -37,20 +37,26 @@ tensorboard(log_dir = "tensorboard/")
 
 
 
+
+
 #example
 # given a case with a following trace of activities up until now, what is the most likely next activity?
-# to
+
+create_vocabulary(df, type = "outcomes") -> voc_outs
+
+as.data.frame(results) %>%
+  left_join(voc_outs, by = c("results" = "key_id")) %>% mutate(actual = tokens_test$token_y) %>%
+  ggplot(aes(results, actual)) +
+  geom_point() + geom_jitter()
+
+results
+voc_outs
 
 ex_trace <- c("Registration", "Triage and Assessment", "MRI SCAN")
 
-create_vocabulary(df, type = "outcomes") -> results
 
-as.data.frame(results) %>%
-  left_join(voc_outs)
+create_vocabulary(df, type = "activities") -> voc_acts
 
-
-
-voc_outs
 
 
 # #Probabilities in R
