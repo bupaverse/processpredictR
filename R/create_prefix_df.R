@@ -1,7 +1,7 @@
 #' Create a dataframe with prefixes
 #'
 #' @param log An object of class log.
-#' @param prediction A prediction task. A character string from c("outcome", "next_activity", "...").
+#' @param prediction A prediction task. A character string from c("outcome", "next_activity", "next_time", "...").
 #' @param ... Assign outcome labels to each case based on end activities. If not specified, simply defines
 #' outcome as last activity in a trace.
 #' @return a dataframe.
@@ -72,6 +72,28 @@ create_prefix_df.log <- function(log, prediction, ...) {
       ungroup()
 
     case_prefix
+
+  }
+
+  else if (prediction == "next_time") {
+
+    to_activitylog(log) %>% # situation when there is both start- and end timestamps
+      group_by(!!bupaR:::case_id_(log)) %>%
+      mutate(activity_duration = (complete-start) %>% as.numeric(),
+             time_passed = cumsum(activity_duration),
+             trace = paste(handling, collapse = ","),
+             k = row_number() - 1) %>% # getting the traces
+      arrange(!!bupaR:::case_id_(log)) %>%
+      mutate(#!!bupaR:::case_id_(log),
+             prefix = purrr::accumulate(as.character(!!bupaR:::activity_id_(log)), paste, sep = " - "),
+             #!!bupaR:::activity_id_(log),
+             activity_duration = activity_duration #,
+             #time_passed = time_passed
+             ) %>%
+      mutate(latest_time = activity_duration,
+             next_time = lead(activity_duration),
+             recent_time = lag(activity_duration)) %>%
+      select(!!bupaR:::case_id_(log), prefix, k, time_passed, recent_time, latest_time, next_time, activity_duration, trace, everything())
 
   }
 

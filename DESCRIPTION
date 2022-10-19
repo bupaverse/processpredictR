@@ -30,6 +30,8 @@ Imports:
     tidyr, 
     purrr, 
     stringr, 
-    keras
+    keras,
+    lubridate, 
+    ggplot2
 Roxygen: list(markdown = TRUE)
 Config/testthat/edition: 3
