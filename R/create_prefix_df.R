@@ -79,7 +79,8 @@ create_prefix_df.log <- function(log, prediction, ...) {
 
     to_activitylog(log) %>% # situation when there is both start- and end timestamps
       group_by(!!bupaR:::case_id_(log)) %>%
-      mutate(activity_duration = (complete-start) %>% as.numeric(),
+      mutate(ith_case = cur_group_id(),
+             activity_duration = (complete-start) %>% as.numeric(),
              time_passed = cumsum(activity_duration),
              trace = paste(handling, collapse = ","),
              k = row_number() - 1) %>% # getting the traces
@@ -94,7 +95,8 @@ create_prefix_df.log <- function(log, prediction, ...) {
              recent_time = lag(activity_duration),
              recent_time = if_else(is.na(recent_time), 0, recent_time)) %>%
       drop_na(next_time) %>%
-      select(!!bupaR:::case_id_(log), prefix, k, time_passed, recent_time, latest_time, next_time, activity_duration, trace, everything())
+      select(ith_case, !!bupaR:::case_id_(log), prefix, k, time_passed, recent_time, latest_time, next_time, activity_duration, trace, everything()) %>%
+      re_map(to_activitylog(log) %>% mapping())
 
   }
 
