@@ -87,12 +87,13 @@ create_prefix_df.log <- function(log, prediction, ...) {
       mutate(#!!bupaR:::case_id_(log),
              prefix = purrr::accumulate(as.character(!!bupaR:::activity_id_(log)), paste, sep = " - "),
              #!!bupaR:::activity_id_(log),
-             activity_duration = activity_duration #,
-             #time_passed = time_passed
+             activity_duration = activity_duration
              ) %>%
       mutate(latest_time = activity_duration,
              next_time = lead(activity_duration),
-             recent_time = lag(activity_duration)) %>%
+             recent_time = lag(activity_duration),
+             recent_time = if_else(is.na(recent_time), 0, recent_time)) %>%
+      drop_na(next_time) %>%
       select(!!bupaR:::case_id_(log), prefix, k, time_passed, recent_time, latest_time, next_time, activity_duration, trace, everything())
 
   }
