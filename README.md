@@ -3,9 +3,9 @@ Predictions on processes from event log using Transformer model.
 Prediction tasks:
 - [x] outcome
 - [x] next activity
+- [x] next time
 - [ ] remaining trace
 - [ ] remaining time
-- [ ] next time
 
 ## Example next activity prediction
 ### Installation
