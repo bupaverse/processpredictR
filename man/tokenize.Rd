@@ -15,3 +15,11 @@ A list of tokens token_x and token_y
 \description{
 (WIP)
 }
+\examples{
+library(eventdataR)
+testtime <- create_prefix_df(patients, prediction = "next_time")
+testout <- create_prefix_df(patients, prediction = "outcome")
+testact <- create_prefix_df(patients, prediction = "next_activity")
+purrr::map(list(testtime, testout,testact), tokenize) \%>\% head(10)
+
+}

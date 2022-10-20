@@ -18,11 +18,16 @@ create_prefix_df(patients, prediction = "outcome")
 
 # NEXT TIME
 
+scale(test$next_time) -> standardScaled
+scales::rescale(test$next_time, to = c(0, 1)) -> minmaxScaled
 
+library(scales)
+standardScaled * attr(standardScaled, 'scaled:scale') + attr(standardScaled, 'scaled:center') -> x
 
+x[995:1001] == test$next_time[995:1001]
 
-
-
+x[995:1001]
+test$next_time[995:1001]
 
 
 # Scenario1 ---------------------------------------------------------------
