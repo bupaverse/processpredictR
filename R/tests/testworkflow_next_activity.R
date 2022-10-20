@@ -1,7 +1,7 @@
 # testworkflow_next_activity ----------------------------------------------
 
 #preprocess dataset
-df <- create_prefix_df(patients, prediction = "next_activity")
+df <- create_prefix_df(eventdataR::patients, prediction = "next_activity")
 df
 
 #split dataset into train- and test dataset
@@ -33,7 +33,7 @@ results <- transformer_predict(transformer_model = model, tokens_test = tokens_t
 results
 
 #visualize with tensorboard
-tensorboard(log_dir = "tensorboard/")
+keras::tensorboard(log_dir = "tensorboard/")
 
 
 

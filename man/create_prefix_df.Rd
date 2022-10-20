@@ -9,7 +9,7 @@ create_prefix_df(log, prediction, ...)
 \arguments{
 \item{log}{An object of class log.}
 
-\item{prediction}{A prediction task. A character string from c("outcome", "next_activity", "...").}
+\item{prediction}{A prediction task. A character string from c("outcome", "next_activity", "next_time", "...").}
 
 \item{...}{Assign outcome labels to each case based on end activities. If not specified, simply defines
 outcome as last activity in a trace.}

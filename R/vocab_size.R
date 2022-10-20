@@ -16,6 +16,7 @@ vocab_size <- function(processed_df) {
       append(activity_names)
     outcome_names <- processed_df$outcome %>% unique() %>% as.character()
     length(unique(append(activity_names, outcome_names))) %>% as.integer()
+
   }
 
   else if ("next_activity" %in% names(processed_df)) {
@@ -24,6 +25,14 @@ vocab_size <- function(processed_df) {
       append(activity_names)
     outcome_names <- processed_df$next_activity %>% unique()
     length(unique(append(activity_names, outcome_names))) %>% as.integer()
+
+  }
+
+  else if ("next_time" %in% names(processed_df)) {
+    activity_names <- processed_df[[bupaR::activity_id(processed_df)]] %>% as.character() %>% unique()
+    activity_names <- c("PAD", "UNK") %>%
+      append(activity_names)
+    length(unique(activity_names)) %>% as.integer()
 
   }
 

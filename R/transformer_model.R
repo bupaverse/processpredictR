@@ -23,12 +23,31 @@ transformer_model <- function(processed_df) {
   #
   # }
 
+
+  # parameters of the model
   maxlen <- max_case_length(processed_df)
   vocab_size <- vocab_size(processed_df)
-  num_output <- num_outputs(processed_df)
 
+  if ("outcome" %in% names(processed_df) || "next_activity" %in% names(processed_df)) {
 
-  source_python("inst/transformer_model.py")
-  get_outcome_transformer_model(maxlen, vocab_size, num_output)
+    num_output <- num_outputs(processed_df)
+
+    # same for both OUTCOME and NEXT_ACTIVITY
+    source_python("inst/transformer_model.py")
+    get_outcome_transformer_model(maxlen, vocab_size, num_output)
+
+  }
+
+  else if ("next_time" %in% names(processed_df)) {
+
+    source_python("inst/transformer_model.py")
+    get_next_time_model(maxlen, vocab_size, as.integer(1))
+
+  }
 
 }
+
+
+
+
+
