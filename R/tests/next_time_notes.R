@@ -4,25 +4,46 @@ library(ggplot2)
 library(eventdataR)
 create_prefix_df(patients, prediction = "outcome")
 
-# TIME PASSED since case has initiated
+
+
+# time_x to np_array ------------------------------------------------------
+
+tokens_train$time_x$recent_time %>% reticulate::np_array(dtype = "float32") %>% reticulate::array_reshape(dim = c(-1, 1))
+tokens_train$time_x$latest_time %>% reticulate::np_array(dtype = "float32") %>% reticulate::array_reshape(dim = c(-1, 1))
+tokens_train$time_x$time_passed %>% reticulate::np_array(dtype = "float32") %>% reticulate::array_reshape(dim = c(-1, 1))
+
+as.array(c(reticulate::np_array(tokens_train$time_x$recent_time, dtype="float32"), reticulate::np_array(tokens_train$time_x$latest_time)))
+
+append(tokens_train$time_x$recent_time %>% reticulate::np_array(dtype = "float32") %>% reticulate::array_reshape(dim = c(-1, 1)),
+       tokens_train$time_x$latest_time %>% reticulate::np_array(dtype = "float32") %>% reticulate::array_reshape(dim = c(-1, 1)))
 
 
 
-# RECENT TIME
+
+tokens_train$time_x %>% names()
 
 
 
-# LATEST TIME
+tokens_train$token_y  %>% reticulate::np_array(dtype = "float32")
+
+# SOLUTION
+matrix(c(tokens_train$time_x$recent_time, tokens_train$time_x$latest_time, tokens_train$time_x$time_passed), ncol = 3) %>%
+  reticulate::np_array(dtype = "float32")
+
+tokens_train$token_x %>% keras::pad_sequences(maxlen = max_case_length(df), value = 0)
+tokens_train$token_x %>% keras::pad_sequences(maxlen = max_case_length(df), value = 0) %>% reticulate::np_array(dtype = "float32")
 
 
 
-# NEXT TIME
 
-scale(test$next_time) -> standardScaled
+
+# SCALE TIME DURATIONS ----------------------------------------------------
+scale(df_test$next_time) -> standardScaled
+standardScaled
 scales::rescale(test$next_time, to = c(0, 1)) -> minmaxScaled
 
 library(scales)
-standardScaled * attr(standardScaled, 'scaled:scale') + attr(standardScaled, 'scaled:center') -> x
+standardScaled * attr(standardScaled, 'scaled:scale') + attr(standardScaled, 'scaled:center')
 
 x[995:1001] == test$next_time[995:1001]
 

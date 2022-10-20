@@ -137,7 +137,7 @@ tokenize <- function(processed_df) {
     # token_x, i.e. activity prefixes
     # time_x, i.e. a list of calculated and scaled durations (recent, latest, passed)
     # time_y, i.e. a next_activity duration
-    list(token_x = token_x, time_x = time_x, time_y = time_y)
+    list(token_x = token_x, time_x = time_x, token_y = time_y)
 
   } # followed by train_token_x %>% reticulate::np_array(dtype = "float32") in transformer_fit or predict
 

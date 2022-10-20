@@ -49,9 +49,10 @@ def get_outcome_transformer_model(max_case_length, vocab_size, output_dim, embed
   x = layers.Dense(64, activation="relu")(x)
   x = layers.Dropout(0.1)(x)
   outputs = layers.Dense(output_dim, activation="linear")(x)
-  transformer = tf.keras.Model(inputs=inputs, outputs=outputs, name = "outcome_transformer")
+  transformer = tf.keras.Model(inputs=inputs, outputs=outputs, name = "outcome_OR_nextActivity_transformer")
   
   return transformer
+
 
 
 def get_next_time_model(max_case_length, vocab_size, output_dim = 1, embed_dim = 36, num_heads = 4, ff_dim = 64):
