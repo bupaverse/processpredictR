@@ -68,7 +68,7 @@ tensorboard(log_dir = "tensorboard/")
 ```
 
 
-<details><summary>next activity prediction</summary>
+<details><summary>## Next activity prediction</summary>
 <p>
   
   ### preprocess dataset
