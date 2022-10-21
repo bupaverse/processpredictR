@@ -3,10 +3,9 @@ Predictions on processes from event log using Transformer model.
 Prediction tasks:
 - [x] outcome
 - [x] next activity
-- [x] next time <sub>requires an event- or activity log to have both start- and end timestamps</sub>
-- [ ] remaining time <sub>requires an event- or activity log to have both start- and end timestamps</sub>
+- [x] next time <sup>requires an event- or activity log to have both start- and end timestamps</sup>
+- [ ] remaining time <sup>requires an event- or activity log to have both start- and end timestamps</sup>
 - [ ] remaining trace  
-*Temporarily, next_time and remaining_time tasks require an event- or activity log to have both start- and end timestamps.*
 
 ## Example next activity prediction
 ### Installation
