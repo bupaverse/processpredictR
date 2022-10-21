@@ -73,7 +73,69 @@ tensorboard(log_dir = "tensorboard/")
 </p>
 </details>
 
+<details><summary>Next time prediction</summary>
+<p>
+  
+### Installation
+```r
+install.packages("https://github.com/bupaverse/processpredictR.git")
+library(processpredictR)
+```
+  
+  #preprocess dataset
+df <- create_prefix_df(eventdataR::patients, prediction = "next_time")
+df
 
+#split dataset into train- and test dataset
+split_train_test_df(df, ratio = 0.7)
+df_train <- split_train_test_df(df, ratio = 0.7)$train_df
+df_test <- split_train_test_df(df, ratio = 0.7)$test_df
+
+#tokenize train dataset
+tokens_train <- tokenize(df_train)
+tokens_train
+
+#define transformer model
+model <- transformer_model(df)
+model
+
+#compile transformer model
+transformer_compile(transformer_model = model, learning_rate = 0.001)
+
+#fit transformer model
+transformer_fit(transformer_model = model, tokens_train = tokens_train,
+                maxlen = max_case_length(df), num_epochs = 10, batch_size = 12, file = "example_model_next_time")
+
+
+#tokenize test dataset
+tokens_test <- tokenize(df_test)
+
+#predict on test data
+results <- transformer_predict(transformer_model = model, tokens_test = tokens_test, maxlen = max_case_length(df), predict_type = "metrics")
+results
+
+#get the predicted values y_pred
+y_pred <- transformer_predict(transformer_model = model, tokens_test = tokens_test, maxlen = max_case_length(df), predict_type = "y_pred")
+y_pred %>% as.vector()
+
+scale(df_test$next_time) -> standardScaled
+standardScaled
+
+(y_pred %>% as.vector() * attr(standardScaled, 'scaled:scale') + attr(standardScaled, 'scaled:center')) %>% summary()
+
+MAPE <- mean(abs((tokens_test$token_y-y_pred)/tokens_test$token_y))*100
+MAPE
+r2_score <- cor(tokens_test$token_y,y_pred)^2
+r2_score
+
+Metrics::mae(tokens_test$token_y, y_pred)
+Metrics::rmse(tokens_test$token_y, y_pred)
+
+# tensorboard
+keras::tensorboard(log_dir = "tensorboard/")
+  
+</p>
+</details>
 
 ## Attribution
 This repository is based on the ProcessTransformer library by Buksh et al. Citation: Zaharah A. Bukhsh, Aaqib Saeed, & Remco M. Dijkman. (2021). "ProcessTransformer: Predictive Business Process Monitoring with Transformer Network". arXiv preprint arXiv:2104.00721
