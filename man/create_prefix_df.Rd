@@ -31,5 +31,7 @@ create_prefix_df(eventdataR::patients, prediction = "outcome", outcome_label1 = 
 outcome_label2 = acts[-1])
 
 create_prefix_df(traffic_fines, prediction = "next_activity")
+create_prefix_df(patients, prediction = "next_time")
+create_prefix_df(patients, prediction = "remaining_time")
 
 }

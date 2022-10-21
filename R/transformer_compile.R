@@ -14,7 +14,7 @@ transformer_compile <- function(transformer_model, learning_rate) {
 
   }
 
-  else if (transformer_model$name == "next_time_transformer") {
+  else if (transformer_model$name == "next_time_transformer" || transformer_model$name == "remaining_time_transformer") {
   source_python("inst/fit_model_next_time.py")
 
   }

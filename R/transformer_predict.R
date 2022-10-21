@@ -23,7 +23,7 @@ transformer_predict <- function(transformer_model, tokens_test, maxlen, predict_
 
   }
 
-  else if (transformer_model$name == "next_time_transformer") {
+  else if (transformer_model$name == "next_time_transformer" || transformer_model$name == "remaining_time_transformer") {
 
     test_time_x <- matrix(c(tokens_test$time_x$recent_time, tokens_test$time_x$latest_time, tokens_test$time_x$time_passed), ncol = 3) %>%
       reticulate::np_array(dtype = "float32")
