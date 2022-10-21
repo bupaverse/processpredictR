@@ -4,7 +4,7 @@ Prediction tasks:
 - [x] outcome
 - [x] next activity
 - [x] next time <sup>requires an event- or activity log to have both start- and end timestamps</sup>
-- [ ] remaining time <sup>requires an event- or activity log to have both start- and end timestamps</sup>
+- [x] remaining time <sup>requires an event- or activity log to have both start- and end timestamps</sup>
 - [ ] remaining trace  
 
 ## Example next activity prediction
