@@ -1,5 +1,6 @@
 # processpredictR
 Predictions on processes from event log using Transformer model.  
+
 Prediction tasks:
 - [x] outcome
 - [x] next activity
@@ -66,8 +67,8 @@ results
 tensorboard(log_dir = "tensorboard/")
 ```
 
-
-
+### Attribution
+This repository is based on the ProcessTransformer library by Buksh et al. Citation: Zaharah A. Bukhsh, Aaqib Saeed, & Remco M. Dijkman. (2021). "ProcessTransformer: Predictive Business Process Monitoring with Transformer Network". arXiv preprint arXiv:2104.00721
 
 
 
