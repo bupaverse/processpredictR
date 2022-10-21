@@ -27,7 +27,7 @@ transformer_fit <- function(transformer_model, tokens_train, maxlen, num_epochs,
 
   }
 
-  else if (transformer_model$name == "next_time_transformer") {
+  else if (transformer_model$name == "next_time_transformer" || transformer_model$name == "remaining_time_transformer") {
 
     train_time_x <- matrix(c(tokens_train$time_x$recent_time, tokens_train$time_x$latest_time, tokens_train$time_x$time_passed), ncol = 3) %>%
       reticulate::np_array(dtype = "float32")

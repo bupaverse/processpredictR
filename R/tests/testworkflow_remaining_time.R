@@ -1,7 +1,7 @@
-# testworkflow_next_time --------------------------------------------------
+# testworkflow_remaining_time ---------------------------------------------
 
 #preprocess dataset
-df <- create_prefix_df(eventdataR::patients, prediction = "next_time")
+df <- create_prefix_df(eventdataR::patients, prediction = "remaining_time")
 df
 
 #split dataset into train- and test dataset
@@ -22,8 +22,7 @@ transformer_compile(transformer_model = model, learning_rate = 0.001)
 
 #fit transformer model
 transformer_fit(transformer_model = model, tokens_train = tokens_train,
-                maxlen = max_case_length(df), num_epochs = 10, batch_size = 12, file = "example_model_next_time")
-
+                maxlen = max_case_length(df), num_epochs = 10, batch_size = 12, file = "example_model_remaining_time")
 
 #tokenize test dataset
 tokens_test <- tokenize(df_test)
@@ -33,15 +32,17 @@ results <- transformer_predict(transformer_model = model, tokens_test = tokens_t
 results
 
 #get the predicted values y_pred
-y_pred <- transformer_predict(transformer_model = model, tokens_test = tokens_test, maxlen = max_case_length(df), predict_type = "y_pred")
-y_pred %>% as.vector()
+y_pred_scaled <- transformer_predict(transformer_model = model, tokens_test = tokens_test, maxlen = max_case_length(df), predict_type = "y_pred")
+y_pred_scaled %>% as.vector()
 
-scale(df_test$next_time) -> standardScaled
+scale(df_test$remaining_time) -> standardScaled
 standardScaled
 
-(y_pred %>% as.vector() * attr(standardScaled, 'scaled:scale') + attr(standardScaled, 'scaled:center')) %>% summary()
+y_pred <- (y_pred_scaled %>% as.vector() * attr(standardScaled, 'scaled:scale') + attr(standardScaled, 'scaled:center'))
+y_pred %>% summary()
 
-MAPE <- mean(abs((tokens_test$token_y-y_pred)/tokens_test$token_y))*100
+
+MAPE <- mean(abs((tokens_test$token_y - y_pred)/tokens_test$token_y)) * 100
 MAPE
 r2_score <- cor(tokens_test$token_y,y_pred)^2
 r2_score
@@ -49,8 +50,17 @@ r2_score
 Metrics::mae(tokens_test$token_y, y_pred)
 Metrics::rmse(tokens_test$token_y, y_pred)
 
+
 # tensorboard
 keras::tensorboard(log_dir = "tensorboard/")
+
+
+
+
+
+
+
+
 
 
 

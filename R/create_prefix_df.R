@@ -16,6 +16,8 @@
 #' outcome_label2 = acts[-1])
 #'
 #' create_prefix_df(traffic_fines, prediction = "next_activity")
+#' create_prefix_df(patients, prediction = "next_time")
+#' create_prefix_df(patients, prediction = "remaining_time")
 #'
 #' @export
 create_prefix_df <- function(log, prediction, ...) {
@@ -96,6 +98,32 @@ create_prefix_df.log <- function(log, prediction, ...) {
              recent_time = if_else(is.na(recent_time), 0, recent_time)) %>%
       drop_na(next_time) %>%
       select(ith_case, !!bupaR:::case_id_(log), prefix, k, time_passed, recent_time, latest_time, next_time, activity_duration, trace, everything()) %>%
+      re_map(to_activitylog(log) %>% mapping())
+
+  }
+
+
+
+  else if (prediction == "remaining_time") {
+
+    to_activitylog(log) %>% # situation when there is both start- and end timestamps
+      group_by(!!bupaR:::case_id_(log)) %>%
+      mutate(ith_case = cur_group_id(),
+             activity_duration = (complete-start) %>% as.numeric(),
+             time_passed = cumsum(activity_duration),
+             trace = paste(handling, collapse = ","),
+             k = row_number() - 1) %>% # getting the traces
+      arrange(!!bupaR:::case_id_(log)) %>%
+      mutate(#!!bupaR:::case_id_(log),
+        prefix = purrr::accumulate(as.character(!!bupaR:::activity_id_(log)), paste, sep = " - "),
+        #!!bupaR:::activity_id_(log),
+        activity_duration = activity_duration
+      ) %>%
+      mutate(latest_time = activity_duration,
+             recent_time = lag(activity_duration),
+             recent_time = if_else(is.na(recent_time), 0, recent_time),
+             remaining_time = last(time_passed) - time_passed[k+1]) %>%
+      select(ith_case, !!bupaR:::case_id_(log), prefix, k, time_passed, recent_time, latest_time, remaining_time, activity_duration, trace, everything()) %>%
       re_map(to_activitylog(log) %>% mapping())
 
   }

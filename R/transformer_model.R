@@ -45,6 +45,13 @@ transformer_model <- function(processed_df) {
 
   }
 
+  else if ("remaining_time" %in% names(processed_df)) {
+
+    source_python("inst/transformer_model.py")
+    get_remaining_time_model(maxlen, vocab_size, as.integer(1))
+
+  }
+
 }
 
 

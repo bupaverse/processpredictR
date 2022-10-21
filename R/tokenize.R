@@ -27,7 +27,7 @@ tokenize <- function(processed_df) {
   }
 
   # NEXT_TIME task
-  else if ("next_time" %in% names(processed_df)) {
+  else if ("next_time" %in% names(processed_df) || "remaining_time" %in% names(processed_df)) {
 
     activities <- processed_df[[bupaR::activity_id(processed_df)]] %>% as.character() %>% unique()
     values_x <- activities
@@ -140,6 +140,30 @@ tokenize <- function(processed_df) {
     list(token_x = token_x, time_x = time_x, token_y = time_y)
 
   } # followed by train_token_x %>% reticulate::np_array(dtype = "float32") in transformer_fit or predict
+
+
+  else if ("remaining_time" %in% names(processed_df)) {
+
+    # later alternatively inversing times back to interpret the model predictions output
+    # time_passed1 * attr(time_passed1, 'scaled:scale') + attr(time_passed1, 'scaled:center'))
+
+    # time_x (input)
+    recent_time <- processed_df$recent_time %>% scale() %>% as.vector()
+    latest_time <- processed_df$latest_time %>% scale() %>% as.vector()
+    time_passed <- processed_df$time_passed %>% scale() %>% as.vector()
+    time_x <- list(recent_time = recent_time, latest_time = latest_time, time_passed = time_passed)
+
+    #time_y (output)
+    time_y <- processed_df$remaining_time %>% scale() %>% as.vector()
+
+    # return:
+    # token_x, i.e. activity prefixes
+    # time_x, i.e. a list of calculated and scaled durations (recent, latest, passed)
+    # time_y, i.e. a next_activity duration
+    list(token_x = token_x, time_x = time_x, token_y = time_y)
+
+  }
+
 
 }
 

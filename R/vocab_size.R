@@ -28,7 +28,7 @@ vocab_size <- function(processed_df) {
 
   }
 
-  else if ("next_time" %in% names(processed_df)) {
+  else if ("next_time" %in% names(processed_df) || "remaining_time" %in% names(processed_df)) {
     activity_names <- processed_df[[bupaR::activity_id(processed_df)]] %>% as.character() %>% unique()
     activity_names <- c("PAD", "UNK") %>%
       append(activity_names)
