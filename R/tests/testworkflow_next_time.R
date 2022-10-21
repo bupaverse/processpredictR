@@ -32,7 +32,7 @@ tokens_test <- tokenize(df_test)
 results <- transformer_predict(transformer_model = model, tokens_test = tokens_test, maxlen = max_case_length(df), predict_type = "metrics")
 results
 
-#get the predicted values y_pred
+#get the predicted values y_pred and calculate metrics
 y_pred <- transformer_predict(transformer_model = model, tokens_test = tokens_test, maxlen = max_case_length(df), predict_type = "y_pred")
 y_pred %>% as.vector()
 
