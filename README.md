@@ -5,7 +5,7 @@ Prediction tasks:
 - [x] next activity
 - [x] next time
 - [ ] remaining time
-- [ ] remaining trace
+- [ ] remaining trace  
 *Temporarily, next_time and remaining_time tasks require an event- or activity log to have both start- and end timestamps.*
 
 ## Example next activity prediction
