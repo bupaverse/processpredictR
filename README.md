@@ -83,41 +83,59 @@ library(processpredictR)
 ```
   
 ### preprocess dataset
+```r
 df <- create_prefix_df(eventdataR::patients, prediction = "next_time")
 df
-
+```
+      
 ### split dataset into train- and test dataset
+```r
 split_train_test_df(df, ratio = 0.7)
 df_train <- split_train_test_df(df, ratio = 0.7)$train_df
 df_test <- split_train_test_df(df, ratio = 0.7)$test_df
-
+```
+           
 ### tokenize train dataset
+```r
 tokens_train <- tokenize(df_train)
 tokens_train
-
-### define transformer model
+```
+ 
+### define transformer model          
+```r
 model <- transformer_model(df)
 model
+```
 
 ### compile transformer model
+```r
 transformer_compile(transformer_model = model, learning_rate = 0.001)
-
+```
+         
 ### fit transformer model
+```r
 transformer_fit(transformer_model = model, tokens_train = tokens_train,
                 maxlen = max_case_length(df), num_epochs = 10, batch_size = 12, file = "example_model_next_time")
-
-
-### tokenize test dataset
+```
+         
+### tokenize test dataset 
+```r
 tokens_test <- tokenize(df_test)
+```
 
 ### predict on test data
+```r
 results <- transformer_predict(transformer_model = model, tokens_test = tokens_test, maxlen = max_case_length(df), predict_type = "metrics")
 results
-
+```
+           
 ### get the predicted values y_pred and calculate metrics
+```r
 y_pred <- transformer_predict(transformer_model = model, tokens_test = tokens_test, maxlen = max_case_length(df), predict_type = "y_pred")
 y_pred %>% as.vector()
+```
 
+```r
 scale(df_test$next_time) -> standardScaled
 standardScaled
 
@@ -130,10 +148,13 @@ r2_score
 
 Metrics::mae(tokens_test$token_y, y_pred)
 Metrics::rmse(tokens_test$token_y, y_pred)
+```
 
 ### tensorboard
+```r
 keras::tensorboard(log_dir = "tensorboard/")
-  
+```
+ 
 </p>
 </details>
 
