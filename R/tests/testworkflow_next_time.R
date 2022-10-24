@@ -22,7 +22,7 @@ transformer_compile(transformer_model = model, learning_rate = 0.001)
 
 #fit transformer model
 transformer_fit(transformer_model = model, tokens_train = tokens_train,
-                maxlen = max_case_length(df), num_epochs = 10, batch_size = 12, file = "example_model_next_time")
+                maxlen = max_case_length(df), num_epochs = 5, batch_size = 12, file = "example_model_next_time")
 
 
 #tokenize test dataset
@@ -41,13 +41,11 @@ standardScaled
 
 (y_pred %>% as.vector() * attr(standardScaled, 'scaled:scale') + attr(standardScaled, 'scaled:center')) %>% summary()
 
-MAPE <- mean(abs((tokens_test$token_y-y_pred)/tokens_test$token_y))*100
-MAPE
 r2_score <- cor(tokens_test$token_y,y_pred)^2
-r2_score
+r2_score # how good is the model at predicting
 
 Metrics::mae(tokens_test$token_y, y_pred)
-Metrics::rmse(tokens_test$token_y, y_pred)
+Metrics::rmse(tokens_test$token_y, y_pred) # average deviation between predicted and actual value
 
 # tensorboard
 keras::tensorboard(log_dir = "tensorboard/")

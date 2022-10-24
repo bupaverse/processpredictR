@@ -15,8 +15,8 @@ transformer_predict <- function(transformer_model, tokens_test, maxlen, predict_
   test_token_x <- test_token_x %>% reticulate::np_array(dtype = "float32")
   test_token_y <- tokens_test$token_y  %>% reticulate::np_array(dtype = "float32")
 
-
   source_python("inst/predict.py")
+
   if (transformer_model$name == "outcome_OR_nextActivity_transformer") {
 
     predict_model(transformer_model, test_token_x, test_token_y, predict_type)
@@ -29,6 +29,12 @@ transformer_predict <- function(transformer_model, tokens_test, maxlen, predict_
       reticulate::np_array(dtype = "float32")
 
     predict_model_next_time(transformer_model, test_token_x, test_time_x, test_token_y, predict_type)
+
+  }
+
+  else if (transformer_model$name == "remaining_trace_transformer") {
+
+    predict_model(transformer_model, test_token_x, test_token_y, predict_type)
 
   }
 

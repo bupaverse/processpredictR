@@ -9,7 +9,7 @@ create_vocabulary(processed_df, task_type)
 \arguments{
 \item{processed_df}{A processed dataframe}
 
-\item{type}{A type of vocabulary c("both", "activities", "outcomes")}
+\item{task_type}{A type of vocabulary c("both", "activities", "outcomes")}
 }
 \value{
 a character vector of unique elements

@@ -52,6 +52,15 @@ transformer_model <- function(processed_df) {
 
   }
 
+  else if ("remaining_trace" %in% names(processed_df)) {
+
+    num_output <- num_outputs(processed_df)
+
+    source_python("inst/transformer_model.py")
+    get_remaining_trace_model(maxlen, vocab_size, num_output)
+
+  }
+
 }
 
 

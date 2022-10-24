@@ -21,4 +21,10 @@ num_outputs <- function(processed_df) {
 
   }
 
+  else if ("remaining_trace" %in% names(processed_df)) {
+
+    processed_df$remaining_trace %>% unique() %>% length()
+
+  }
+
 }

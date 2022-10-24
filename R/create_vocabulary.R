@@ -1,7 +1,7 @@
 #' Create a vocabulary, i.e. c("PAD", "UNK"), activities, outcome labels
 #'
 #'@param processed_df A processed dataframe
-#'@param type A type of vocabulary c("both", "activities", "outcomes")
+#'@param task_type A type of vocabulary c("both", "activities", "outcomes")
 #'@return a character vector of unique elements
 #'
 #' @export
@@ -56,6 +56,26 @@ create_vocabulary <- function(processed_df, task_type) {
     acts <- data.frame(activity_name = keys_x %>% unlist()) %>% mutate(key_id = row_number() - 1)
 
     acts
+
+  }
+
+  else if (task_type == "remaining_trace") {
+
+    activity_names <- processed_df[[bupaR::activity_id(processed_df)]] %>% as.character() %>% unique()
+    activity_names <- c("PAD", "UNK") %>%
+      append(activity_names)
+    values_x <- unique(activity_names)
+
+    #activities tokens
+    keys_x <- as.list(values_x)
+    acts <- data.frame(activity_name = keys_x %>% unlist()) %>% mutate(key_id = row_number() - 1)
+
+    keys_y <- processed_df$remaining_trace %>% unique() %>% as.list()
+    outs <- data.frame(activity = unlist(keys_y)) %>% mutate(key_id = row_number() - 1)
+
+    list(activities = acts, outcomes = outs)
+
+
 
   }
 

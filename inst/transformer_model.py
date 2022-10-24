@@ -90,3 +90,20 @@ def get_remaining_time_model(max_case_length, vocab_size, output_dim = 1, embed_
   name = "remaining_time_transformer")
   
   return transformer
+
+
+
+def get_remaining_trace_model(max_case_length, vocab_size, output_dim, embed_dim = 36, num_heads = 4, ff_dim = 64):
+  inputs = layers.Input(shape=(max_case_length,))
+  
+  x = TokenAndPositionEmbedding(max_case_length, vocab_size, embed_dim)(inputs)
+  x = TransformerBlock(embed_dim, num_heads, ff_dim)(x)
+  x = layers.GlobalAveragePooling1D()(x)
+  x = layers.Dropout(0.1)(x)
+  x = layers.Dense(64, activation="relu")(x)
+  x = layers.Dropout(0.1)(x)
+  outputs = layers.Dense(output_dim, activation="linear")(x)
+  transformer = tf.keras.Model(inputs=inputs, outputs=outputs, name = "remaining_trace_transformer")
+  
+  return transformer
+

@@ -27,7 +27,8 @@ tokenize <- function(processed_df) {
   }
 
   # NEXT_TIME task
-  else if ("next_time" %in% names(processed_df) || "remaining_time" %in% names(processed_df)) {
+  else if ("next_time" %in% names(processed_df) || "remaining_time" %in% names(processed_df) ||
+           "remaining_trace" %in% names(processed_df)) {
 
     activities <- processed_df[[bupaR::activity_id(processed_df)]] %>% as.character() %>% unique()
     values_x <- activities
@@ -164,6 +165,22 @@ tokenize <- function(processed_df) {
 
   }
 
+  else if ("remaining_trace" %in% names(processed_df)) {
+
+    keys_y <- processed_df$remaining_trace %>% unique()
+
+
+    token_y = c()
+
+    for (i in (1:length(processed_df$trace))) {
+      tok <- which(processed_df$remaining_trace[i] == keys_y)
+      token_y <- token_y  %>% append(tok-1)
+
+    }
+
+    list(token_x = token_x, token_y = token_y)
+
+  }
 
 }
 

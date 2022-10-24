@@ -1,7 +1,7 @@
 # testworkflow_next_activity ----------------------------------------------
 
 #preprocess dataset
-df <- create_prefix_df(eventdataR::patients, prediction = "next_activity")
+df <- create_prefix_df(eventdataR::traffic_fines, prediction = "next_activity")
 df
 
 #split dataset into train- and test dataset

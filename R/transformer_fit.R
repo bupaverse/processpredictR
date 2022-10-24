@@ -20,9 +20,10 @@ transformer_fit <- function(transformer_model, tokens_train, maxlen, num_epochs,
   num_epochs <- num_epochs %>% as.integer()
   batch_size <- batch_size %>% as.integer()
 
-  if (transformer_model$name == "outcome_OR_nextActivity_transformer") {
+  if (transformer_model$name == "outcome_OR_nextActivity_transformer" ||
+      transformer_model$name == "remaining_trace_transformer") {
 
-    source_python("inst/fit_model_outcome_OR_next_activity.py")
+    source_python("inst/fit_outcome_activity_trace.py")
     fit_model(transformer_model, train_token_x, train_token_y, num_epochs, batch_size, file)
 
   }
@@ -32,7 +33,7 @@ transformer_fit <- function(transformer_model, tokens_train, maxlen, num_epochs,
     train_time_x <- matrix(c(tokens_train$time_x$recent_time, tokens_train$time_x$latest_time, tokens_train$time_x$time_passed), ncol = 3) %>%
       reticulate::np_array(dtype = "float32")
 
-    source_python("inst/fit_model_next_time.py")
+    source_python("inst/fit_time.py")
     fit_model(transformer_model, train_token_x, train_time_x, train_token_y, num_epochs, batch_size, file)
 
   }

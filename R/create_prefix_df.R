@@ -86,7 +86,7 @@ create_prefix_df.log <- function(log, prediction, ...) {
         mutate(ith_case = cur_group_id(),
                activity_duration = (complete-start) %>% as.numeric(),
                time_passed = cumsum(activity_duration),
-               trace = paste(handling, collapse = ","),
+               trace = paste(!!bupaR:::activity_id_(log), collapse = ","),
                k = row_number() - 1) %>% # getting the traces
         arrange(!!bupaR:::case_id_(log)) %>%
         mutate(#!!bupaR:::case_id_(log),
@@ -117,7 +117,7 @@ create_prefix_df.log <- function(log, prediction, ...) {
         mutate(ith_case = cur_group_id(),
                activity_duration = (complete-start) %>% as.numeric(),
                time_passed = cumsum(activity_duration),
-               trace = paste(handling, collapse = ","),
+               trace = paste(!!bupaR:::activity_id_(log), collapse = ","),
                k = row_number() - 1) %>% # getting the traces
         arrange(!!bupaR:::case_id_(log)) %>%
         mutate(#!!bupaR:::case_id_(log),
@@ -135,6 +135,25 @@ create_prefix_df.log <- function(log, prediction, ...) {
     }
 
     else {print("Log does not contain both start- and end timestamps")}
+
+  }
+
+  else if (prediction == "remaining_trace") {
+
+    log %>% # situation when there is both start- and end timestamps
+      group_by(!!bupaR:::case_id_(log)) %>%
+      mutate(ith_case = cur_group_id(),
+             trace = paste(!!bupaR:::activity_id_(log), collapse = ","),
+             k = row_number() - 1) %>% # getting the traces
+      arrange(!!bupaR:::case_id_(log)) %>%
+      distinct(!!bupaR:::activity_instance_id_(log), .keep_all = T) %>%
+      mutate(
+        prefix = purrr::accumulate(as.character(!!bupaR:::activity_id_(log)), paste, sep = " - ", .dir = "forward"),
+        remaining_trace = purrr::accumulate(as.character(!!bupaR:::activity_id_(log)), paste, sep = " - ", .dir = "backward")) %>%
+      mutate(remaining_trace = lead(remaining_trace),
+             remaining_trace = if_else(is.na(remaining_trace), "endpoint", remaining_trace)) %>%
+      select(ith_case, !!bupaR:::case_id_(log), prefix, remaining_trace, k, trace, everything()) %>%
+      re_map(mapping(log))
 
   }
 

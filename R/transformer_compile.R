@@ -8,14 +8,15 @@
 #' @export
 transformer_compile <- function(transformer_model, learning_rate) {
 
-  if (transformer_model$name == "outcome_OR_nextActivity_transformer") {
-  source_python("inst/fit_model_outcome_OR_next_activity.py")
-  compile_model(transformer_model, learning_rate)
+  if (transformer_model$name == "outcome_OR_nextActivity_transformer" ||
+      transformer_model$name == "remaining_trace_transformer") {
+
+    source_python("inst/fit_outcome_activity_trace.py")
 
   }
 
   else if (transformer_model$name == "next_time_transformer" || transformer_model$name == "remaining_time_transformer") {
-  source_python("inst/fit_model_next_time.py")
+    source_python("inst/fit_time.py")
 
   }
 

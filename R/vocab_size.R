@@ -36,4 +36,13 @@ vocab_size <- function(processed_df) {
 
   }
 
+  else if ("remaining_trace" %in% names(processed_df)) {
+    activity_names <- processed_df[[bupaR::activity_id(processed_df)]] %>% as.character() %>% unique()
+    activity_names <- c("PAD", "UNK") %>%
+      append(activity_names)
+    length(unique(activity_names)) %>% as.integer()
+
+
+  }
+
 }
