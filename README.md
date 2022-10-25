@@ -33,7 +33,7 @@ df_test <- split_train_test_df(df, ratio = 0.7)$test_df
 
 ### tokenize train dataset
 ```r
-tokens_train <- tokenize(df_train)
+tokens_train <- tokenize(df_train, vocabulary = create_vocabulary(df))
 tokens_train
 ```
 
@@ -56,7 +56,7 @@ transformer_fit(transformer_model = model, tokens_train = tokens_train,
 
 ### tokenize test dataset
 ```r
-tokens_test <- tokenize(df_test)
+tokens_test <- tokenize(df_test, vocabulary = create_vocabulary(df))
 ```
 
 ### predict on test data
@@ -97,7 +97,7 @@ df_test <- split_train_test_df(df, ratio = 0.7)$test_df
            
 ### tokenize train dataset
 ```r
-tokens_train <- tokenize(df_train)
+tokens_train <- tokenize(df_train, vocabulary = create_vocabulary(df))
 tokens_train
 ```
  
@@ -120,7 +120,7 @@ transformer_fit(transformer_model = model, tokens_train = tokens_train,
          
 ### tokenize test dataset 
 ```r
-tokens_test <- tokenize(df_test)
+tokens_test <- tokenize(df_test, vocabulary = create_vocabulary(df))
 ```
 
 ### predict on test data
