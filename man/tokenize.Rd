@@ -4,10 +4,12 @@
 \alias{tokenize}
 \title{Tokenize prefix (feature) and outcome (target) of a processed dataframe to fit the transformer model}
 \usage{
-tokenize(processed_df)
+tokenize(processed_df, vocabulary)
 }
 \arguments{
 \item{processed_df}{A processed dataframe (= processed event log)}
+
+\item{vocabulary}{A vocabulary, i.e. a list of activities and outcome labels.}
 }
 \value{
 A list of tokens token_x and token_y
@@ -20,6 +22,6 @@ library(eventdataR)
 testtime <- create_prefix_df(patients, prediction = "next_time")
 testout <- create_prefix_df(patients, prediction = "outcome")
 testact <- create_prefix_df(patients, prediction = "next_activity")
-purrr::map(list(testtime, testout,testact), tokenize) \%>\% head(10)
+purrr::map(list(testtime, testout, testact), tokenize) \%>\% head(10)
 
 }

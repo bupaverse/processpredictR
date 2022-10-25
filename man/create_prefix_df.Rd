@@ -21,17 +21,18 @@ a dataframe.
 Create a dataframe with prefixes
 }
 \examples{
+# Outcome task prediction with custom outcome labels:
 library(eventdataR)
-create_prefix_df(patients, prediction = "outcome", outcome1 = "Check-out",
-outcome2 = c("X-Ray", "Blood test", "Triage and Assessment"))
-
 acts <- patients \%>\% edeaR::end_activities("activity")
 acts <- unique(acts$activity) \%>\% as.character()
 create_prefix_df(eventdataR::patients, prediction = "outcome", outcome_label1 = "Check-out",
 outcome_label2 = acts[-1])
 
+# Example next_activity task prediction on traffic_fines dataset:
 create_prefix_df(traffic_fines, prediction = "next_activity")
-create_prefix_df(patients, prediction = "next_time")
-create_prefix_df(patients, prediction = "remaining_time")
+
+# Each prediction task for the patients dataset:
+tasks <- c("outcome", "next_activity", "next_time", "remaining_time", "remaining_trace")
+purrr::map(tasks, ~create_prefix_df(eventdataR::patients, prediction = .x))
 
 }

@@ -4,16 +4,19 @@
 \alias{create_vocabulary}
 \title{Create a vocabulary, i.e. c("PAD", "UNK"), activities, outcome labels}
 \usage{
-create_vocabulary(processed_df, task_type)
+create_vocabulary(processed_df)
 }
 \arguments{
 \item{processed_df}{A processed dataframe}
-
-\item{task_type}{A type of vocabulary c("both", "activities", "outcomes")}
 }
 \value{
 a character vector of unique elements
 }
 \description{
 Create a vocabulary, i.e. c("PAD", "UNK"), activities, outcome labels
+}
+\examples{
+tasks <- c("outcome", "next_activity", "next_time", "remaining_time", "remaining_trace")
+purrr::map(tasks, ~create_prefix_df(patients, prediction = .x)) \%>\% purrr::map(create_vocabulary)
+
 }

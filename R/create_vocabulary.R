@@ -1,13 +1,17 @@
 #' Create a vocabulary, i.e. c("PAD", "UNK"), activities, outcome labels
 #'
-#'@param processed_df A processed dataframe
-#'@param task_type A type of vocabulary c("both", "activities", "outcomes")
-#'@return a character vector of unique elements
+#' @param processed_df A processed dataframe
+#' @return a character vector of unique elements
+#'
+#' @examples
+#' tasks <- c("outcome", "next_activity", "next_time", "remaining_time", "remaining_trace")
+#' purrr::map(tasks, ~create_prefix_df(patients, prediction = .x)) %>% purrr::map(create_vocabulary)
 #'
 #' @export
-create_vocabulary <- function(processed_df, task_type) {
+create_vocabulary <- function(processed_df) {
 
-  if (task_type == "outcome") {
+  #OUTCOME
+  if ("outcome" %in% names(processed_df)) {
     activity_names <- processed_df$current_activity %>% unique() %>% as.character()
     activity_names <- c("PAD", "UNK") %>%
       append(activity_names)
@@ -16,17 +20,18 @@ create_vocabulary <- function(processed_df, task_type) {
 
     #outcome tokens
     keys_y <- outcome_names %>% as.list()
-    outs <- data.frame(activity = unlist(keys_y)) %>% mutate(key_id = row_number() - 1)
+    #outs <- data.frame(activity = unlist(keys_y)) %>% mutate(key_id = row_number() - 1)
 
     #activities tokens
     keys_x <- as.list(values_x)
-    acts <- data.frame(activity_name = keys_x %>% unlist()) %>% mutate(key_id = row_number() - 1)
+    #acts <- data.frame(activity_name = keys_x %>% unlist()) %>% mutate(key_id = row_number() - 1)
 
-    list(activities = acts, outcomes = outs)
+    list(keys_x = keys_x, keys_y = keys_y)
 
   }
 
-  else if (task_type == "next_activity") {
+  #NEXT_ACTIVITY
+  else if ("last_activity" %in% names(processed_df)) {
     activity_names <- processed_df$current_activity %>% unique() %>% as.character()
     activity_names <- c("PAD", "UNK") %>%
       append(activity_names)
@@ -35,17 +40,18 @@ create_vocabulary <- function(processed_df, task_type) {
 
     #activities tokens
     keys_x <- as.list(values_x)
-    acts <- data.frame(activity_name = keys_x %>% unlist()) %>% mutate(key_id = row_number() - 1)
+    #acts <- data.frame(activity_name = keys_x %>% unlist()) %>% mutate(key_id = row_number() - 1)
 
     #outcome tokens
     keys_y <- outcome_names %>% as.list()
-    outs <- data.frame(activity = unlist(keys_y)) %>% mutate(key_id = row_number() - 1)
+    #outs <- data.frame(activity = unlist(keys_y)) %>% mutate(key_id = row_number() - 1)
 
-    list(activities = acts, outcomes = outs)
+    list(keys_x = keys_x, keys_y = keys_y)
 
   }
 
-  else if (task_type == "next_time" || task_type == "remaining_time") {
+  #NEXT_TIME & REMAINING_TIME
+  else if ("next_time" %in% names(processed_df) || "remaining_time" %in% names(processed_df)) {
     activity_names <- processed_df[[bupaR::activity_id(processed_df)]] %>% as.character() %>% unique()
     activity_names <- c("PAD", "UNK") %>%
       append(activity_names)
@@ -53,13 +59,15 @@ create_vocabulary <- function(processed_df, task_type) {
 
     #activities tokens
     keys_x <- as.list(values_x)
-    acts <- data.frame(activity_name = keys_x %>% unlist()) %>% mutate(key_id = row_number() - 1)
+    #acts <- data.frame(activity_name = keys_x %>% unlist()) %>% mutate(key_id = row_number() - 1)
 
-    acts
+    #acts
+    keys_x
 
   }
 
-  else if (task_type == "remaining_trace") {
+  #REMAINING TRACE
+  else if ("remaining_trace" %in% names(processed_df)) {
 
     activity_names <- processed_df[[bupaR::activity_id(processed_df)]] %>% as.character() %>% unique()
     activity_names <- c("PAD", "UNK") %>%
@@ -68,15 +76,12 @@ create_vocabulary <- function(processed_df, task_type) {
 
     #activities tokens
     keys_x <- as.list(values_x)
-    acts <- data.frame(activity_name = keys_x %>% unlist()) %>% mutate(key_id = row_number() - 1)
+    #acts <- data.frame(activity_name = keys_x %>% unlist()) %>% mutate(key_id = row_number() - 1)
 
     keys_y <- processed_df$remaining_trace %>% unique() %>% as.list()
-    outs <- data.frame(activity = unlist(keys_y)) %>% mutate(key_id = row_number() - 1)
+    #outs <- data.frame(activity = unlist(keys_y)) %>% mutate(key_id = row_number() - 1)
 
-    list(activities = acts, outcomes = outs)
-
-
-
+    list(keys_x = keys_x, keys_y = keys_y)
   }
 
 }

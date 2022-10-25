@@ -2,8 +2,9 @@
 #'
 #' (WIP)
 #'
-#'
 #' @param processed_df A processed dataframe (= processed event log)
+#' @param vocabulary A vocabulary, i.e. a list of activities and outcome labels.
+#'
 #' @return A list of tokens token_x and token_y
 #'
 #' @examples
@@ -11,50 +12,50 @@
 #' testtime <- create_prefix_df(patients, prediction = "next_time")
 #' testout <- create_prefix_df(patients, prediction = "outcome")
 #' testact <- create_prefix_df(patients, prediction = "next_activity")
-#' purrr::map(list(testtime, testout,testact), tokenize) %>% head(10)
+#' purrr::map(list(testtime, testout, testact), tokenize) %>% head(10)
 #'
 #'@export
-tokenize <- function(processed_df) {
+tokenize <- function(processed_df, vocabulary) {
   #activities <- as.character(activity_labels(log))
 
   # OUTCOME task
-  if ("outcome" %in% names(processed_df)) { #temporarily works only if there is a column named outcome (after preprocess_log())
-
-    activities <- processed_df$current_activity %>% unique() %>% as.character()
-    outcomes <- processed_df$outcome %>% unique() %>% as.character()
-    values_x <- activities %>% append(outcomes) %>% unique()
-
-  }
+  # if ("outcome" %in% names(processed_df)) { #temporarily works only if there is a column named outcome (after preprocess_log())
+  #
+  #   activities <- processed_df$current_activity %>% unique() %>% as.character()
+  #   outcomes <- processed_df$outcome %>% unique() %>% as.character()
+  #   values_x <- activities %>% append(outcomes) %>% unique()
+  #
+  # }
 
   # NEXT_TIME task
-  else if ("next_time" %in% names(processed_df) || "remaining_time" %in% names(processed_df) ||
-           "remaining_trace" %in% names(processed_df)) {
-
-    activities <- processed_df[[bupaR::activity_id(processed_df)]] %>% as.character() %>% unique()
-    values_x <- activities
-
-  }
+  # else if ("next_time" %in% names(processed_df) || "remaining_time" %in% names(processed_df) ||
+  #          "remaining_trace" %in% names(processed_df)) {
+  #
+  #   activities <- processed_df[[bupaR::activity_id(processed_df)]] %>% as.character() %>% unique()
+  #   values_x <- activities
+  #
+  # }
 
   # NEXT_ACTIVITY task
   #else if ("next_activity" %in% names(processed_df) && !("outcome" %in% names(processed_df))) {
-  else {
-
-    activities <- processed_df$current_activity %>% append(processed_df$next_activity) %>% unique()
-    values_x <- activities
-    outcomes <- processed_df$next_activity %>% unique()
-
-  }
+  # else {
+  #
+  #   activities <- processed_df$current_activity %>% append(processed_df$next_activity) %>% unique()
+  #   values_x <- activities
+  #   outcomes <- processed_df$next_activity %>% unique()
+  #
+  # }
 
   # Get traces as lists from prefix
   processed_df <- processed_df %>%
     mutate(trace = str_split(prefix, pattern = " - "))
 
-  #input tokens
-  values_x <- c("PAD", "UNK") %>%
-    append(values_x)
-
-  keys_x <- as.list(values_x)
-  keys_x
+  # #input tokens
+  # values_x <- c("PAD", "UNK") %>%
+  #   append(values_x)
+  #
+  # keys_x <- as.list(values_x)
+  # keys_x
 
 
   #algorithm to produce token_x (same for all tasks)
@@ -66,7 +67,7 @@ tokenize <- function(processed_df) {
 
     for (j in (1:length(processed_df$trace[[i]]))) {
       #if (processed_df$trace[[i]][j] == x_word_dict$values_x) {}
-      tok <- which(processed_df$trace[[i]][j] == keys_x)
+      tok <- which(processed_df$trace[[i]][j] == vocabulary$keys_x)
       case_trace <- case_trace %>% append(tok-1)
     }
 
@@ -82,15 +83,15 @@ tokenize <- function(processed_df) {
   # OUTCOME or NEXT_ACTIVITY
   if ("outcome" %in% names(processed_df) || ("next_activity" %in% names(processed_df) && !("outcome" %in% names(processed_df)))) {
     #outcome tokens
-    keys_y <- outcomes %>% as.character() %>% as.list()
-    keys_y
+    # keys_y <- outcomes %>% as.character() %>% as.list()
+    # keys_y
 
     # token_y for OUTCOME
     if ("outcome" %in% names(processed_df)) {
       token_y = c()
 
       for (i in (1:length(processed_df$trace))) {
-        tok <- which(processed_df$outcome[i] == keys_y) #match outcome instead of trace
+        tok <- which(processed_df$outcome[i] == vocabulary$keys_y) #match outcome instead of trace
         token_y <- token_y  %>% append(tok-1)
 
       }
@@ -105,7 +106,7 @@ tokenize <- function(processed_df) {
       token_y = c()
 
       for (i in (1:length(processed_df$trace))) {
-        tok <- which(processed_df$next_activity[i] == keys_y) #match outcome instead of trace
+        tok <- which(processed_df$next_activity[i] == vocabulary$keys_y) #match outcome instead of trace
         token_y <- token_y  %>% append(tok-1)
       }
 
@@ -173,7 +174,7 @@ tokenize <- function(processed_df) {
     token_y = c()
 
     for (i in (1:length(processed_df$trace))) {
-      tok <- which(processed_df$remaining_trace[i] == keys_y)
+      tok <- which(processed_df$remaining_trace[i] == vocabulary$keys_y)
       token_y <- token_y  %>% append(tok-1)
 
     }

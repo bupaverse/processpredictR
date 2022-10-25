@@ -10,7 +10,7 @@ df_train <- split_train_test_df(df, ratio = 0.7)$train_df
 df_test <- split_train_test_df(df, ratio = 0.7)$test_df
 
 #tokenize train dataset
-tokens_train <- tokenize(df_train)
+tokens_train <- tokenize(df_train, vocabulary = create_vocabulary(df))
 tokens_train
 
 #define transformer model
@@ -26,7 +26,7 @@ transformer_fit(transformer_model = model, tokens_train = tokens_train,
 
 
 #tokenize test dataset
-tokens_test <- tokenize(df_test)
+tokens_test <- tokenize(df_test, vocabulary = create_vocabulary(df))
 
 #predict on test data
 results <- transformer_predict(transformer_model = model, tokens_test = tokens_test, maxlen = max_case_length(df), predict_type = "metrics")

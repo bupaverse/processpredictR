@@ -1,10 +1,15 @@
-# testworkflow_remaining_TRACE --------------------------------------------
+# testworkflow_outcome ----------------------------------------------------
 
 #preprocess dataset
-df <- create_prefix_df(eventdataR::traffic_fines, prediction = "remaining_trace")
+patients %>% end_activities("activity")
+acts <- unique(acts$activity) %>% as.character()
+
+df <- create_prefix_df(patients, prediction = "outcome", outcome_label1 = "Check-out",
+                       outcome_label2 = acts[-1])
 df
 
-#split dataset into train- and test dataset
+
+## split processed dataframe into train- and test dataframes
 split_train_test_df(df, ratio = 0.7)
 df_train <- split_train_test_df(df, ratio = 0.7)$train_df
 df_test <- split_train_test_df(df, ratio = 0.7)$test_df
@@ -21,7 +26,7 @@ transformer_compile(transformer_model = model, learning_rate = 0.001)
 
 #fit transformer model
 transformer_fit(transformer_model = model, tokens_train = tokens_train,
-                maxlen = max_case_length(df), num_epochs = 5, batch_size = 12, file = "example_model_remaining_trace")
+                maxlen = max_case_length(df), num_epochs = 5, batch_size = 12, file = "example_model_outcome")
 
 #tokenize test dataset
 tokens_test <- tokenize(df_test, vocabulary = create_vocabulary(df))
