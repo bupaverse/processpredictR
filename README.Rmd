@@ -9,7 +9,8 @@ knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>",
   fig.path = "man/figures/README-",
-  out.width = "100%"
+  out.width = "100%",
+  eval = F
 )
 ```
 
@@ -40,60 +41,61 @@ devtools::install_github("bupaverse/processpredictR")
 <p>
   
 ### Installation
-```r
+``` {r}
 install.packages("https://github.com/bupaverse/processpredictR.git")
 library(processpredictR)
+library(eventdataR)
 ```
   
 ### preprocess dataset
-```r
+``` {r}
 df <- create_prefix_df(traffic_fines, prediction = "next_activity")
 df
 ```
 
 ### split dataset into train- and test dataset
-```r
+``` {r}
 split_train_test_df(df, ratio = 0.7)
 df_train <- split_train_test_df(df, ratio = 0.7)$train_df
 df_test <- split_train_test_df(df, ratio = 0.7)$test_df
 ```
 
 ### tokenize train dataset
-```r
+``` {r}
 tokens_train <- tokenize(df_train, vocabulary = create_vocabulary(df))
 tokens_train
 ```
 
 ### define transformer model
-```r
+``` {r}
 model <- transformer_model(df)
 model
 ```
 
 ### compile transformer model
-```r
+``` {r}
 transformer_compile(transformer_model = model, learning_rate = 0.001)
 ```
 
 ### fit transformer model
-```r
+``` {r}
 transformer_fit(transformer_model = model, tokens_train = tokens_train,
                 maxlen = max_case_length(df), num_epochs = 15, batch_size = 12, file = "example_model_next_activity")
 ```
 
 ### tokenize test dataset
-```r
+``` {r}
 tokens_test <- tokenize(df_test, vocabulary = create_vocabulary(df))
 ```
 
 ### predict on test data
-```r
+``` {r}
 results <- transformer_predict(transformer_model = model, tokens_test = tokens_test, maxlen = max_case_length(df))
 results
 ```
 
 ### visualize with tensorboard
-```r
+``` {r}
 tensorboard(log_dir = "tensorboard/")
 ```
  
@@ -104,65 +106,65 @@ tensorboard(log_dir = "tensorboard/")
 <p>
   
 ### Installation
-```r
+``` {r}
 install.packages("https://github.com/bupaverse/processpredictR.git")
 library(processpredictR)
 ```
   
 ### preprocess dataset
-```r
+``` {r}
 df <- create_prefix_df(eventdataR::patients, prediction = "next_time")
 df
 ```
       
 ### split dataset into train- and test dataset
-```r
+``` {r}
 split_train_test_df(df, ratio = 0.7)
 df_train <- split_train_test_df(df, ratio = 0.7)$train_df
 df_test <- split_train_test_df(df, ratio = 0.7)$test_df
 ```
            
 ### tokenize train dataset
-```r
+``` {r}
 tokens_train <- tokenize(df_train, vocabulary = create_vocabulary(df))
 tokens_train
 ```
  
 ### define transformer model          
-```r
+``` {r}
 model <- transformer_model(df)
 model
 ```
 
 ### compile transformer model
-```r
+``` {r}
 transformer_compile(transformer_model = model, learning_rate = 0.001)
 ```
          
 ### fit transformer model
-```r
+``` {r}
 transformer_fit(transformer_model = model, tokens_train = tokens_train,
                 maxlen = max_case_length(df), num_epochs = 10, batch_size = 12, file = "example_model_next_time")
 ```
          
 ### tokenize test dataset 
-```r
+``` {r}
 tokens_test <- tokenize(df_test, vocabulary = create_vocabulary(df))
 ```
 
 ### predict on test data
-```r
+``` {r}
 results <- transformer_predict(transformer_model = model, tokens_test = tokens_test, maxlen = max_case_length(df), predict_type = "metrics")
 results
 ```
            
 ### get the predicted values y_pred and calculate metrics
-```r
+``` {r}
 y_pred <- transformer_predict(transformer_model = model, tokens_test = tokens_test, maxlen = max_case_length(df), predict_type = "y_pred")
 y_pred %>% as.vector()
 ```
 
-```r
+``` {r}
 scale(df_test$next_time) -> standardScaled
 standardScaled
 
@@ -178,7 +180,7 @@ Metrics::rmse(tokens_test$token_y, y_pred)
 ```
 
 ### tensorboard
-```r
+``` {r}
 keras::tensorboard(log_dir = "tensorboard/")
 ```
  

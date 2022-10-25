@@ -42,6 +42,7 @@ Next activity prediction
 ``` r
 install.packages("https://github.com/bupaverse/processpredictR.git")
 library(processpredictR)
+library(eventdataR)
 ```
 
 ### preprocess dataset
