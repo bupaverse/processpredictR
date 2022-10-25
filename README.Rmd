@@ -1,188 +1,168 @@
+---
+output: github_document
+---
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.path = "man/figures/README-",
+  out.width = "100%"
+)
+```
 
 # processpredictR
 
 <!-- badges: start -->
 <!-- badges: end -->
 
-The goal of processpredictR is to perform prediction tasks on processes
-using event logs and Transformer models.
+The goal of processpredictR is to perform prediction tasks on processes using event logs and Transformer models.  
 
 ## Installation
 
-You can install the development version of processpredictR from
-[GitHub](https://github.com/) with:
+You can install the development version of processpredictR from [GitHub](https://github.com/) with:
 
 ``` r
 # install.packages("devtools")
 devtools::install_github("bupaverse/processpredictR")
 ```
-
 ## Prediction tasks:
-
--   [x] outcome
--   [x] next activity
--   [x] next time <sup>requires an event- or activity log to have both
-    start- and end timestamps</sup>
--   [x] remaining time <sup>requires an event- or activity log to have
-    both start- and end timestamps</sup>
--   [x] remaining trace
+- [x] outcome
+- [x] next activity
+- [x] next time <sup>requires an event- or activity log to have both start- and end timestamps</sup>
+- [x] remaining time <sup>requires an event- or activity log to have both start- and end timestamps</sup>
+- [x] remaining trace  
 
 ## Examples
-
-<details>
-<summary>
-Next activity prediction
-</summary>
+<details><summary>Next activity prediction</summary>
 <p>
-
+  
 ### Installation
-
-``` r
+```r
 install.packages("https://github.com/bupaverse/processpredictR.git")
 library(processpredictR)
 ```
-
+  
 ### preprocess dataset
-
-``` r
+```r
 df <- create_prefix_df(traffic_fines, prediction = "next_activity")
 df
 ```
 
 ### split dataset into train- and test dataset
-
-``` r
+```r
 split_train_test_df(df, ratio = 0.7)
 df_train <- split_train_test_df(df, ratio = 0.7)$train_df
 df_test <- split_train_test_df(df, ratio = 0.7)$test_df
 ```
 
 ### tokenize train dataset
-
-``` r
+```r
 tokens_train <- tokenize(df_train, vocabulary = create_vocabulary(df))
 tokens_train
 ```
 
 ### define transformer model
-
-``` r
+```r
 model <- transformer_model(df)
 model
 ```
 
 ### compile transformer model
-
-``` r
+```r
 transformer_compile(transformer_model = model, learning_rate = 0.001)
 ```
 
 ### fit transformer model
-
-``` r
+```r
 transformer_fit(transformer_model = model, tokens_train = tokens_train,
                 maxlen = max_case_length(df), num_epochs = 15, batch_size = 12, file = "example_model_next_activity")
 ```
 
 ### tokenize test dataset
-
-``` r
+```r
 tokens_test <- tokenize(df_test, vocabulary = create_vocabulary(df))
 ```
 
 ### predict on test data
-
-``` r
+```r
 results <- transformer_predict(transformer_model = model, tokens_test = tokens_test, maxlen = max_case_length(df))
 results
 ```
 
 ### visualize with tensorboard
-
-``` r
+```r
 tensorboard(log_dir = "tensorboard/")
 ```
-
+ 
 </p>
 </details>
-<details>
-<summary>
-Next time prediction
-</summary>
+
+<details><summary>Next time prediction</summary>
 <p>
-
+  
 ### Installation
-
-``` r
+```r
 install.packages("https://github.com/bupaverse/processpredictR.git")
 library(processpredictR)
 ```
-
+  
 ### preprocess dataset
-
-``` r
+```r
 df <- create_prefix_df(eventdataR::patients, prediction = "next_time")
 df
 ```
-
+      
 ### split dataset into train- and test dataset
-
-``` r
+```r
 split_train_test_df(df, ratio = 0.7)
 df_train <- split_train_test_df(df, ratio = 0.7)$train_df
 df_test <- split_train_test_df(df, ratio = 0.7)$test_df
 ```
-
+           
 ### tokenize train dataset
-
-``` r
+```r
 tokens_train <- tokenize(df_train, vocabulary = create_vocabulary(df))
 tokens_train
 ```
-
-### define transformer model
-
-``` r
+ 
+### define transformer model          
+```r
 model <- transformer_model(df)
 model
 ```
 
 ### compile transformer model
-
-``` r
+```r
 transformer_compile(transformer_model = model, learning_rate = 0.001)
 ```
-
+         
 ### fit transformer model
-
-``` r
+```r
 transformer_fit(transformer_model = model, tokens_train = tokens_train,
                 maxlen = max_case_length(df), num_epochs = 10, batch_size = 12, file = "example_model_next_time")
 ```
-
-### tokenize test dataset
-
-``` r
+         
+### tokenize test dataset 
+```r
 tokens_test <- tokenize(df_test, vocabulary = create_vocabulary(df))
 ```
 
 ### predict on test data
-
-``` r
+```r
 results <- transformer_predict(transformer_model = model, tokens_test = tokens_test, maxlen = max_case_length(df), predict_type = "metrics")
 results
 ```
-
+           
 ### get the predicted values y_pred and calculate metrics
-
-``` r
+```r
 y_pred <- transformer_predict(transformer_model = model, tokens_test = tokens_test, maxlen = max_case_length(df), predict_type = "y_pred")
 y_pred %>% as.vector()
 ```
 
-``` r
+```r
 scale(df_test$next_time) -> standardScaled
 standardScaled
 
@@ -198,17 +178,16 @@ Metrics::rmse(tokens_test$token_y, y_pred)
 ```
 
 ### tensorboard
-
-``` r
+```r
 keras::tensorboard(log_dir = "tensorboard/")
 ```
-
+ 
 </p>
 </details>
 
 ## Attribution
+This repository is based on the ProcessTransformer library by Buksh et al. Citation: Zaharah A. Bukhsh, Aaqib Saeed, & Remco M. Dijkman. (2021). "ProcessTransformer: Predictive Business Process Monitoring with Transformer Network". arXiv preprint arXiv:2104.00721
 
-This repository is based on the ProcessTransformer library by Buksh et
-al. Citation: Zaharah A. Bukhsh, Aaqib Saeed, & Remco M. Dijkman.
-(2021). “ProcessTransformer: Predictive Business Process Monitoring with
-Transformer Network”. arXiv preprint arXiv:2104.00721
+
+
+
