@@ -22,4 +22,6 @@ transformer_compile <- function(transformer_model, learning_rate) {
 
   compile_model(transformer_model, learning_rate)
 
+  print("Compilation complete!")
+
 }

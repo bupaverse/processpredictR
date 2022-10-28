@@ -62,7 +62,7 @@ create_vocabulary <- function(processed_df) {
     #acts <- data.frame(activity_name = keys_x %>% unlist()) %>% mutate(key_id = row_number() - 1)
 
     #acts
-    keys_x
+    list(keys_x = keys_x)
 
   }
 

@@ -115,6 +115,7 @@ tokenize <- function(processed_df, vocabulary) {
     }
 
     # return a list of tokens
+
     list(token_x = token_x, token_y = token_y)
 
   }
@@ -139,7 +140,9 @@ tokenize <- function(processed_df, vocabulary) {
     # token_x, i.e. activity prefixes
     # time_x, i.e. a list of calculated and scaled durations (recent, latest, passed)
     # time_y, i.e. a next_activity duration
+
     list(token_x = token_x, time_x = time_x, token_y = time_y)
+
 
   } # followed by train_token_x %>% reticulate::np_array(dtype = "float32") in transformer_fit or predict
 
@@ -158,10 +161,18 @@ tokenize <- function(processed_df, vocabulary) {
     #time_y (output)
     time_y <- processed_df$remaining_time %>% scale() %>% as.vector()
 
+
     # return:
     # token_x, i.e. activity prefixes
     # time_x, i.e. a list of calculated and scaled durations (recent, latest, passed)
     # time_y, i.e. a next_activity duration
+
+    class(token_x) <- c("token", "list")
+    class(recent_time) <- c("tokens_time", "list")
+    class(latest_time) <- c("tokens_time", "list")
+    class(time_passed) <- c("tokens_time", "list")
+    class(time_y) <- c("tokens_time", "token", "list")
+
     list(token_x = token_x, time_x = time_x, token_y = time_y)
 
   }
@@ -184,4 +195,5 @@ tokenize <- function(processed_df, vocabulary) {
   }
 
 }
+
 

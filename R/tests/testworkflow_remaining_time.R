@@ -1,13 +1,13 @@
 # testworkflow_remaining_time ---------------------------------------------
 
 #preprocess dataset
-df <- create_prefix_df(eventdataR::patients, prediction = "remaining_time")
+df <- prepare_examples(eventdataR::patients, task = "remaining_time")
 df
 
 #split dataset into train- and test dataset
-split_train_test_df(df, ratio = 0.7)
-df_train <- split_train_test_df(df, ratio = 0.7)$train_df
-df_test <- split_train_test_df(df, ratio = 0.7)$test_df
+df_train_test <- split_train_test(df, ratio = 0.7)
+df_train <- df_train_test$train_df
+df_test <- df_train_test$test_df
 
 #tokenize train dataset
 tokens_train <- tokenize(df_train, vocabulary = create_vocabulary(df))

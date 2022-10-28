@@ -1,7 +1,7 @@
 #' Create a dataframe with prefixes
 #'
 #' @param log An object of class log.
-#' @param prediction A prediction task. A character string from c("outcome", "next_activity", "next_time", "...").
+#' @param task A character string from c("outcome", "next_activity", "next_time", "...").
 #' @param ... Assign outcome labels to each case based on end activities. If not specified, simply defines
 #' outcome as last activity in a trace.
 #'
@@ -12,29 +12,40 @@
 #' library(eventdataR)
 #' acts <- patients %>% edeaR::end_activities("activity")
 #' acts <- unique(acts$activity) %>% as.character()
-#' create_prefix_df(eventdataR::patients, prediction = "outcome", outcome_label1 = "Check-out",
+#' prepare_examples(eventdataR::patients, task = "outcome", outcome_label1 = "Check-out",
 #' outcome_label2 = acts[-1])
 #'
 #' # Example next_activity task prediction on traffic_fines dataset:
-#' create_prefix_df(traffic_fines, prediction = "next_activity")
+#' prepare_examples(traffic_fines, prediction = "next_activity")
 #'
 #' # Each prediction task for the patients dataset:
 #' tasks <- c("outcome", "next_activity", "next_time", "remaining_time", "remaining_trace")
-#' purrr::map(tasks, ~create_prefix_df(eventdataR::patients, prediction = .x))
+#' purrr::map(tasks, ~prepare_examples(eventdataR::patients, task = .x))
 #'
 #' @export
-create_prefix_df <- function(log, prediction, ...) {
-  UseMethod("create_prefix_df")
+prepare_examples <- function(log, task = c("outcome", "next_activity",
+                                           "next_time", "remaining_time",
+                                           "remaining_trace"), ...) {
+  UseMethod("prepare_examples")
 }
 
 #' @export
-create_prefix_df.log <- function(log, prediction, ...) {
+prepare_examples.log <- function(log, task = c("outcome", "next_activity",
+                                               "next_time", "remaining_time",
+                                               "remaining_trace"), ...) {
   # traces_per_case <- case_list(log, .keep_trace_list = TRUE) %>%
   #   mutate(ith_case = row_number()) %>%
   #   rename(case_id = case_id(log))
 
+  #task <- match.arg(task)
 
-  if (prediction == "outcome") {
+  task <- rlang::arg_match(task, c("outcome", "next_activity",
+                           "next_time", "remaining_time",
+                           "remaining_trace"))
+
+  cat("Prediction task: ", task, "\n")
+
+  if (task == "outcome") {
 
     traces_per_case <- case_list(log, .keep_trace_list = TRUE) %>%
       mutate(ith_case = row_number()) %>%
@@ -57,7 +68,7 @@ create_prefix_df.log <- function(log, prediction, ...) {
 
 
   }
-  else if (prediction == "next_activity") {
+  else if (task == "next_activity") {
     traces_per_case <- case_list(log, .keep_trace_list = TRUE) %>%
       mutate(trace_list = purrr::map(trace_list, ~append(.x, "endpoint")),
              ith_case = row_number()) %>%
@@ -80,7 +91,7 @@ create_prefix_df.log <- function(log, prediction, ...) {
 
   }
 
-  else if (prediction == "next_time") {
+  else if (task == "next_time") {
 
     if ((log[[lifecycle_id(log)]] %>% unique() %>% length()) == 2) {
 
@@ -111,7 +122,7 @@ create_prefix_df.log <- function(log, prediction, ...) {
 
 
 
-  else if (prediction == "remaining_time") { # MAKE HERE AN IF ELSE STATEMENT TO CHECK FOR START- END TIMESTAMPS
+  else if (task == "remaining_time") { # MAKE HERE AN IF ELSE STATEMENT TO CHECK FOR START- END TIMESTAMPS
 
     if ((log[[lifecycle_id(log)]] %>% unique() %>% length()) == 2) {
 
@@ -141,7 +152,7 @@ create_prefix_df.log <- function(log, prediction, ...) {
 
   }
 
-  else if (prediction == "remaining_trace") {
+  else if (task == "remaining_trace") {
 
     log %>% # situation when there is both start- and end timestamps
       group_by(!!bupaR:::case_id_(log)) %>%

@@ -1,18 +1,18 @@
 # testworkflow_outcome ----------------------------------------------------
 
 #preprocess dataset
-patients %>% end_activities("activity")
+acts <- patients %>% end_activities("activity")
 acts <- unique(acts$activity) %>% as.character()
 
-df <- create_prefix_df(patients, prediction = "outcome", outcome_label1 = "Check-out",
+df <- prepare_examples(patients, task = "outcome", outcome_label1 = "Check-out",
                        outcome_label2 = acts[-1])
 df
 
 
 ## split processed dataframe into train- and test dataframes
-split_train_test_df(df, ratio = 0.7)
-df_train <- split_train_test_df(df, ratio = 0.7)$train_df
-df_test <- split_train_test_df(df, ratio = 0.7)$test_df
+df_train_test <- split_train_test(df, ratio = 0.7)
+df_train <- df_train_test$train_df
+df_test <- df_train_test$test_df
 
 #tokenize train dataset
 tokens_train <- tokenize(df_train, vocabulary = create_vocabulary(df))
