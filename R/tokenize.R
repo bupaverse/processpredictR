@@ -167,13 +167,16 @@ tokenize <- function(processed_df, vocabulary) {
     # time_x, i.e. a list of calculated and scaled durations (recent, latest, passed)
     # time_y, i.e. a next_activity duration
 
-    class(token_x) <- c("token", "list")
-    class(recent_time) <- c("tokens_time", "list")
-    class(latest_time) <- c("tokens_time", "list")
-    class(time_passed) <- c("tokens_time", "list")
-    class(time_y) <- c("tokens_time", "token", "list")
+    # class(token_x) <- c("token", "list")
+    # class(recent_time) <- c("tokens_time", "list")
+    # class(latest_time) <- c("tokens_time", "list")
+    # class(time_passed) <- c("tokens_time", "list")
+    # class(time_y) <- c("tokens_time", "token", "list")
 
-    list(token_x = token_x, time_x = time_x, token_y = time_y)
+    tokens <- list(token_x = token_x, time_x = time_x, token_y = time_y)
+
+    class(tokens) <- c("tokens", "list")
+    tokens
 
   }
 

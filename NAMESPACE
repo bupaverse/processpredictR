@@ -2,7 +2,7 @@
 
 S3method(activities_list,log)
 S3method(prepare_examples,log)
-S3method(print,token)
+S3method(print,tokens)
 export("%>%")
 export(activities_list)
 export(assign_outcome_labels)

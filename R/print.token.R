@@ -5,18 +5,8 @@
 #' @importFrom purrr map_chr
 #'
 #' @export
-print.token <- function(x, ...) {
+print.tokens <- function(x, ...) {
 
-num_tokens <- length(x)
-cat(" -> consists of ", num_tokens, " tokens", "\n")
-cat("something else", "\n")
-
-if
-}
-
-print.tokens_time <- function(x, ...) {
-  num_inputs <- length(x)
-  num_tokens <- lengths(x)
-
-  cat("list of ", num_inputs, " scaled time durations with ", num_tokens, " tokens for ", names(x), ", respectively.")
+#cat(" -> consists of ", purrr::map_chr(x, length),  " tokens", "\n")
+  cat(" -> consists of ", length(x),  " features", "\n")
 }
