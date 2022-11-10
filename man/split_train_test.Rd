@@ -4,12 +4,12 @@
 \alias{split_train_test}
 \title{Splits processed dataframe into train- and/or test dataframes}
 \usage{
-split_train_test(processed_df, ratio = 0.7, trace_length_bins = NULL)
+split_train_test(processed_df, split = 0.7, trace_length_bins = 5)
 }
 \arguments{
 \item{processed_df}{A preprocessed dataframe from preprocess_log function}
 
-\item{ratio}{A train-test split ratio}
+\item{split}{A train-test split ratio}
 
 \item{trace_length_bins}{Number of trace length bins to use for stratification}
 }

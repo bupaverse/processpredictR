@@ -2,7 +2,7 @@
 #'
 #' @param log An object of class log.
 #' @param task A character string from c("outcome", "next_activity", "next_time", "...").
-#' @param ... Assign outcome labels to each case based on end activities. If not specified, simply defines
+#' @param ... Assign outcome labels to each case based on end activity. If not specified, simply defines
 #' outcome as last activity in a trace.
 #'
 #' @return a dataframe.
@@ -39,9 +39,7 @@ prepare_examples.log <- function(log, task = c("outcome", "next_activity",
 
   #task <- match.arg(task)
 
-  task <- rlang::arg_match(task, c("outcome", "next_activity",
-                           "next_time", "remaining_time",
-                           "remaining_trace"))
+  task <- rlang::arg_match(task)
 
   cat("Prediction task: ", task, "\n")
 

@@ -15,7 +15,7 @@ prepare_examples(
 
 \item{task}{A character string from c("outcome", "next_activity", "next_time", "...").}
 
-\item{...}{Assign outcome labels to each case based on end activities. If not specified, simply defines
+\item{...}{Assign outcome labels to each case based on end activity. If not specified, simply defines
 outcome as last activity in a trace.}
 }
 \value{

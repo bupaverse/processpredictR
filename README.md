@@ -41,6 +41,9 @@ Next activity prediction
 
 ``` r
 install.packages("https://github.com/bupaverse/processpredictR.git")
+```
+
+``` r
 library(processpredictR)
 library(eventdataR)
 ```
@@ -48,16 +51,16 @@ library(eventdataR)
 ### preprocess dataset
 
 ``` r
-df <- create_prefix_df(traffic_fines, prediction = "next_activity")
+df <- prepare_examples(patients, task = "remaining_time")
 df
 ```
 
 ### split dataset into train- and test dataset
 
 ``` r
-split_train_test_df(df, ratio = 0.7)
-df_train <- split_train_test_df(df, ratio = 0.7)$train_df
-df_test <- split_train_test_df(df, ratio = 0.7)$test_df
+split <- split_train_test(df, split = 0.7)
+df_train <- split$train_df
+df_test <- split$test_df
 ```
 
 ### tokenize train dataset

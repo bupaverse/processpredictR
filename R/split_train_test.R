@@ -3,30 +3,24 @@
 #' (WIP)
 #'
 #' @param processed_df A preprocessed dataframe from preprocess_log function
-#' @param ratio A train-test split ratio
+#' @param split A train-test split ratio
 #' @param trace_length_bins Number of trace length bins to use for stratification
 #' @return  a list of train and test dataframes
 #'
 #' @export
-split_train_test <- function(processed_df, ratio = 0.7, trace_length_bins = NULL) { # OR n_distinct(log[case_id(log)])
+split_train_test <- function(processed_df, split = 0.7, trace_length_bins = 5) { # OR n_distinct(log[case_id(log)])
 
   if (is.null(trace_length_bins)) {
-    set.seed(123)
     unique_cases <- unique(processed_df$ith_case)
-    sample_size <- n_distinct(unique_cases) * 0.7 # choose a specified sample_size
+    sample_size <- n_distinct(unique_cases) * split # choose a specified sample_size
     train_ind <- sample(unique(processed_df$ith_case), size = sample_size)
 
     # id's train
     unique_cases_train <- unique_cases[train_ind] # train dataset
-    unique_cases_train <- data.frame(ith_case = unique_cases_train)
+    train_df <-  processed_df %>% filter(ith_case %in% unique_cases_train)
 
     # id's test
-    unique_cases_test <- unique_cases[-train_ind]
-    unique_cases_test <- data.frame(ith_case = unique_cases_test)
-
-    # join with processed_df
-    train_df <- inner_join(processed_df, unique_cases_train, by = "ith_case")
-    test_df <- inner_join(processed_df, unique_cases_test, by = "ith_case")
+    test_df <- processed_df %>% filter(!(ith_case %in% unique_cases_train))
 
     list(train_df = train_df, test_df = test_df)
 
@@ -36,7 +30,21 @@ split_train_test <- function(processed_df, ratio = 0.7, trace_length_bins = NULL
   else {
 
     processed_df %>%
-      mutate(case_tile = ntile(ith_case, trace_length_bins))
+      #make list of case id + trace length
+      group_by(ith_case) %>%
+      summarize(trace_length = max(k) + 1) %>%
+      # make bins based on trace length
+      mutate(bin = ntile(trace_length, trace_length_bins)) %>%
+      # for each bin, sample the fraction of the event log according to split
+      group_by(bin) %>%
+      sample_frac(split) %>%
+      # pull the case ids from these fractions
+      pull(ith_case) -> unique_cases_train
+
+    train_df <-  processed_df %>% filter(ith_case %in% unique_cases_train)
+    test_df <- processed_df %>% filter(!(ith_case %in% unique_cases_train))
+
+    list(train_df = train_df, test_df = test_df)
 
   }
 
