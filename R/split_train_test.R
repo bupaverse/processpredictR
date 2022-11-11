@@ -1,11 +1,11 @@
-#' Splits the preprocessed data.frame
+#' Splits the preprocessed [`data.frame`].
 #'
 #' @description Returns train- and test dataframes as a list.
 #'
 #' @param processed_df [`data.frame`]: A preprocessed [`data.frame`] from prepare_examples function.
 #' @param ratio [`numeric`] (default 0.7): A train-test split ratio.
 #' @param trace_length_bins [`numeric`] (default [`NULL`]): A number of trace length bins to use for stratification.
-#' If [`NULL`] does not stratify for similar trace length in both train- and test dataframes.
+#' If [`NULL`], does not stratify for similar trace length in both train- and test dataframes.
 #'
 #' @export
 split_train_test <- function(processed_df, split = 0.7, trace_length_bins = 5) { # OR n_distinct(log[case_id(log)])

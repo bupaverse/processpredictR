@@ -2,7 +2,7 @@
 % Please edit documentation in R/split_train_test.R
 \name{split_train_test}
 \alias{split_train_test}
-\title{Splits the preprocessed data.frame}
+\title{Splits the preprocessed \code{\link{data.frame}}.}
 \usage{
 split_train_test(processed_df, split = 0.7, trace_length_bins = 5)
 }
@@ -10,7 +10,7 @@ split_train_test(processed_df, split = 0.7, trace_length_bins = 5)
 \item{processed_df}{\code{\link{data.frame}}: A preprocessed \code{\link{data.frame}} from prepare_examples function.}
 
 \item{trace_length_bins}{\code{\link{numeric}} (default \code{\link{NULL}}): A number of trace length bins to use for stratification.
-If \code{\link{NULL}} does not stratify for similar trace length in both train- and test dataframes.}
+If \code{\link{NULL}}, does not stratify for similar trace length in both train- and test dataframes.}
 
 \item{ratio}{\code{\link{numeric}} (default 0.7): A train-test split ratio.}
 }
