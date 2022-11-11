@@ -2,7 +2,8 @@
 
 #preprocess dataset
 acts <- patients %>% end_activities("activity")
-acts <- unique(acts$activity) %>% as.character()
+acts <- acts$handling %>% as.character()
+acts
 
 df <- prepare_examples(patients, task = "outcome", outcome_label1 = "Check-out",
                        outcome_label2 = acts[-1])
