@@ -7,7 +7,7 @@
 tokenize(processed_df, vocabulary)
 }
 \arguments{
-\item{processed_df}{\code{\link{data.frame}}: A preprocessed \code{\link{data.frame}} from prepare_examples function.}
+\item{processed_df}{A preprocessed object of type \code{\link{log}} or \code{\link{data.frame}} from prepare_examples function.}
 
 \item{vocabulary}{\code{\link{list}}: A vocabulary, i.e. a list of activities and outcome labels.}
 }

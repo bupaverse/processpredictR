@@ -2,8 +2,8 @@
 #'
 #' @description Returns train- and test dataframes as a list.
 #'
-#' @param processed_df [`data.frame`]: A preprocessed [`data.frame`] from prepare_examples function.
-#' @param ratio [`numeric`] (default 0.7): A train-test split ratio.
+#' @param processed_df A preprocessed object of type [`log`] or [`data.frame`] from prepare_examples function.
+#' @param split [`numeric`] (default 0.7): A train-test split ratio.
 #' @param trace_length_bins [`numeric`] (default [`NULL`]): A number of trace length bins to use for stratification.
 #' If [`NULL`], does not stratify for similar trace length in both train- and test dataframes.
 #'

@@ -7,12 +7,12 @@
 split_train_test(processed_df, split = 0.7, trace_length_bins = 5)
 }
 \arguments{
-\item{processed_df}{\code{\link{data.frame}}: A preprocessed \code{\link{data.frame}} from prepare_examples function.}
+\item{processed_df}{A preprocessed object of type \code{\link{log}} or \code{\link{data.frame}} from prepare_examples function.}
+
+\item{split}{\code{\link{numeric}} (default 0.7): A train-test split ratio.}
 
 \item{trace_length_bins}{\code{\link{numeric}} (default \code{\link{NULL}}): A number of trace length bins to use for stratification.
 If \code{\link{NULL}}, does not stratify for similar trace length in both train- and test dataframes.}
-
-\item{ratio}{\code{\link{numeric}} (default 0.7): A train-test split ratio.}
 }
 \description{
 Returns train- and test dataframes as a list.
