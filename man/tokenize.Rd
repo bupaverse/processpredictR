@@ -2,26 +2,24 @@
 % Please edit documentation in R/tokenize.R
 \name{tokenize}
 \alias{tokenize}
-\title{Tokenize prefix (feature) and outcome (target) of a processed dataframe to fit the transformer model}
+\title{Tokenize features and target of a preprocessed \code{\link{data.frame}}}
 \usage{
 tokenize(processed_df, vocabulary)
 }
 \arguments{
-\item{processed_df}{A processed dataframe (= processed event log)}
+\item{processed_df}{\code{\link{data.frame}}: A preprocessed \code{\link{data.frame}} from prepare_examples function.}
 
-\item{vocabulary}{A vocabulary, i.e. a list of activities and outcome labels.}
+\item{vocabulary}{\code{\link{list}}: A vocabulary, i.e. a list of activities and outcome labels.}
 }
 \value{
-A list of tokens token_x and token_y
+A list of tokens: token_x and token_y
 }
 \description{
-(WIP)
+Tokenize features and target of a processed \code{\link{data.frame}} to fit the transformer model.
 }
 \examples{
 library(eventdataR)
-testtime <- create_prefix_df(patients, prediction = "next_time")
-testout <- create_prefix_df(patients, prediction = "outcome")
-testact <- create_prefix_df(patients, prediction = "next_activity")
-purrr::map(list(testtime, testout, testact), tokenize) \%>\% head(10)
+ex_remaining_trace <- prepare_examples(patients, task = "remaining_trace")
+tokenize(ex_remaining_trace, vocabulary = create_vocabulary(ex_remaining_trace))
 
 }
