@@ -2,20 +2,18 @@
 % Please edit documentation in R/split_train_test.R
 \name{split_train_test}
 \alias{split_train_test}
-\title{Splits processed dataframe into train- and/or test dataframes}
+\title{Splits the preprocessed data.frame}
 \usage{
 split_train_test(processed_df, split = 0.7, trace_length_bins = 5)
 }
 \arguments{
-\item{processed_df}{A preprocessed dataframe from preprocess_log function}
+\item{processed_df}{\code{\link{data.frame}}: A preprocessed \code{\link{data.frame}} from prepare_examples function.}
 
-\item{split}{A train-test split ratio}
+\item{trace_length_bins}{\code{\link{numeric}} (default \code{\link{NULL}}): A number of trace length bins to use for stratification.
+If \code{\link{NULL}} does not stratify for similar trace length in both train- and test dataframes.}
 
-\item{trace_length_bins}{Number of trace length bins to use for stratification}
-}
-\value{
-a list of train and test dataframes
+\item{ratio}{\code{\link{numeric}} (default 0.7): A train-test split ratio.}
 }
 \description{
-(WIP)
+Returns train- and test dataframes as a list.
 }
