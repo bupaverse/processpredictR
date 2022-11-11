@@ -1,18 +1,16 @@
-#' Tokenize prefix (feature) and outcome (target) of a processed dataframe to fit the transformer model
+#' Tokenize features and target of a preprocessed [`data.frame`]
 #'
-#' (WIP)
+#' @description Tokenize features and target of a processed [`data.frame`] to fit the transformer model.
 #'
-#' @param processed_df A processed dataframe (= processed event log)
-#' @param vocabulary A vocabulary, i.e. a list of activities and outcome labels.
+#' @inheritParams split_train_test
+#' @param vocabulary [`list`]: A vocabulary, i.e. a list of activities and outcome labels.
 #'
-#' @return A list of tokens token_x and token_y
+#' @return A list of tokens: token_x and token_y
 #'
 #' @examples
 #' library(eventdataR)
-#' testtime <- create_prefix_df(patients, prediction = "next_time")
-#' testout <- create_prefix_df(patients, prediction = "outcome")
-#' testact <- create_prefix_df(patients, prediction = "next_activity")
-#' purrr::map(list(testtime, testout, testact), tokenize) %>% head(10)
+#' ex_remaining_trace <- prepare_examples(patients, task = "remaining_trace")
+#' tokenize(ex_remaining_trace, vocabulary = create_vocabulary(ex_remaining_trace))
 #'
 #'@export
 tokenize <- function(processed_df, vocabulary) {
