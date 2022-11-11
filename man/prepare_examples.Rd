@@ -2,7 +2,7 @@
 % Please edit documentation in R/prepare_examples.R
 \name{prepare_examples}
 \alias{prepare_examples}
-\title{Create a dataframe with prefixes}
+\title{Create a \code{\link{data.frame}} with prefixes}
 \usage{
 prepare_examples(
   log,
@@ -11,18 +11,16 @@ prepare_examples(
 )
 }
 \arguments{
-\item{log}{An object of class log.}
+\item{log}{\code{\link{log}}: Object of class \code{\link{log}} or derivatives (\code{\link{grouped_log}}, \code{\link{eventlog}},
+\code{\link{activitylog}}, etc.).}
 
-\item{task}{A character string from c("outcome", "next_activity", "next_time", "...").}
+\item{task}{\code{\link{character}} (default \code{"outcome"}): For which one of the 5 prediction tasks (\code{"outcome"}, \code{"next_activity"},\code{ "next_time"}) to prepare the event log.}
 
 \item{...}{Assign outcome labels to each case based on end activity. If not specified, simply defines
 outcome as last activity in a trace.}
 }
-\value{
-a dataframe.
-}
 \description{
-Create a dataframe with prefixes
+Create a \code{\link{data.frame}} with prefixes
 }
 \examples{
 # Outcome task prediction with custom outcome labels:
