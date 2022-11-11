@@ -1,11 +1,13 @@
-#' Create a dataframe with prefixes
+#' Preprocess an event log.
 #'
-#' @param log An object of class log.
-#' @param task A character string from c("outcome", "next_activity", "next_time", "...").
+#' @description Prepare an event log for a transformer prediction task.
+#'
+#' @param log \code{\link{log}}: Object of class \code{\link{log}} or derivatives (\code{\link{grouped_log}}, \code{\link{eventlog}},
+#' \code{\link{activitylog}}, etc.).
+#' @param task [`character`] (default `"outcome"`): A prediction task (`"outcome"`, `"next_activity"`,
+#' `"next_time"`,`"remaining_time"`, `"remaining_trace"`).
 #' @param ... Assign outcome labels to each case based on end activity. If not specified, simply defines
 #' outcome as last activity in a trace.
-#'
-#' @return a dataframe.
 #'
 #' @examples
 #' # Outcome task prediction with custom outcome labels:
