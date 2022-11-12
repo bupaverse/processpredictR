@@ -2,21 +2,25 @@
 % Please edit documentation in R/create_vocabulary.R
 \name{create_vocabulary}
 \alias{create_vocabulary}
-\title{Create a vocabulary, i.e. c("PAD", "UNK"), activities, outcome labels}
+\title{Create a vocabulary}
 \usage{
 create_vocabulary(processed_df)
 }
 \arguments{
-\item{processed_df}{A processed dataframe}
+\item{processed_df}{A preprocessed object of type \code{\link{log}} or \code{\link{data.frame}} from prepare_examples function.}
 }
 \value{
-a character vector of unique elements
+A nested \code{\link{list}} consisting of:
+\itemize{
+\item {\code{"keys_x"}}: \code{\link{list}} of activity labels
+\item {\code{"keys_y"}}: \code{\link{list}} of outcome labels (none for tasks \code{"next_time"} and \code{"remaining_time"})
+}
 }
 \description{
-Create a vocabulary, i.e. c("PAD", "UNK"), activities, outcome labels
+Creates a vocabulary of activities and outcome labels.
 }
 \examples{
 tasks <- c("outcome", "next_activity", "next_time", "remaining_time", "remaining_trace")
-purrr::map(tasks, ~create_prefix_df(patients, prediction = .x)) \%>\% purrr::map(create_vocabulary)
+purrr::map(tasks, ~prepare_examples(patients, task = .x)) \%>\% purrr::map(create_vocabulary)
 
 }

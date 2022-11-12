@@ -11,7 +11,9 @@ df
 
 
 ## split processed dataframe into train- and test dataframes
+set.seed(123)
 df_train_test <- split_train_test(df, split = 0.7)
+df_train_test
 df_train <- df_train_test$train_df
 df_test <- df_train_test$test_df
 

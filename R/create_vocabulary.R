@@ -1,11 +1,18 @@
-#' Create a vocabulary, i.e. c("PAD", "UNK"), activities, outcome labels
+#' Create a vocabulary
 #'
-#' @param processed_df A processed dataframe
-#' @return a character vector of unique elements
+#' @description Creates a vocabulary of activities and outcome labels.
+#'
+#' @return A nested [`list`] consisting of:
+#' \itemize{
+#'  \item {`"keys_x"`}: [`list`] of activity labels
+#'  \item {`"keys_y"`}: [`list`] of outcome labels (none for tasks `"next_time"` and `"remaining_time"`)
+#' }
+#'
+#' @inheritParams tokenize
 #'
 #' @examples
 #' tasks <- c("outcome", "next_activity", "next_time", "remaining_time", "remaining_trace")
-#' purrr::map(tasks, ~create_prefix_df(patients, prediction = .x)) %>% purrr::map(create_vocabulary)
+#' purrr::map(tasks, ~prepare_examples(patients, task = .x)) %>% purrr::map(create_vocabulary)
 #'
 #' @export
 create_vocabulary <- function(processed_df) {
