@@ -32,7 +32,7 @@ prepare_examples(eventdataR::patients, task = "outcome", outcome_label1 = "Check
 outcome_label2 = acts[-1])
 
 # Example next_activity task prediction on traffic_fines dataset:
-prepare_examples(traffic_fines, prediction = "next_activity")
+prepare_examples(traffic_fines, task = "next_activity")
 
 # Each prediction task for the patients dataset:
 tasks <- c("outcome", "next_activity", "next_time", "remaining_time", "remaining_trace")
