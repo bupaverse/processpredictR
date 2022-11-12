@@ -114,7 +114,7 @@ tokenize <- function(processed_df, vocabulary) {
 
     # return a list of tokens
 
-    tokens <- list(token_x = token_x, token_y = time_y)
+    tokens <- list(token_x = token_x, token_y = token_y)
     class(tokens) <- c("tokens", "list")
     tokens
 
@@ -194,7 +194,7 @@ tokenize <- function(processed_df, vocabulary) {
 
     }
 
-    tokens <- list(token_x = token_x, token_y = time_y)
+    tokens <- list(token_x = token_x, token_y = token_y)
     class(tokens) <- c("tokens", "list")
     tokens
 
