@@ -49,7 +49,7 @@ library(eventdataR)
 ### preprocess dataset
 
 ``` r
-df <- prepare_examples(patients, task = "remaining_time")
+df <- prepare_examples(patients, task = "next_time")
 df
 ```
 
