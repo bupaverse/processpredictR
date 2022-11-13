@@ -47,47 +47,83 @@ prepare_examples.log <- function(log, task = c("outcome", "next_activity",
 
   if (task == "outcome") {
 
-    traces_per_case <- case_list(log, .keep_trace_list = TRUE) %>%
-      mutate(ith_case = row_number()) %>%
-      rename(case_id = case_id(log))
+    # traces_per_case <- case_list(log, .keep_trace_list = TRUE) %>%
+    #   mutate(ith_case = row_number()) %>%
+    #   rename(case_id = case_id(log))
+    #
+    # case_prefix <- traces_per_case %>%
+    #   group_by(ith_case, case_id) %>%
+    #   #group_by(across(c(5, 1))) %>%
+    #   summarise(prefix = purrr::accumulate(traces_per_case$trace_list[[ith_case]], paste, sep = " - "),
+    #             current_activity = traces_per_case$trace_list[[ith_case]],
+    #             traces = traces_per_case$trace_list[ith_case]) %>%
+    #   mutate(k = row_number() - 1,
+    #          outcome = last(current_activity),
+    #          next_activity = lead(current_activity)) %>%
+    #   filter(!is.na(next_activity)) %>%
+    #   ungroup()
+    #
+    # case_prefix <- case_prefix %>% assign_outcome_labels(...)
+    # case_prefix
 
-    case_prefix <- traces_per_case %>%
-      group_by(ith_case, case_id) %>%
-      #group_by(across(c(5, 1))) %>%
-      summarise(prefix = purrr::accumulate(traces_per_case$trace_list[[ith_case]], paste, sep = " - "),
-                current_activity = traces_per_case$trace_list[[ith_case]],
-                traces = traces_per_case$trace_list[ith_case]) %>%
-      mutate(k = row_number() - 1,
-             outcome = last(current_activity),
-             next_activity = lead(current_activity)) %>%
-      filter(!is.na(next_activity)) %>%
-      ungroup()
 
-    case_prefix <- case_prefix %>% assign_outcome_labels(...)
-    case_prefix
+    #RETURNS OBJECT OF TYPE `log`
+    log %>%
+      group_by(!!bupaR:::case_id_(log)) %>%
+      mutate(ith_case = cur_group_id(),
+             trace = paste(!!bupaR:::activity_id_(log), collapse = ","),
+             k = row_number() - 1) %>% # getting the traces
+      arrange(!!bupaR:::case_id_(log)) %>%
+      distinct(!!bupaR:::activity_instance_id_(log), .keep_all = T) %>%
+      mutate(
+        prefix = purrr::accumulate(as.character(!!bupaR:::activity_id_(log)), paste, sep = " - ", .dir = "forward")) %>%
+      mutate(next_activity = lead(!!bupaR:::activity_id_(log)),
+             next_activity = if_else(is.na(next_activity), "endpoint", as.character(next_activity)),
+             outcome = last(!!bupaR:::activity_id_(log)),
+             current_activity = !!bupaR:::activity_id_(log)) %>%
+      select(ith_case, !!bupaR:::case_id_(log), prefix, next_activity, k, trace, everything()) %>%
+      assign_outcome_labels(...) %>%
+      re_map(mapping(log))
 
 
   }
   else if (task == "next_activity") {
-    traces_per_case <- case_list(log, .keep_trace_list = TRUE) %>%
-      mutate(trace_list = purrr::map(trace_list, ~append(.x, "endpoint")),
-             ith_case = row_number()) %>%
-      rename(case_id = case_id(log))
+    # traces_per_case <- case_list(log, .keep_trace_list = TRUE) %>%
+    #   mutate(trace_list = purrr::map(trace_list, ~append(.x, "endpoint")),
+    #          ith_case = row_number()) %>%
+    #   rename(case_id = case_id(log))
+    #
+    # case_prefix <- traces_per_case %>%
+    #   group_by(ith_case, case_id) %>%
+    #   #group_by(across(c(5, 1))) %>%
+    #   summarise(prefix = purrr::accumulate(traces_per_case$trace_list[[ith_case]], paste, sep = " - "),
+    #             current_activity = traces_per_case$trace_list[[ith_case]],
+    #             traces = traces_per_case$trace_list[ith_case]) %>%
+    #   mutate(k = row_number() - 1,
+    #          last_activity = last(current_activity),
+    #          next_activity = lead(current_activity)) %>% #,
+    #   filter(!is.na(next_activity)) %>%
+    #          #next_activity = if_else(is.na(next_activity), "endpoint", next_activity)) %>%
+    #   ungroup()
+    #
+    # case_prefix
 
-    case_prefix <- traces_per_case %>%
-      group_by(ith_case, case_id) %>%
-      #group_by(across(c(5, 1))) %>%
-      summarise(prefix = purrr::accumulate(traces_per_case$trace_list[[ith_case]], paste, sep = " - "),
-                current_activity = traces_per_case$trace_list[[ith_case]],
-                traces = traces_per_case$trace_list[ith_case]) %>%
-      mutate(k = row_number() - 1,
-             last_activity = last(current_activity),
-             next_activity = lead(current_activity)) %>% #,
-      filter(!is.na(next_activity)) %>%
-             #next_activity = if_else(is.na(next_activity), "endpoint", next_activity)) %>%
-      ungroup()
 
-    case_prefix
+    #RETURNS OBJECT OF TYPE `log`
+    log %>%
+      group_by(!!bupaR:::case_id_(log)) %>%
+      mutate(ith_case = cur_group_id(),
+             trace = paste(!!bupaR:::activity_id_(log), collapse = ","),
+             k = row_number() - 1) %>% # getting the traces
+      arrange(!!bupaR:::case_id_(log)) %>%
+      distinct(!!bupaR:::activity_instance_id_(log), .keep_all = T) %>%
+      mutate(
+        prefix = purrr::accumulate(as.character(!!bupaR:::activity_id_(log)), paste, sep = " - ", .dir = "forward")) %>%
+      mutate(next_activity = lead(!!bupaR:::activity_id_(log)),
+             next_activity = if_else(is.na(next_activity), "endpoint", as.character(next_activity)),
+             last_activity = last(next_activity)) %>%
+      select(ith_case, !!bupaR:::case_id_(log), prefix, next_activity, k, trace, everything()) %>%
+      re_map(mapping(log))
 
   }
 
@@ -154,7 +190,7 @@ prepare_examples.log <- function(log, task = c("outcome", "next_activity",
 
   else if (task == "remaining_trace") {
 
-    log %>% # situation when there is both start- and end timestamps
+    log %>%
       group_by(!!bupaR:::case_id_(log)) %>%
       mutate(ith_case = cur_group_id(),
              trace = paste(!!bupaR:::activity_id_(log), collapse = ","),
