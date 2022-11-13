@@ -45,6 +45,7 @@ prepare_examples.log <- function(log, task = c("outcome", "next_activity",
 
   cat("Prediction task: ", task, "\n")
 
+  # OUTCOME
   if (task == "outcome") {
 
     # traces_per_case <- case_list(log, .keep_trace_list = TRUE) %>%
@@ -66,7 +67,6 @@ prepare_examples.log <- function(log, task = c("outcome", "next_activity",
     # case_prefix <- case_prefix %>% assign_outcome_labels(...)
     # case_prefix
 
-
     #RETURNS OBJECT OF TYPE `log`
     log %>%
       group_by(!!bupaR:::case_id_(log)) %>%
@@ -87,7 +87,10 @@ prepare_examples.log <- function(log, task = c("outcome", "next_activity",
 
 
   }
+
+  # NEXT_ACTIVITY
   else if (task == "next_activity") {
+
     # traces_per_case <- case_list(log, .keep_trace_list = TRUE) %>%
     #   mutate(trace_list = purrr::map(trace_list, ~append(.x, "endpoint")),
     #          ith_case = row_number()) %>%
@@ -108,7 +111,6 @@ prepare_examples.log <- function(log, task = c("outcome", "next_activity",
     #
     # case_prefix
 
-
     #RETURNS OBJECT OF TYPE `log`
     log %>%
       group_by(!!bupaR:::case_id_(log)) %>%
@@ -127,11 +129,13 @@ prepare_examples.log <- function(log, task = c("outcome", "next_activity",
 
   }
 
+  # NEXT_TIME
   else if (task == "next_time") {
 
+    # if contains both start- and end timestamps
     if ((log[[lifecycle_id(log)]] %>% unique() %>% length()) == 2) {
 
-      to_activitylog(log) %>% # situation when there is both start- and end timestamps
+      to_activitylog(log) %>%
         group_by(!!bupaR:::case_id_(log)) %>%
         mutate(ith_case = cur_group_id(),
                activity_duration = (complete-start) %>% as.numeric(),
@@ -154,15 +158,44 @@ prepare_examples.log <- function(log, task = c("outcome", "next_activity",
 
     }
 
+    # if does NOT contain both start- and end timestamps
+    else if ((log[[lifecycle_id(log)]] %>% unique() %>% length()) == 1) {
+
+      log %>%
+        group_by(!!bupaR:::case_id_(log)) %>%
+        mutate(ith_case = cur_group_id(),
+               start = lag(!!bupaR:::timestamp_(log)),
+               complete = (!!bupaR:::timestamp_(log)),
+               start = if_else(is.na(start), complete, start),
+               activity_duration = (complete-start) %>% as.numeric(),
+               time_passed = cumsum(activity_duration),
+               trace = paste(!!bupaR:::activity_id_(log), collapse = ","),
+               k = row_number() - 1) %>% # getting the traces
+        arrange(!!bupaR:::case_id_(log)) %>%
+        mutate(#!!bupaR:::case_id_(log),
+          prefix = purrr::accumulate(as.character(!!bupaR:::activity_id_(log)), paste, sep = " - "),
+          #!!bupaR:::activity_id_(log),
+          activity_duration = activity_duration
+        ) %>%
+        mutate(latest_time = activity_duration,
+               next_time = lead(activity_duration),
+               recent_time = lag(activity_duration),
+               recent_time = if_else(is.na(recent_time), 0, recent_time)) %>%
+        drop_na(next_time) %>%
+        select(ith_case, !!bupaR:::case_id_(log), prefix, k, time_passed, recent_time, latest_time, next_time, activity_duration, trace, everything()) %>%
+        re_map(mapping(log))
+
+    }
+
   }
 
+  # REMAINING_TIME
+  else if (task == "remaining_time") {
 
-
-  else if (task == "remaining_time") { # MAKE HERE AN IF ELSE STATEMENT TO CHECK FOR START- END TIMESTAMPS
-
+    # if contains both start- and end timestamps
     if ((log[[lifecycle_id(log)]] %>% unique() %>% length()) == 2) {
 
-      to_activitylog(log) %>% # situation when there is both start- and end timestamps
+      to_activitylog(log) %>%
         group_by(!!bupaR:::case_id_(log)) %>%
         mutate(ith_case = cur_group_id(),
                activity_duration = (complete-start) %>% as.numeric(),
@@ -184,10 +217,38 @@ prepare_examples.log <- function(log, task = c("outcome", "next_activity",
 
     }
 
-    else {print("Log does not contain both start- and end timestamps")}
+    # if does NOT contain both start- and end timestamps
+    else if ((log[[lifecycle_id(log)]] %>% unique() %>% length()) == 1) {
+
+      log %>%
+        group_by(!!bupaR:::case_id_(log)) %>%
+        mutate(ith_case = cur_group_id(),
+               start = lag(!!bupaR:::timestamp_(log)),
+               complete = (!!bupaR:::timestamp_(log)),
+               start = if_else(is.na(start), complete, start),
+               activity_duration = (complete-start) %>% as.numeric(),
+               time_passed = cumsum(activity_duration),
+               trace = paste(!!bupaR:::activity_id_(log), collapse = ","),
+               k = row_number() - 1) %>% # getting the traces
+        arrange(!!bupaR:::case_id_(log)) %>%
+        mutate(#!!bupaR:::case_id_(log),
+          prefix = purrr::accumulate(as.character(!!bupaR:::activity_id_(log)), paste, sep = " - "),
+          #!!bupaR:::activity_id_(log),
+          activity_duration = activity_duration
+        ) %>%
+        mutate(latest_time = activity_duration,
+               #next_time = lead(activity_duration),
+               recent_time = lag(activity_duration),
+               recent_time = if_else(is.na(recent_time), 0, recent_time),
+               remaining_time = last(time_passed) - time_passed[k+1]) %>%
+        select(ith_case, !!bupaR:::case_id_(log), prefix, k, time_passed, recent_time, latest_time, remaining_time, activity_duration, trace, everything()) %>%
+        re_map(mapping(log))
+
+    }
 
   }
 
+  # REMAINING_TRACE
   else if (task == "remaining_trace") {
 
     log %>%
