@@ -23,10 +23,8 @@ devtools::install_github("bupaverse/processpredictR")
 
 -   [x] outcome
 -   [x] next activity
--   [x] next time <sup>requires an event- or activity log to have both
-    start- and end timestamps</sup>
--   [x] remaining time <sup>requires an event- or activity log to have
-    both start- and end timestamps</sup>
+-   [x] next time
+-   [x] remaining time
 -   [x] remaining trace
 
 ## Examples
@@ -58,7 +56,8 @@ df
 ### split dataset into train- and test dataset
 
 ``` r
-split <- split_train_test(df, split = 0.7)
+set.seed(123)
+split <- split_train_test(df, split = 0.7, trace_length_bins = 5)
 df_train <- split$train_df
 df_test <- split$test_df
 ```
@@ -134,9 +133,10 @@ df
 ### split dataset into train- and test dataset
 
 ``` r
-split_train_test_df(df, ratio = 0.7)
-df_train <- split_train_test_df(df, ratio = 0.7)$train_df
-df_test <- split_train_test_df(df, ratio = 0.7)$test_df
+set.seed(123)
+split <- split_train_test(df, split = 0.7, trace_length_bins = 5)
+df_train <- split$train_df
+df_test <- split$test_df
 ```
 
 ### tokenize train dataset
