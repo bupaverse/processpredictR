@@ -5,12 +5,13 @@ df <- prepare_examples(eventdataR::traffic_fines, task = "next_activity")
 df
 
 #split dataset into train- and test dataset
-df_train_test <- split_train_test(df, ratio = 0.7)
+df_train_test <- split_train_test(df, split = 0.7, trace_length_bins = 5)
 df_train <- df_train_test$train_df
 df_test <- df_train_test$test_df
 
 #tokenize train dataset
 tokens_train <- tokenize(df_train, vocabulary = create_vocabulary(df))
+tokens_train
 
 #define transformer model
 model <- transformer_model(df)
