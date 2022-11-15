@@ -2,7 +2,7 @@
 #'
 #' @description Creates a vocabulary of activities and outcome labels.
 #'
-#' @return A nested [`list`] consisting of:
+#' @return A [`list`] consisting of:
 #' \itemize{
 #'  \item {`"keys_x"`}: [`list`] of activity labels
 #'  \item {`"keys_y"`}: [`list`] of outcome labels (none for tasks `"next_time"` and `"remaining_time"`)
@@ -18,7 +18,7 @@
 create_vocabulary <- function(processed_df) {
 
   #OUTCOME
-  if ("outcome" %in% names(processed_df)) {
+  if (get_task(processed_df) == "outcome") {
     activity_names <- processed_df$current_activity %>% unique() %>% as.character()
     activity_names <- c("PAD", "UNK") %>%
       append(activity_names)
@@ -38,7 +38,7 @@ create_vocabulary <- function(processed_df) {
   }
 
   #NEXT_ACTIVITY
-  else if ("last_activity" %in% names(processed_df)) {
+  else if (get_task(processed_df) == "next_activity") {
     activity_names <- processed_df$current_activity %>% unique() %>% as.character()
     activity_names <- c("PAD", "UNK") %>%
       append(activity_names)
@@ -58,7 +58,7 @@ create_vocabulary <- function(processed_df) {
   }
 
   #NEXT_TIME & REMAINING_TIME
-  else if ("next_time" %in% names(processed_df) || "remaining_time" %in% names(processed_df)) {
+  else if (get_task(processed_df) %in% c("next_time","remaining_time")) {
     activity_names <- processed_df[[bupaR::activity_id(processed_df)]] %>% as.character() %>% unique()
     activity_names <- c("PAD", "UNK") %>%
       append(activity_names)
@@ -74,9 +74,9 @@ create_vocabulary <- function(processed_df) {
   }
 
   #REMAINING TRACE
-  else if ("remaining_trace" %in% names(processed_df)) {
+  else if (get_task(processed_df) == "remaining_trace") {
 
-    activity_names <- processed_df[[bupaR::activity_id(processed_df)]] %>% as.character() %>% unique()
+    activity_names <- processed_df[[attr(processed_df, "mapping")$activity_id]] %>% as.character() %>% unique()
     activity_names <- c("PAD", "UNK") %>%
       append(activity_names)
     values_x <- unique(activity_names)

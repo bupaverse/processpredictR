@@ -10,7 +10,7 @@ create_vocabulary(processed_df)
 \item{processed_df}{A preprocessed object of type \code{\link{log}} or \code{\link{data.frame}} from prepare_examples function.}
 }
 \value{
-A nested \code{\link{list}} consisting of:
+A \code{\link{list}} consisting of:
 \itemize{
 \item {\code{"keys_x"}}: \code{\link{list}} of activity labels
 \item {\code{"keys_y"}}: \code{\link{list}} of outcome labels (none for tasks \code{"next_time"} and \code{"remaining_time"})
