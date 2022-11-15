@@ -43,7 +43,7 @@ prepare_examples.log <- function(log, task = c("outcome", "next_activity",
 
   task <- rlang::arg_match(task)
 
-  cat("Prediction task: ", task, "\n")
+  message("Prediction task: ", task, "\n")
 
   # OUTCOME
   if (task == "outcome") {
