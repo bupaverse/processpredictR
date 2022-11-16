@@ -4,7 +4,7 @@
 \alias{tokenize}
 \title{Tokenize features and target of a preprocessed \code{\link{data.frame}}}
 \usage{
-tokenize(processed_df, vocabulary)
+tokenize(processed_df)
 }
 \arguments{
 \item{processed_df}{A preprocessed object of type \code{\link{log}} or \code{\link{data.frame}} from prepare_examples function.}
