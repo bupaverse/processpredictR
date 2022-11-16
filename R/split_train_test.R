@@ -7,8 +7,14 @@
 #' @param trace_length_bins [`numeric`] (default [`NULL`]): A number of trace length bins to use for stratification.
 #' If [`NULL`], does not stratify for similar trace length in both train- and test dataframes.
 #'
+#'
 #' @export
-split_train_test <- function(processed_df, split = 0.7, trace_length_bins = 5) { # OR n_distinct(log[case_id(log)])
+split_train_test <- function(processed_df, split = 0.7, trace_length_bins = 5) {
+  UseMethod("split_train_test")
+}
+
+#' @export
+split_train_test.ppred_examples_df <- function(processed_df, split = 0.7, trace_length_bins = 5) { # OR n_distinct(log[case_id(log)])
 
   if (is.null(trace_length_bins)) {
     unique_cases <- unique(processed_df$ith_case)

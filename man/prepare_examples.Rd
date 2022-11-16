@@ -7,6 +7,7 @@
 prepare_examples(
   log,
   task = c("outcome", "next_activity", "next_time", "remaining_time", "remaining_trace"),
+  feature = NULL,
   ...
 )
 }
