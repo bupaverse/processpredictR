@@ -24,9 +24,11 @@ split_train_test.ppred_examples_df <- function(processed_df, split = 0.7, trace_
     # id's train
     unique_cases_train <- unique_cases[train_ind] # train dataset
     train_df <-  processed_df %>% filter(ith_case %in% unique_cases_train)
+    class(train_df) <- c("ppred_examples_df", class(train_df))
 
     # id's test
     test_df <- processed_df %>% filter(!(ith_case %in% unique_cases_train))
+    class(test_df) <- c("ppred_examples_df", class(test_df))
 
     list(train_df = train_df, test_df = test_df)
 
@@ -48,7 +50,10 @@ split_train_test.ppred_examples_df <- function(processed_df, split = 0.7, trace_
       pull(ith_case) -> unique_cases_train
 
     train_df <-  processed_df %>% filter(ith_case %in% unique_cases_train)
+    class(train_df) <- c("ppred_examples_df", class(train_df))
+
     test_df <- processed_df %>% filter(!(ith_case %in% unique_cases_train))
+    class(test_df) <- c("ppred_examples_df", class(test_df))
 
     list(train_df = train_df, test_df = test_df)
 

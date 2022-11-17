@@ -55,10 +55,10 @@ def get_outcome_transformer_model(max_case_length, vocab_size, output_dim, embed
 
 
 
-def get_next_time_model(max_case_length, vocab_size, output_dim = 1, embed_dim = 36, num_heads = 4, ff_dim = 64):
+def get_next_time_model(max_case_length, num_features, vocab_size, output_dim = 1, embed_dim = 36, num_heads = 4, ff_dim = 64):
   inputs = layers.Input(shape=(max_case_length,))
   # Three time-based features
-  time_inputs = layers.Input(shape=(3,)) 
+  time_inputs = layers.Input(shape=(num_features,)) 
   x = TokenAndPositionEmbedding(max_case_length, vocab_size, embed_dim)(inputs)
   x = TransformerBlock(embed_dim, num_heads, ff_dim)(x)
   x = layers.GlobalAveragePooling1D()(x)
@@ -73,10 +73,10 @@ def get_next_time_model(max_case_length, vocab_size, output_dim = 1, embed_dim =
   return transformer
 
 
-def get_remaining_time_model(max_case_length, vocab_size, output_dim = 1, embed_dim = 36, num_heads = 4, ff_dim = 64):
+def get_remaining_time_model(max_case_length, num_features, vocab_size, output_dim = 1, embed_dim = 36, num_heads = 4, ff_dim = 64):
   inputs = layers.Input(shape=(max_case_length,))
   # Three time-based features
-  time_inputs = layers.Input(shape=(3,)) 
+  time_inputs = layers.Input(shape=(num_features,)) 
   x = TokenAndPositionEmbedding(max_case_length, vocab_size, embed_dim)(inputs)
   x = TransformerBlock(embed_dim, num_heads, ff_dim)(x)
   x = layers.GlobalAveragePooling1D()(x)

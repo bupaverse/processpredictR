@@ -300,7 +300,7 @@ prepare_examples.log <- function(log, task = c("outcome", "next_activity",
 
     attr(output, "task") <- task
     attr(output, "y_var") <- "remaining_time"
-    attr(output, "features") <- c("throughput_time","processing_time","previous_duration")
+    attr(output, "features") <- c("throughput_time","processing_time","previous_duration") # append(feature)
     attr(output, "mapping") <- mapping(log)
     attr(output, "vocabulary") <- create_vocabulary(output)
   }
