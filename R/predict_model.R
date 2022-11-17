@@ -22,13 +22,13 @@ predict_model.ppred_model <- function(transformer_model, tokens_test, maxlen, pr
 
   source_python("inst/predict.py")
 
-  if (transformer_model$name == "outcome_OR_nextActivity_transformer") {
+  if (transformer_model$name %in% c("outcome", "next_activity", "remaining_trace")) {
 
     predict_model(transformer_model, test_token_x, test_token_y, predict_type)
 
   }
 
-  else if (transformer_model$name == "next_time_transformer" || transformer_model$name == "remaining_time_transformer") {
+  else if (transformer_model$name %in% c("next_time", "remaining_time")) {
 
     test_time_x <- matrix(c(tokens_test$time_x$recent_time, tokens_test$time_x$latest_time, tokens_test$time_x$time_passed), ncol = 3) %>%
       reticulate::np_array(dtype = "float32")
@@ -36,13 +36,6 @@ predict_model.ppred_model <- function(transformer_model, tokens_test, maxlen, pr
     predict_model_next_time(transformer_model, test_token_x, test_time_x, test_token_y, predict_type)
 
   }
-
-  else if (transformer_model$name == "remaining_trace_transformer") {
-
-    predict_model(transformer_model, test_token_x, test_token_y, predict_type)
-
-  }
-
 }
 
 
