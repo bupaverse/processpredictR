@@ -6,12 +6,12 @@
 #' @return A transformer model
 #'
 #' @export
-create_model <- function(processed_df) {
+create_model <- function(processed_df, custom_model_py) {
   UseMethod("create_model")
 }
 
 #' @export
-create_model.ppred_examples_df <- function(processed_df) {
+create_model.ppred_examples_df <- function(processed_df, custom_model_py = NULL) {
 
   # tf <- import("tensorflow")
   # layers <- import("keras")$layers
@@ -22,6 +22,9 @@ create_model.ppred_examples_df <- function(processed_df) {
   # if(prediction == "next_activity") {
   #   maxlen <- max_case_length(log) + 1 %>% as.integer()
   # }
+
+
+  # if (is.null(custom_model_py)) {
 
   # vocabulary and task
   vocabulary <- get_vocabulary(processed_df)
@@ -58,6 +61,14 @@ create_model.ppred_examples_df <- function(processed_df) {
 
   class(model) <- c("ppred_model", class(model))
   return(model)
+
+  # }
+
+  # else {
+  #
+  #
+  #
+  # }
 }
 
 

@@ -4,7 +4,7 @@
 \alias{create_model}
 \title{Define transformer model}
 \usage{
-create_model(processed_df)
+create_model(processed_df, custom_model_py)
 }
 \arguments{
 \item{processed_df}{A processed \code{\link{data.frame}} from prepare_examples}

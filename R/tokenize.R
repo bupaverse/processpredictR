@@ -21,13 +21,13 @@ tokenize <- function(processed_df) {
 tokenize.ppred_examples_df <- function(processed_df) {
 
   # vocabulary and task
-  vocabulary <- attr(df_train, "vocabulary")
-  task <- attr(df_train, "task")
+  vocabulary <- attr(processed_df, "vocabulary")
+  task <- attr(processed_df, "task")
 
   # algorithm to produce token_x (same for all tasks)
   token_x <- list()
 
-  for (i in (1:length(processed_df$prefix_list))) {
+  for (i in (1:length(processed_df$prefix))) {
     #case_trace <- list()
     case_trace <- c()
 
@@ -42,6 +42,13 @@ tokenize.ppred_examples_df <- function(processed_df) {
   }
 
 
+  # time_x (extra features)
+  time_x <- NULL
+  if (!is.null(attr(processed_df, "features"))) {
+  time_x <- processed_df %>% as_tibble() %>% select(attr(processed_df, "features")) %>% as.list() %>%
+    purrr::map(scale) %>%
+    purrr::map(as.vector)
+  }
 
   #algorithm to produce token_y
 
@@ -57,7 +64,7 @@ tokenize.ppred_examples_df <- function(processed_df) {
     }
 
     # return a list of tokens
-    tokens <- list(token_x = token_x, token_y = token_y)
+    tokens <- list(token_x = token_x, time_x = time_x, token_y = token_y)
     class(tokens) <- c("ppred_examples_tokens", "list")
     tokens
   }
@@ -66,13 +73,13 @@ tokenize.ppred_examples_df <- function(processed_df) {
   else if (task == "next_activity") {
     token_y = c()
 
-    for (i in (1:length(processed_df$prefix_list))) {
+    for (i in (1:length(processed_df$prefix))) {
       tok <- which(processed_df$next_activity[i] == vocabulary$keys_y) #match outcome instead of trace
       token_y <- token_y  %>% append(tok-1)
     }
 
     # return a list of tokens
-    tokens <- list(token_x = token_x, token_y = token_y)
+    tokens <- list(token_x = token_x, time_x = time_x, token_y = token_y)
     class(tokens) <- c("ppred_examples_tokens", "list")
     tokens
 
@@ -82,13 +89,13 @@ tokenize.ppred_examples_df <- function(processed_df) {
   else if (task == "remaining_trace") {
     token_y = c()
 
-    for (i in (1:length(processed_df$prefix_list))) {
+    for (i in (1:length(processed_df$prefix))) {
       tok <- which(processed_df$remaining_trace[i] == vocabulary$keys_y)
       token_y <- token_y  %>% append(tok-1)
     }
 
     # return a list of tokens:
-    tokens <- list(token_x = token_x, token_y = token_y)
+    tokens <- list(token_x = token_x, time_x = time_x, token_y = token_y)
     class(tokens) <- c("ppred_examples_tokens", "list")
     tokens
   }
@@ -100,9 +107,9 @@ tokenize.ppred_examples_df <- function(processed_df) {
     # time_passed1 * attr(time_passed1, 'scaled:scale') + attr(time_passed1, 'scaled:center'))
 
     # # time_x (input)
-    time_x <- processed_df %>% as_tibble() %>% select(attr(processed_df, "features")) %>% as.list() %>%
-      purrr::map(scale) %>%
-      purrr::map(as.vector)
+    # time_x <- processed_df %>% as_tibble() %>% select(attr(processed_df, "features")) %>% as.list() %>%
+    #   purrr::map(scale) %>%
+    #   purrr::map(as.vector)
     # recent_time <- processed_df$recent_time %>% scale() %>% as.vector()
     # latest_time <- processed_df$latest_time %>% scale() %>% as.vector()
     # time_passed <- processed_df$time_passed %>% scale() %>% as.vector()
