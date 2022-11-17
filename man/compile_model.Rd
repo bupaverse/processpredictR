@@ -2,7 +2,7 @@
 % Please edit documentation in R/compile_model.R
 \name{compile_model}
 \alias{compile_model}
-\title{Compile and fit transformer model (test)}
+\title{Compile transformer model}
 \usage{
 compile_model(transformer_model, learning_rate)
 }
@@ -12,5 +12,5 @@ compile_model(transformer_model, learning_rate)
 \item{learning_rate}{A learning rate of a model}
 }
 \description{
-(test)
+Compile transformer model
 }

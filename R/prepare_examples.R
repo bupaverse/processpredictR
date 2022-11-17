@@ -6,6 +6,7 @@
 #' \code{\link{activitylog}}, etc.).
 #' @param task [`character`] (default `"outcome"`): A prediction task (`"outcome"`, `"next_activity"`,
 #' `"next_time"`,`"remaining_time"`, `"remaining_trace"`).
+#' @param features [`character`]: A list of additional column names.
 #' @param ... Assign outcome labels to each case based on end activity. If not specified, simply defines
 #' outcome as last activity in a trace.
 #'
@@ -27,14 +28,14 @@
 #' @export
 prepare_examples <- function(log, task = c("outcome", "next_activity",
                                            "next_time", "remaining_time",
-                                           "remaining_trace"), feature = NULL, ...) {
+                                           "remaining_trace"), features = NULL, ...) {
   UseMethod("prepare_examples")
 }
 
 #' @export
 prepare_examples.log <- function(log, task = c("outcome", "next_activity",
                                                "next_time", "remaining_time",
-                                               "remaining_trace"), feature = NULL, ...) {
+                                               "remaining_trace"), features = NULL, ...) {
 
   task <- rlang::arg_match(task)
 
@@ -116,7 +117,7 @@ prepare_examples.log <- function(log, task = c("outcome", "next_activity",
 
     attr(output, "task") <- task
     attr(output, "y_var") <- "outcome"
-    attr(output, "features") <- NULL
+    attr(output, "features") <- c()
     attr(output, "mapping") <- mapping(log)
     attr(output, "vocabulary") <- create_vocabulary(output)
   }
@@ -186,7 +187,7 @@ prepare_examples.log <- function(log, task = c("outcome", "next_activity",
 
   attr(output, "task") <- task
   attr(output, "y_var") <- "next_activity"
-  attr(output, "features") <- NULL
+  attr(output, "features") <- c()
   attr(output, "mapping") <- mapping(log)
   attr(output, "vocabulary") <- create_vocabulary(output)
   }
@@ -249,15 +250,16 @@ prepare_examples.log <- function(log, task = c("outcome", "next_activity",
              latest_duration = ifelse(is.na(latest_duration), 0, latest_duration)) %>%
       drop_na(time_till_next_activity)  %>%
       select(ith_case, !!bupaR:::case_id_(log), prefix_list, prefix, k,
-             latest_duration, throughput_time, time_before_activity,
-             processing_time, time_till_next_activity, trace, everything()) %>%
+             latest_duration, throughput_time, time_before_activity, processing_time, time_till_next_activity,
+             features, everything()) %>%
       re_map(mapping = mapping(log)) -> output
 
       class(output) <- c("ppred_examples_df", class(output))
 
       attr(output, "task") <- task
       attr(output, "y_var") <- "time_till_next_activity"
-      attr(output, "features") <- c("latest_duration", "throughput_time","time_before_activity","processing_time")
+      attr(output, "features") <- c("latest_duration", "throughput_time","time_before_activity","processing_time") %>%
+        append(features)
       attr(output, "mapping") <- mapping(log)
       attr(output, "vocabulary") <- create_vocabulary(output)
   }
@@ -291,15 +293,15 @@ prepare_examples.log <- function(log, task = c("outcome", "next_activity",
              previous_duration = if_else(is.na(previous_duration), 0, previous_duration),
              remaining_time = last(complete) -complete) %>%
       select(ith_case, !!bupaR:::case_id_(log), prefix_list, prefix, k,
-             throughput_time, processing_time,
-             previous_duration, remaining_time, trace, everything()) %>%
+             throughput_time, processing_time, previous_duration, remaining_time,
+             features, everything()) %>%
       re_map(mapping = mapping(log)) -> output
 
     class(output) <- c("ppred_examples_df", class(output))
 
     attr(output, "task") <- task
     attr(output, "y_var") <- "remaining_time"
-    attr(output, "features") <- c("throughput_time","processing_time","previous_duration") # append
+    attr(output, "features") <- c("throughput_time","processing_time","previous_duration") %>% append(features)
     attr(output, "mapping") <- mapping(log)
     attr(output, "vocabulary") <- create_vocabulary(output)
   }
