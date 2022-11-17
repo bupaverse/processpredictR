@@ -98,7 +98,7 @@ prepare_examples.log <- function(log, task = c("outcome", "next_activity",
       group_by_case() %>%
       mutate(ith_case = cur_group_id(),
              k = row_number() - 1,
-             current_activity = !!bupaR:::activity_id_(log),
+             current_activity = (!!bupaR:::activity_id_(log)),
              prefix_list = purrr::accumulate(as.character(current_activity), c),
              prefix = purrr::accumulate(as.character(current_activity), paste, sep = " - ")) %>%
       arrange(!!bupaR:::case_id_(log)) %>%
@@ -321,7 +321,7 @@ prepare_examples.log <- function(log, task = c("outcome", "next_activity",
       mutate(remaining_trace = lead(remaining_trace),
              remaining_trace = if_else(is.na(remaining_trace), "endpoint", remaining_trace)) %>%
       select(ith_case, !!bupaR:::case_id_(log), prefix_list,
-             prefix, remaining_trace, k, trace, everything()) -> output
+             prefix, remaining_trace, k, everything()) -> output
 
 
     class(output) <- c("ppred_examples_df", class(output))
