@@ -69,6 +69,7 @@ create_model.ppred_examples_df <- function(processed_df, custom_model_py = NULL,
     model <- get_remaining_time_model(maxlen, num_features, vocab_size, as.integer(1), name)
   }
 
+  attr(model, "max_case_length") <- maxlen
   class(model) <- c("ppred_model", class(model))
   return(model)
 

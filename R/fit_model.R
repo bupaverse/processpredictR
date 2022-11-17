@@ -4,17 +4,19 @@
 #'
 #' @param transformer_model A defined transformer model
 #' @param tokens_train A list of train tokens, i.e. token_x, token_y
-#' @param maxlen An integer number of the maximum case length (longest trace) in an event log
 #' @param num_epochs  A number of epochs
 #' @param batch_size A batch size
 #' @param file Name of saved model (weights)
 #'
 #' @export
-fit_model <- function(transformer_model, tokens_train, maxlen, num_epochs, batch_size, file) {
+fit_model <- function(transformer_model, tokens_train, num_epochs, batch_size, file) {
   UseMethod("fit_model")
 }
 #' @export
-fit_model.ppred_model <- function(transformer_model, tokens_train, maxlen, num_epochs, batch_size, file) {
+fit_model.ppred_model <- function(transformer_model, tokens_train, num_epochs, batch_size, file) {
+
+  # max_case_length
+  maxlen <- attr(transformer_model, "max_case_length") %>% as.integer()
 
   # same for all tasks
   train_token_x <- tokens_train$token_x %>% keras::pad_sequences(maxlen = maxlen, value = 0)
