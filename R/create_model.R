@@ -38,6 +38,8 @@ create_model.ppred_examples_df <- function(processed_df, custom_model_py = NULL,
   if (is.null(name)) {
     name <- task
   }
+  else name <- name
+
   if (!is.null(attr(processed_df, "features"))) {
     num_features <- processed_df %>% attr("features") %>% length()
   }
@@ -70,6 +72,8 @@ create_model.ppred_examples_df <- function(processed_df, custom_model_py = NULL,
   }
 
   attr(model, "max_case_length") <- maxlen
+  attr(model, "features") <- processed_df %>% attr("features")
+  attr(model, "num_features") <- num_features
   class(model) <- c("ppred_model", class(model))
   return(model)
 
