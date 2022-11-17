@@ -8,6 +8,10 @@ create_model(processed_df, custom_model_py = NULL, name = NULL)
 }
 \arguments{
 \item{processed_df}{A processed \code{\link{data.frame}} from prepare_examples}
+
+\item{custom_model_py}{A custom .py model}
+
+\item{name}{\code{\link{data.frame}}: A name for the model}
 }
 \value{
 A transformer model

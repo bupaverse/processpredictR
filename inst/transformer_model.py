@@ -39,7 +39,7 @@ class TokenAndPositionEmbedding(layers.Layer):
 
 
 
-def get_outcome_transformer_model(max_case_length, num_features, vocab_size, output_dim, embed_dim = 36, num_heads = 4, ff_dim = 64):
+def get_outcome_transformer_model(max_case_length, num_features, vocab_size, output_dim, name, embed_dim = 36, num_heads = 4, ff_dim = 64):
   inputs = layers.Input(shape=(max_case_length,))
   if num_features > 0: 
     extra_inputs = layers.Input(shape=(num_features,))
@@ -53,13 +53,13 @@ def get_outcome_transformer_model(max_case_length, num_features, vocab_size, out
   x = layers.Dense(64, activation="relu")(x)
   x = layers.Dropout(0.1)(x)
   outputs = layers.Dense(output_dim, activation="linear")(x)
-  transformer = tf.keras.Model(inputs=inputs, outputs=outputs, name = "outcome_OR_nextActivity_transformer")
+  transformer = tf.keras.Model(inputs=inputs, outputs=outputs, name = name) #name = "outcome_OR_nextActivity_transformer")
   
   return transformer
 
 
 
-def get_next_time_model(max_case_length, num_features, vocab_size, output_dim = 1, embed_dim = 36, num_heads = 4, ff_dim = 64):
+def get_next_time_model(max_case_length, num_features, vocab_size, output_dim, name, embed_dim = 36, num_heads = 4, ff_dim = 64):
   inputs = layers.Input(shape=(max_case_length,))
   # Three time-based features
   time_inputs = layers.Input(shape=(num_features,)) 
@@ -72,12 +72,12 @@ def get_next_time_model(max_case_length, num_features, vocab_size, output_dim = 
   x = layers.Dense(128, activation="relu")(x)
   x = layers.Dropout(0.1)(x)
   outputs = layers.Dense(output_dim, activation="linear")(x)
-  transformer = tf.keras.Model(inputs=[inputs, time_inputs], outputs=outputs, name = "next_time_transformer")
+  transformer = tf.keras.Model(inputs=[inputs, time_inputs], outputs=outputs, name = name)
   
   return transformer
 
 
-def get_remaining_time_model(max_case_length, num_features, vocab_size, output_dim = 1, embed_dim = 36, num_heads = 4, ff_dim = 64):
+def get_remaining_time_model(max_case_length, num_features, vocab_size, output_dim, name, embed_dim = 36, num_heads = 4, ff_dim = 64):
   inputs = layers.Input(shape=(max_case_length,))
   # Three time-based features
   time_inputs = layers.Input(shape=(num_features,)) 
@@ -91,13 +91,13 @@ def get_remaining_time_model(max_case_length, num_features, vocab_size, output_d
   x = layers.Dropout(0.1)(x)
   outputs = layers.Dense(output_dim, activation="linear")(x)
   transformer = tf.keras.Model(inputs=[inputs, time_inputs], outputs=outputs,
-  name = "remaining_time_transformer")
+  name = name)
   
   return transformer
 
 
 
-def get_remaining_trace_model(max_case_length, num_features, vocab_size, output_dim, embed_dim = 36, num_heads = 4, ff_dim = 64):
+def get_remaining_trace_model(max_case_length, num_features, vocab_size, output_dim, name, embed_dim = 36, num_heads = 4, ff_dim = 64):
   inputs = layers.Input(shape=(max_case_length,))
   if num_features > 0: 
     extra_inputs = layers.Input(shape=(num_features,))
@@ -111,7 +111,7 @@ def get_remaining_trace_model(max_case_length, num_features, vocab_size, output_
   x = layers.Dense(64, activation="relu")(x)
   x = layers.Dropout(0.1)(x)
   outputs = layers.Dense(output_dim, activation="linear")(x)
-  transformer = tf.keras.Model(inputs=inputs, outputs=outputs, name = "remaining_trace_transformer")
+  transformer = tf.keras.Model(inputs=inputs, outputs=outputs, name = name)
   
   return transformer
 

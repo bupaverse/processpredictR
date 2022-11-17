@@ -3,7 +3,7 @@
 #' (WIP)
 #'
 #' @param processed_df A processed [`data.frame`] from prepare_examples
-#' @param custom_model_py
+#' @param custom_model_py A custom .py model
 #' @param name [`data.frame`]: A name for the model
 #' @return A transformer model
 #'
@@ -50,23 +50,23 @@ create_model.ppred_examples_df <- function(processed_df, custom_model_py = NULL,
   if (task %in% c("outcome", "next_activity")) {
 
     num_output <- num_outputs(processed_df)
-    model <- get_outcome_transformer_model(maxlen, num_features, vocab_size, num_output)
+    model <- get_outcome_transformer_model(maxlen, num_features, vocab_size, num_output, name)
   }
 
   else if (task == "remaining_trace") {
 
     num_output <- num_outputs(processed_df)
-    model <- get_remaining_trace_model(maxlen, num_features, vocab_size, num_output)
+    model <- get_remaining_trace_model(maxlen, num_features, vocab_size, num_output, name)
   }
 
   else if (task == "next_time") {
 
-    model <- get_next_time_model(maxlen, num_features, vocab_size, as.integer(1))
+    model <- get_next_time_model(maxlen, num_features, vocab_size, as.integer(1), name)
   }
 
   else if (task == "remaining_time") {
 
-    model <- get_remaining_time_model(maxlen, num_features, vocab_size, as.integer(1))
+    model <- get_remaining_time_model(maxlen, num_features, vocab_size, as.integer(1), name)
   }
 
   class(model) <- c("ppred_model", class(model))

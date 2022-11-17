@@ -8,7 +8,12 @@
 #' @param predict_type A type of output to generate c("y_pred", "metrics")
 #'
 #' @export
-transformer_predict <- function(transformer_model, tokens_test, maxlen, predict_type = "metrics") {
+predict_model <- function(transformer_model, tokens_test, maxlen, predict_type = "metrics") {
+  UseMethod("predict_model")
+}
+
+#' @export
+predict_model.ppred_model <- function(transformer_model, tokens_test, maxlen, predict_type = "metrics") {
 
   # same for all tasks
   test_token_x <- tokens_test$token_x %>% keras::pad_sequences(maxlen = maxlen, value = 0)

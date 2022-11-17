@@ -13,14 +13,12 @@ compile_model <- function(transformer_model, learning_rate) {
 #' @export
 compile_model.ppred_model <- function(transformer_model, learning_rate) {
 
-  if (transformer_model$name == "outcome_OR_nextActivity_transformer" ||
-      transformer_model$name == "remaining_trace_transformer") {
+  if (transformer_model$name %in% c("outcome", "next_activity", "remaining_trace")) {
 
     source_python("inst/fit_outcome_activity_trace.py")
   }
 
-  else if (transformer_model$name == "next_time_transformer" ||
-           transformer_model$name == "remaining_time_transformer") {
+  else if (transformer_model$name %in% c("next_time", "remaining_time")) {
 
     source_python("inst/fit_time.py")
   }
