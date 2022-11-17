@@ -8,7 +8,7 @@ callback_list = [
         ]
 
 
-def compile_model(transformer_model, learning_rate):
+def compile_model_py(transformer_model, learning_rate):
   transformer_model.compile(
     optimizer=tf.keras.optimizers.Adam(learning_rate),
     loss=tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True),
@@ -20,7 +20,7 @@ def compile_model(transformer_model, learning_rate):
 # #     loss=tf.keras.losses.BinaryCrossentropy(from_logits=True),
 # #     metrics=[tf.keras.metrics.BinaryAccuracy()])
 
-def fit_model(transformer_model, train_token_x, train_token_y, num_epochs, batch_size, file):
+def fit_model_py(transformer_model, train_token_x, train_token_y, num_epochs, batch_size, file):
   transformer_model.fit(
     train_token_x, train_token_y, 
     epochs=num_epochs,

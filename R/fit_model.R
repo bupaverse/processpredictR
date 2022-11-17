@@ -10,7 +10,11 @@
 #' @param file Name of saved model (weights)
 #'
 #' @export
-transformer_fit <- function(transformer_model, tokens_train, maxlen, num_epochs, batch_size, file) {
+fit_model <- function(transformer_model, tokens_train, maxlen, num_epochs, batch_size, file) {
+  UseMethod("fit_model")
+}
+#' @export
+fit_model.ppred_model <- function(transformer_model, tokens_train, maxlen, num_epochs, batch_size, file) {
 
   # same for all tasks
   train_token_x <- tokens_train$token_x %>% keras::pad_sequences(maxlen = maxlen, value = 0)
@@ -24,17 +28,18 @@ transformer_fit <- function(transformer_model, tokens_train, maxlen, num_epochs,
       transformer_model$name == "remaining_trace_transformer") {
 
     source_python("inst/fit_outcome_activity_trace.py")
-    fit_model(transformer_model, train_token_x, train_token_y, num_epochs, batch_size, file)
+    fit_model_py(transformer_model, train_token_x, train_token_y, num_epochs, batch_size, file)
 
   }
 
-  else if (transformer_model$name == "next_time_transformer" || transformer_model$name == "remaining_time_transformer") {
+  else if (transformer_model$name == "next_time_transformer" ||
+           transformer_model$name == "remaining_time_transformer") {
 
     train_time_x <- matrix(c(tokens_train$time_x$recent_time, tokens_train$time_x$latest_time, tokens_train$time_x$time_passed), ncol = 3) %>%
       reticulate::np_array(dtype = "float32")
 
     source_python("inst/fit_time.py")
-    fit_model(transformer_model, train_token_x, train_time_x, train_token_y, num_epochs, batch_size, file)
+    fit_model_py(transformer_model, train_token_x, train_time_x, train_token_y, num_epochs, batch_size, file)
 
   }
 

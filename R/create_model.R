@@ -32,36 +32,32 @@ create_model.ppred_examples_df <- function(processed_df) {
   vocab_size <- vocab_size(processed_df)
   num_features <- processed_df %>% attr("features") %>% length()
 
+  source_python("inst/transformer_model.py")
 
-  # OUTCOME and NEXT_ACTIVITY tasks
   if (task %in% c("outcome", "next_activity")) {
 
     num_output <- num_outputs(processed_df)
-
-    # same for both OUTCOME and NEXT_ACTIVITY
-    source_python("inst/transformer_model.py")
-    get_outcome_transformer_model(maxlen, vocab_size, num_output)
+    model <- get_outcome_transformer_model(maxlen, vocab_size, num_output)
   }
 
   else if (task == "remaining_trace") {
 
     num_output <- num_outputs(processed_df)
-
-    source_python("inst/transformer_model.py")
-    get_remaining_trace_model(maxlen, vocab_size, num_output)
+    model <- get_remaining_trace_model(maxlen, vocab_size, num_output)
   }
 
   else if (task == "next_time") {
 
-    source_python("inst/transformer_model.py")
-    get_next_time_model(maxlen, num_features, vocab_size, as.integer(1))
+    model <- get_next_time_model(maxlen, num_features, vocab_size, as.integer(1))
   }
 
   else if (task == "remaining_time") {
 
-    source_python("inst/transformer_model.py")
-    get_remaining_time_model(maxlen, num_features, vocab_size, as.integer(1))
+    model <- get_remaining_time_model(maxlen, num_features, vocab_size, as.integer(1))
   }
+
+  class(model) <- c("ppred_model", class(model))
+  return(model)
 }
 
 
