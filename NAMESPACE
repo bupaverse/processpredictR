@@ -3,7 +3,7 @@
 S3method(activities_list,log)
 S3method(create_model,ppred_examples_df)
 S3method(prepare_examples,log)
-S3method(print,tokens)
+S3method(print,ppred_examples_tokens)
 S3method(split_train_test,ppred_examples_df)
 S3method(tokenize,ppred_examples_df)
 export("%>%")

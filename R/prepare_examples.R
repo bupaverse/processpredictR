@@ -107,9 +107,8 @@ prepare_examples.log <- function(log, task = c("outcome", "next_activity",
         next_activity = lead(current_activity),
         next_activity = if_else(is.na(next_activity), "endpoint", as.character(next_activity)),
         outcome = last(current_activity)) %>%
-      select(ith_case, !!bupaR:::case_id_(log), prefix_list, prefix, outcome, k, feature,
-             everything(),
-             -current_activity, - trace_id) %>%
+      select(ith_case, !!bupaR:::case_id_(log), prefix_list, prefix, outcome, k, feature, current_activity,
+             everything(), -trace_id) %>%
       assign_outcome_labels(...) %>%
       re_map(mapping = mapping(log)) -> output
 
@@ -300,7 +299,7 @@ prepare_examples.log <- function(log, task = c("outcome", "next_activity",
 
     attr(output, "task") <- task
     attr(output, "y_var") <- "remaining_time"
-    attr(output, "features") <- c("throughput_time","processing_time","previous_duration") # append(feature)
+    attr(output, "features") <- c("throughput_time","processing_time","previous_duration") # append
     attr(output, "mapping") <- mapping(log)
     attr(output, "vocabulary") <- create_vocabulary(output)
   }

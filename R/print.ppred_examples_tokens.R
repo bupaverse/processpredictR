@@ -5,7 +5,7 @@
 #' @importFrom purrr map_chr
 #'
 #' @export
-print.tokens <- function(x, ...) {
+print.ppred_examples_tokens <- function(x, ...) {
 
 #cat(" -> consists of ", purrr::map_chr(x, length),  " tokens", "\n")
   cat("Tokenized examples","\n")

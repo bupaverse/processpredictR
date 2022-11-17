@@ -21,8 +21,8 @@ tokenize <- function(processed_df) {
 tokenize.ppred_examples_df <- function(processed_df) {
 
   # vocabulary and task
-  vocabulary <- get_vocabulary(processed_df)
-  task <- get_task(processed_df)
+  vocabulary <- attr(df_train, "vocabulary")
+  task <- attr(df_train, "task")
 
   # algorithm to produce token_x (same for all tasks)
   token_x <- list()
@@ -82,7 +82,7 @@ tokenize.ppred_examples_df <- function(processed_df) {
   else if (task == "remaining_trace") {
     token_y = c()
 
-    for (i in (1:length(processed_df$trace))) {
+    for (i in (1:length(processed_df$prefix_list))) {
       tok <- which(processed_df$remaining_trace[i] == vocabulary$keys_y)
       token_y <- token_y  %>% append(tok-1)
     }
@@ -94,7 +94,7 @@ tokenize.ppred_examples_df <- function(processed_df) {
   }
 
   # NEXT_TIME and REMAINING_TIME tasks
-  else if (task == "next_time" || task == "remaining_time") {
+  else if (task %in% c("next_time", "remaining_time")) {
 
     # inversing times back to interpret the model predictions output
     # time_passed1 * attr(time_passed1, 'scaled:scale') + attr(time_passed1, 'scaled:center'))

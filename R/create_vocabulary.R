@@ -19,7 +19,7 @@ create_vocabulary <- function(processed_df) {
 
   #OUTCOME
   if (get_task(processed_df) == "outcome") {
-    activity_names <- processed_df$current_activity %>% unique() %>% as.character()
+    activity_names <- processed_df[[bupaR::activity_id_(processed_df)]] %>% unique() %>% as.character()
     activity_names <- c("PAD", "UNK") %>%
       append(activity_names)
     outcome_names <- processed_df$outcome %>% unique() %>% as.character()
@@ -39,7 +39,7 @@ create_vocabulary <- function(processed_df) {
 
   #NEXT_ACTIVITY
   else if (get_task(processed_df) == "next_activity") {
-    activity_names <- processed_df$current_activity %>% unique() %>% as.character()
+    activity_names <- processed_df[[bupaR::activity_id_(processed_df)]] %>% unique() %>% as.character()
     activity_names <- c("PAD", "UNK") %>%
       append(activity_names)
     outcome_names <- processed_df$next_activity %>% unique()
