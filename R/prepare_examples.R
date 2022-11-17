@@ -108,7 +108,7 @@ prepare_examples.log <- function(log, task = c("outcome", "next_activity",
         next_activity = if_else(is.na(next_activity), "endpoint", as.character(next_activity)),
         outcome = last(current_activity)) %>%
       select(ith_case, !!bupaR:::case_id_(log), prefix_list, prefix, outcome, k, feature, current_activity,
-             everything(), -trace_id, -trace) %>%
+             everything(), -trace_id, -trace, -current_activity) %>%
       assign_outcome_labels(...) %>%
       re_map(mapping = mapping(log)) -> output
 
