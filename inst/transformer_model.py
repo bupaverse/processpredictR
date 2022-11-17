@@ -39,12 +39,16 @@ class TokenAndPositionEmbedding(layers.Layer):
 
 
 
-def get_outcome_transformer_model(max_case_length, vocab_size, output_dim, embed_dim = 36, num_heads = 4, ff_dim = 64):
+def get_outcome_transformer_model(max_case_length, num_features, vocab_size, output_dim, embed_dim = 36, num_heads = 4, ff_dim = 64):
   inputs = layers.Input(shape=(max_case_length,))
-  
+  if num_features > 0: 
+    extra_inputs = layers.Input(shape=(num_features,))
   x = TokenAndPositionEmbedding(max_case_length, vocab_size, embed_dim)(inputs)
   x = TransformerBlock(embed_dim, num_heads, ff_dim)(x)
   x = layers.GlobalAveragePooling1D()(x)
+  if num_features > 0: 
+    x_extra = layers.Dense(32, activation="relu")(extra_inputs)
+    x = layers.Concatenate()([x, extra_inputs])
   x = layers.Dropout(0.1)(x)
   x = layers.Dense(64, activation="relu")(x)
   x = layers.Dropout(0.1)(x)
@@ -93,12 +97,16 @@ def get_remaining_time_model(max_case_length, num_features, vocab_size, output_d
 
 
 
-def get_remaining_trace_model(max_case_length, vocab_size, output_dim, embed_dim = 36, num_heads = 4, ff_dim = 64):
+def get_remaining_trace_model(max_case_length, num_features, vocab_size, output_dim, embed_dim = 36, num_heads = 4, ff_dim = 64):
   inputs = layers.Input(shape=(max_case_length,))
-  
+  if num_features > 0: 
+    extra_inputs = layers.Input(shape=(num_features,))
   x = TokenAndPositionEmbedding(max_case_length, vocab_size, embed_dim)(inputs)
   x = TransformerBlock(embed_dim, num_heads, ff_dim)(x)
   x = layers.GlobalAveragePooling1D()(x)
+  if num_features > 0: 
+    x_extra = layers.Dense(32, activation="relu")(extra_inputs)
+    x = layers.Concatenate()([x, x_extra])
   x = layers.Dropout(0.1)(x)
   x = layers.Dense(64, activation="relu")(x)
   x = layers.Dropout(0.1)(x)

@@ -323,7 +323,8 @@ prepare_examples.log <- function(log, task = c("outcome", "next_activity",
       mutate(remaining_trace = lead(remaining_trace),
              remaining_trace = if_else(is.na(remaining_trace), "endpoint", remaining_trace)) %>%
       select(ith_case, !!bupaR:::case_id_(log), prefix_list,
-             prefix, remaining_trace, k, everything()) -> output
+             prefix, remaining_trace, k, everything()) %>%
+      re_map(mapping = mapping(log)) -> output
 
 
     class(output) <- c("ppred_examples_df", class(output))
