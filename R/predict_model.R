@@ -2,23 +2,35 @@
 #'
 #' (WIP)
 #'
-#' @param transformer_model A defined transformer model
-#' @param tokens_test A list of test tokens, i.e. token_x, token_y
-#' @param predict_type A type of output to generate c("y_pred", "metrics")
+#' @param transformer_model A defined transformer model.
+#' @param test_data A test dataset.
+#' @param metrics [`logical`] (default [`FALSE`]): Returns a vector of predicted values.
 #'
 #' @export
-predict_model <- function(transformer_model, tokens_test, predict_type = "y_pred") {
+predict_model <- function(transformer_model, test_data, metrics = FALSE) {
   UseMethod("predict_model")
 }
 
 #' @export
-predict_model.ppred_model <- function(transformer_model, tokens_test, predict_type = "y_pred") {
+predict_model.ppred_model <- function(transformer_model, test_data, metrics = FALSE) {
 
+  # tokenizing activities from the train dataset
+  tokens_train <- tokenize(test_data)
+
+  # other parameters
   num_features <- attr(model, "num_features")
   maxlen <- attr(transformer_model, "max_case_length") %>% as.integer()
   test_token_x <- tokens_test$token_x %>% keras::pad_sequences(maxlen = maxlen, value = 0)
   test_token_x <- test_token_x %>% reticulate::np_array(dtype = "float32")
   test_token_y <- tokens_test$token_y  %>% reticulate::np_array(dtype = "float32")
+
+  # predict_type: default predict function returns the predicted y
+  if (metrics) {
+    predict_type <- "metrics"
+  }
+  else {
+    predict_type <- "y_pred"
+  }
 
   source_python("inst/predict.py")
 
