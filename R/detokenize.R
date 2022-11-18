@@ -13,13 +13,12 @@ detokenize <- function(processed_df, y_pred, y_actual) {
 #' @export
 detokenize.tokens_y_pred <- function(processed_df, y_pred, y_actual) {
 
-# back from tokens to labels
 y_pred <- y_pred + 1
-vocabulary <- get_vocabulary(x)
+vocabulary <- get_vocabulary(processed_df)
 vocabulary <- vocabulary$keys_y %>%
   unlist() %>% as_tibble() %>% mutate(token = row_number())
 
 y_pred %>% as_tibble() %>% rename(token = "value") %>% mutate(token = as.integer(token)) %>%
   left_join(vocabulary, by = "token") %>%
-  mutate(y_actual = tokens_test$token_y + 1)
+  mutate(y_actual = y_actual + 1)
 }
