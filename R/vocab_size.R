@@ -8,41 +8,14 @@
 #'
 #'@export
 vocab_size <- function(processed_df) {
-  # maybe calculate vocab_size using preprocess_log()
 
-  if ("outcome" %in% names(processed_df)) {
-    activity_names <- processed_df$current_activity %>% unique() %>% as.character()
-    activity_names <- c("PAD", "UNK") %>%
-      append(activity_names)
-    outcome_names <- processed_df$outcome %>% unique() %>% as.character()
-    length(unique(append(activity_names, outcome_names))) %>% as.integer()
+  vocabulary <- get_vocabulary(processed_df)
+  vocabulary$keys_x %>% length() %>% as.integer()
 
-  }
-
-  else if ("next_activity" %in% names(processed_df)) {
-    activity_names <- processed_df$current_activity %>% unique() %>% as.character()
-    activity_names <- c("PAD", "UNK") %>%
-      append(activity_names)
-    outcome_names <- processed_df$next_activity %>% unique()
-    length(unique(append(activity_names, outcome_names))) %>% as.integer()
-
-  }
-
-  else if ("next_time" %in% names(processed_df) || "remaining_time" %in% names(processed_df)) {
-    activity_names <- processed_df[[bupaR::activity_id(processed_df)]] %>% as.character() %>% unique()
-    activity_names <- c("PAD", "UNK") %>%
-      append(activity_names)
-    length(unique(activity_names)) %>% as.integer()
-
-  }
-
-  else if ("remaining_trace" %in% names(processed_df)) {
-    activity_names <- processed_df[[bupaR::activity_id(processed_df)]] %>% as.character() %>% unique()
-    activity_names <- c("PAD", "UNK") %>%
-      append(activity_names)
-    length(unique(activity_names)) %>% as.integer()
-
-
-  }
+  # else if (task == "remaining_trace") {
+  #   activity_names <- processed_df[[bupaR::activity_id(processed_df)]] %>% as.character() %>% unique()
+  #   activity_names <- c("PAD", "UNK") %>%
+  #     append(activity_names)
+  #   length(unique(activity_names)) %>% as.integer()
 
 }

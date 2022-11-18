@@ -7,16 +7,7 @@
 #'
 #'@export
 max_case_length <- function(processed_df) {
-
-  if ("outcome" %in% names(processed_df) || "next_activity" %in% names(processed_df)) {
-    processed_df$traces %>% lengths() %>% max()
-  }
-
-  else if ("next_time" %in% names(processed_df) || "remaining_time" %in% names(processed_df) ||
-           "remaining_trace" %in% names(processed_df)) {
     processed_df %>% trace_length() %>% max() %>% as.integer()
-  }
-
 }
 
 

@@ -9,22 +9,7 @@
 #' @export
 num_outputs <- function(processed_df) {
 
-  if ("outcome" %in% names(processed_df)) {
-
-    processed_df$outcome %>% unique() %>% length()
-
-  }
-
-  else if ("next_activity" %in% names(processed_df)) {
-
-    processed_df$next_activity %>% unique() %>% length()
-
-  }
-
-  else if ("remaining_trace" %in% names(processed_df)) {
-
-    processed_df$remaining_trace %>% unique() %>% length()
-
-  }
+  task <- get_task(processed_df)
+  processed_df[[task]] %>% unique() %>% length()
 
 }

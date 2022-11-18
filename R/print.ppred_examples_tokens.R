@@ -5,18 +5,18 @@
 #' @importFrom purrr map_chr
 #'
 #' @export
-print.tokens <- function(x, ...) {
+print.ppred_examples_tokens <- function(x, ...) {
 
 #cat(" -> consists of ", purrr::map_chr(x, length),  " tokens", "\n")
   cat("Tokenized examples","\n")
   for(i in 1:length(x)) {
-    cat(names(tokens_train)[[i]], "\n")
-    if (is.list(tokens_train[[i]])) {
-      print.default(head(tokens_train[[i]], 5))
+    cat(names(x)[[i]], "\n")
+    if (is.list(x[[i]])) {
+      print.default(head(x[[i]], 5))
     }
 
-    if(!is.null(names(tokens_train[[i]]))) {
-      cat(": ", names(tokens_train[[i]]), "\n")
+    if(!is.null(names(x[[i]]))) {
+      cat(": ", names(x[[i]]), "\n")
     }
     cat("\n")
   }

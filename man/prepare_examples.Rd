@@ -7,6 +7,7 @@
 prepare_examples(
   log,
   task = c("outcome", "next_activity", "next_time", "remaining_time", "remaining_trace"),
+  features = NULL,
   ...
 )
 }
@@ -16,6 +17,8 @@ prepare_examples(
 
 \item{task}{\code{\link{character}} (default \code{"outcome"}): A prediction task (\code{"outcome"}, \code{"next_activity"},
 \code{"next_time"},\code{"remaining_time"}, \code{"remaining_trace"}).}
+
+\item{features}{\code{\link{character}}: A list of additional column names.}
 
 \item{...}{Assign outcome labels to each case based on end activity. If not specified, simply defines
 outcome as last activity in a trace.}

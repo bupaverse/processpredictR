@@ -12,16 +12,16 @@ df
 
 ## split processed dataframe into train- and test dataframes
 set.seed(123)
-df_train_test <- split_train_test(df, split = 0.7)
-df_train_test
-df_train <- df_train_test$train_df
-df_test <- df_train_test$test_df
+split <- split_train_test(df, split = 0.7)
+split
+df_train <- split$train_df
+df_test <- split$test_df
 
 #tokenize train dataset
-tokens_train <- tokenize(df_train, vocabulary = create_vocabulary(df))
+tokens_train <- tokenize(df_train)
 tokens_train
 
-model <- transformer_model(df)
+model <- create_model(df)
 model
 
 #compile transformer model

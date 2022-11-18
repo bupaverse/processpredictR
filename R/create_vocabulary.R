@@ -19,7 +19,8 @@ create_vocabulary <- function(processed_df) {
 
   #OUTCOME
   if (get_task(processed_df) == "outcome") {
-    activity_names <- processed_df$current_activity %>% unique() %>% as.character()
+    #activity_names <- processed_df %>% pull(activity_id(processed_df)) %>% unique() %>% as.character()
+    activity_names <- processed_df[[attr(processed_df, "mapping")$activity_id]] %>% as.character() %>% unique()
     activity_names <- c("PAD", "UNK") %>%
       append(activity_names)
     outcome_names <- processed_df$outcome %>% unique() %>% as.character()
@@ -39,7 +40,7 @@ create_vocabulary <- function(processed_df) {
 
   #NEXT_ACTIVITY
   else if (get_task(processed_df) == "next_activity") {
-    activity_names <- processed_df$current_activity %>% unique() %>% as.character()
+    activity_names <- processed_df[[attr(processed_df, "mapping")$activity_id]] %>% as.character() %>% unique()
     activity_names <- c("PAD", "UNK") %>%
       append(activity_names)
     outcome_names <- processed_df$next_activity %>% unique()
@@ -59,7 +60,7 @@ create_vocabulary <- function(processed_df) {
 
   #NEXT_TIME & REMAINING_TIME
   else if (get_task(processed_df) %in% c("next_time","remaining_time")) {
-    activity_names <- processed_df[[bupaR::activity_id(processed_df)]] %>% as.character() %>% unique()
+    activity_names <- processed_df[[attr(processed_df, "mapping")$activity_id]] %>% as.character() %>% unique()
     activity_names <- c("PAD", "UNK") %>%
       append(activity_names)
     values_x <- unique(activity_names)

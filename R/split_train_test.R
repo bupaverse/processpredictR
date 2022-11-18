@@ -7,8 +7,14 @@
 #' @param trace_length_bins [`numeric`] (default [`NULL`]): A number of trace length bins to use for stratification.
 #' If [`NULL`], does not stratify for similar trace length in both train- and test dataframes.
 #'
+#'
 #' @export
-split_train_test <- function(processed_df, split = 0.7, trace_length_bins = 5) { # OR n_distinct(log[case_id(log)])
+split_train_test <- function(processed_df, split = 0.7, trace_length_bins = 5) {
+  UseMethod("split_train_test")
+}
+
+#' @export
+split_train_test.ppred_examples_df <- function(processed_df, split = 0.7, trace_length_bins = 5) { # OR n_distinct(log[case_id(log)])
 
   if (is.null(trace_length_bins)) {
     unique_cases <- unique(processed_df$ith_case)
@@ -18,9 +24,11 @@ split_train_test <- function(processed_df, split = 0.7, trace_length_bins = 5) {
     # id's train
     unique_cases_train <- unique_cases[train_ind] # train dataset
     train_df <-  processed_df %>% filter(ith_case %in% unique_cases_train)
+    class(train_df) <- c("ppred_examples_df", class(train_df))
 
     # id's test
     test_df <- processed_df %>% filter(!(ith_case %in% unique_cases_train))
+    class(test_df) <- c("ppred_examples_df", class(test_df))
 
     list(train_df = train_df, test_df = test_df)
 
@@ -42,7 +50,10 @@ split_train_test <- function(processed_df, split = 0.7, trace_length_bins = 5) {
       pull(ith_case) -> unique_cases_train
 
     train_df <-  processed_df %>% filter(ith_case %in% unique_cases_train)
+    class(train_df) <- c("ppred_examples_df", class(train_df))
+
     test_df <- processed_df %>% filter(!(ith_case %in% unique_cases_train))
+    class(test_df) <- c("ppred_examples_df", class(test_df))
 
     list(train_df = train_df, test_df = test_df)
 
