@@ -27,12 +27,16 @@ predict_model.ppred_model <- function(transformer_model, tokens_test, predict_ty
     test_time_x <- matrix(attr(model, "features"), ncol = num_features) %>%
       reticulate::np_array(dtype = "float32")
 
-    predict_model_next_time(transformer_model, test_token_x, test_time_x, test_token_y, predict_type)
+    output <- predict_model_next_time(transformer_model, test_token_x, test_time_x, test_token_y, predict_type)
+    class(output) <- c("tokens_y_pred", class(output))
+    return(output)
   }
 
   else {
 
-    predict_model(transformer_model, test_token_x, test_token_y, predict_type)
+    output <- predict_model(transformer_model, test_token_x, test_token_y, predict_type)
+    class(output) <- c("tokens_y_pred", class(output))
+    return(output)
   }
 }
 
