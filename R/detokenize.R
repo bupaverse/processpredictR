@@ -4,21 +4,29 @@
 #'
 #' @inheritParams tokenize
 #' @param y_pred [`array`] A vector of predicted values.
-#' @param y_actual [`array`] A vector of actual values.
+#' @param y_actual [`array`] (default [`NULL`]) A vector of actual values.
 #'
 #' @export
-detokenize <- function(processed_df, y_pred, y_actual) {
+detokenize <- function(processed_df, y_pred, y_actual = NULL) {
   UseMethod("detokenize")
 }
+
 #' @export
 detokenize.tokens_y_pred <- function(processed_df, y_pred, y_actual) {
 
-y_pred <- y_pred + 1
-vocabulary <- get_vocabulary(processed_df)
-vocabulary <- vocabulary$keys_y %>%
-  unlist() %>% as_tibble() %>% mutate(token = row_number())
+  y_pred <- y_pred + 1
+  vocabulary <- get_vocabulary(processed_df)
+  vocabulary <- vocabulary$keys_y %>%
+    unlist() %>% as_tibble() %>% mutate(token = row_number())
 
-y_pred %>% as_tibble() %>% rename(token = "value") %>% mutate(token = as.integer(token)) %>%
-  left_join(vocabulary, by = "token") %>%
-  mutate(y_actual = y_actual + 1)
+  output <- y_pred %>% as_tibble() %>% rename(token = "value") %>% mutate(token = as.integer(token)) %>%
+    left_join(vocabulary, by = "token")
+
+  if (!is.null(y_actual)) {
+    output <- output %>%
+      mutate(y_actual = y_actual + 1)
+  }
+
+  return(output)
+
 }
