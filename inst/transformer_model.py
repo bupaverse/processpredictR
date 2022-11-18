@@ -92,7 +92,7 @@ def get_remaining_time_model(max_case_length, num_features, vocab_size, output_d
   outputs = layers.Dense(output_dim, activation="linear")(x)
   transformer = tf.keras.Model(inputs=[inputs, time_inputs], outputs=outputs,
   name = name)
-  
+
   return transformer
 
 

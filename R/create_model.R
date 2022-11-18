@@ -26,7 +26,7 @@ create_model.ppred_examples_df <- function(processed_df, custom_model_py = NULL,
   # }
 
 
-  # if (is.null(custom_model_py)) {
+  if (is.null(custom_model_py)) {
 
   # vocabulary and task
   vocabulary <- get_vocabulary(processed_df)
@@ -76,14 +76,13 @@ create_model.ppred_examples_df <- function(processed_df, custom_model_py = NULL,
   attr(model, "num_features") <- num_features
   class(model) <- c("ppred_model", class(model))
   return(model)
+  }
 
-  # }
+  else {
 
-  # else {
-  #
-  #
-  #
-  # }
+    source_python(custom_model_py)
+
+  }
 }
 
 
