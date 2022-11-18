@@ -4,14 +4,14 @@
 \alias{predict_model}
 \title{Predict model}
 \usage{
-predict_model(transformer_model, tokens_test, predict_type = "y_pred")
+predict_model(transformer_model, test_data, metrics = FALSE)
 }
 \arguments{
-\item{transformer_model}{A defined transformer model}
+\item{transformer_model}{A defined transformer model.}
 
-\item{tokens_test}{A list of test tokens, i.e. token_x, token_y}
+\item{test_data}{A test dataset.}
 
-\item{predict_type}{A type of output to generate c("y_pred", "metrics")}
+\item{metrics}{\code{\link{logical}} (default \code{\link{FALSE}}): Returns a vector of predicted values.}
 }
 \description{
 (WIP)

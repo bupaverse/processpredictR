@@ -4,12 +4,12 @@
 \alias{fit_model}
 \title{Fit model (test)}
 \usage{
-fit_model(transformer_model, tokens_train, num_epochs, batch_size, file)
+fit_model(transformer_model, train_data, num_epochs, batch_size, file)
 }
 \arguments{
 \item{transformer_model}{A defined transformer model}
 
-\item{tokens_train}{A list of train tokens, i.e. token_x, token_y}
+\item{train_data}{A training dataset}
 
 \item{num_epochs}{A number of epochs}
 

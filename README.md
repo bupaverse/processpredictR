@@ -19,32 +19,131 @@ You can install the development version of processpredictR from
 devtools::install_github("bupaverse/processpredictR")
 ```
 
-## Prediction tasks:
-
--   [x] outcome
--   [x] next activity
--   [x] next time
--   [x] remaining time
--   [x] remaining trace
-
 ## Examples
 
+``` r
+library(processpredictR)
+library(eventdataR)
+```
+
+<details>
+<summary>
+Outcome prediction
+</summary>
+<p>
+
+``` r
+library(processpredictR)
+library(eventdataR)
+```
+
+### preprocess dataset
+
+``` r
+df <- prepare_examples(patients, task = "outcome")
+df
+```
+
+### split dataset into train- and test dataset
+
+``` r
+set.seed(123)
+split <- split_train_test(df, split = 0.7, trace_length_bins = 5)
+split
+split$train_df -> df_train
+split$test_df -> df_test
+```
+
+### define transformer model
+
+``` r
+model <- create_model(df)
+model
+```
+
+### compile transformer model
+
+``` r
+compile_model(transformer_model = model, learning_rate = 0.001)
+```
+
+### fit transformer model
+
+``` r
+fit_model(model, train_data = df_train, num_epochs = 5, batch_size = 10, file = "outcome")
+```
+
+### predict on test data
+
+``` r
+result <- predict_model(transformer_model = model, test_data = df_test)
+result
+```
+
+### visualize with tensorboard
+
+``` r
+tensorboard(log_dir = "tensorboard/")
+```
+
+</p>
+</details>
 <details>
 <summary>
 Next activity prediction
 </summary>
 <p>
 
-### Installation
+### preprocess dataset
 
 ``` r
-install.packages("https://github.com/bupaverse/processpredictR.git")
+df <- prepare_examples(patients, task = "next_activity")
+df
 ```
 
+### split dataset into train- and test dataset
+
 ``` r
-library(processpredictR)
-library(eventdataR)
+set.seed(123)
+split <- split_train_test(df, split = 0.7, trace_length_bins = 5)
+split
+split$train_df -> df_train
+split$test_df -> df_test
 ```
+
+### define transformer model
+
+``` r
+model <- create_model(df)
+model
+```
+
+### compile transformer model
+
+``` r
+compile_model(transformer_model = model, learning_rate = 0.001)
+```
+
+### fit transformer model
+
+``` r
+fit_model(model, train_data = df_train, num_epochs = 5, batch_size = 10, file = "next_activity")
+```
+
+### predict on test data
+
+``` r
+result <- predict_model(transformer_model = model, test_data = df_test)
+result
+```
+
+</p>
+</details>
+<details>
+<summary>
+Next time prediction
+</summary>
+<p>
 
 ### preprocess dataset
 
@@ -58,75 +157,51 @@ df
 ``` r
 set.seed(123)
 split <- split_train_test(df, split = 0.7, trace_length_bins = 5)
-df_train <- split$train_df
-df_test <- split$test_df
-```
-
-### tokenize train dataset
-
-``` r
-tokens_train <- tokenize(df_train, vocabulary = create_vocabulary(df))
-tokens_train
+split
+split$train_df -> df_train
+split$test_df -> df_test
 ```
 
 ### define transformer model
 
 ``` r
-model <- transformer_model(df)
+model <- create_model(df)
 model
 ```
 
 ### compile transformer model
 
 ``` r
-transformer_compile(transformer_model = model, learning_rate = 0.001)
+compile_model(transformer_model = model, learning_rate = 0.001)
 ```
 
 ### fit transformer model
 
 ``` r
-transformer_fit(transformer_model = model, tokens_train = tokens_train,
-                maxlen = max_case_length(df), num_epochs = 15, batch_size = 12, file = "example_model_next_activity")
-```
-
-### tokenize test dataset
-
-``` r
-tokens_test <- tokenize(df_test, vocabulary = create_vocabulary(df))
+fit_model(model, train_data = df_train, num_epochs = 5, batch_size = 10, file = "next_time")
 ```
 
 ### predict on test data
 
 ``` r
-results <- transformer_predict(transformer_model = model, tokens_test = tokens_test, maxlen = max_case_length(df))
-results
+result <- predict_model(transformer_model = model, test_data = df_test)
+result
 ```
 
-### visualize with tensorboard
-
-``` r
-tensorboard(log_dir = "tensorboard/")
-```
+### calculate metrics (todo: create function)
 
 </p>
 </details>
 <details>
 <summary>
-Next time prediction
+Remaining time prediction
 </summary>
 <p>
-
-### Installation
-
-``` r
-install.packages("https://github.com/bupaverse/processpredictR.git")
-library(processpredictR)
-```
 
 ### preprocess dataset
 
 ``` r
-df <- create_prefix_df(eventdataR::patients, prediction = "next_time")
+df <- prepare_examples(patients, task = "remaining_time")
 df
 ```
 
@@ -135,76 +210,88 @@ df
 ``` r
 set.seed(123)
 split <- split_train_test(df, split = 0.7, trace_length_bins = 5)
-df_train <- split$train_df
-df_test <- split$test_df
-```
-
-### tokenize train dataset
-
-``` r
-tokens_train <- tokenize(df_train, vocabulary = create_vocabulary(df))
-tokens_train
+split
+split$train_df -> df_train
+split$test_df -> df_test
 ```
 
 ### define transformer model
 
 ``` r
-model <- transformer_model(df)
+model <- create_model(df)
 model
 ```
 
 ### compile transformer model
 
 ``` r
-transformer_compile(transformer_model = model, learning_rate = 0.001)
+compile_model(transformer_model = model, learning_rate = 0.001)
 ```
 
 ### fit transformer model
 
 ``` r
-transformer_fit(transformer_model = model, tokens_train = tokens_train,
-                maxlen = max_case_length(df), num_epochs = 10, batch_size = 12, file = "example_model_next_time")
-```
-
-### tokenize test dataset
-
-``` r
-tokens_test <- tokenize(df_test, vocabulary = create_vocabulary(df))
+fit_model(model, train_data = df_train, num_epochs = 5, batch_size = 10, file = "remaining_time")
 ```
 
 ### predict on test data
 
 ``` r
-results <- transformer_predict(transformer_model = model, tokens_test = tokens_test, maxlen = max_case_length(df), predict_type = "metrics")
-results
+result <- predict_model(transformer_model = model, test_data = df_test)
+result
 ```
 
-### get the predicted values y_pred and calculate metrics
+### calculate metrics (todo: create function)
+
+</p>
+</details>
+<details>
+<summary>
+Remaining_trace prediction
+</summary>
+<p>
+
+### preprocess dataset
 
 ``` r
-y_pred <- transformer_predict(transformer_model = model, tokens_test = tokens_test, maxlen = max_case_length(df), predict_type = "y_pred")
-y_pred %>% as.vector()
+df <- prepare_examples(patients, task = "remaining_trace")
+df
 ```
 
+### split dataset into train- and test dataset
+
 ``` r
-scale(df_test$next_time) -> standardScaled
-standardScaled
-
-(y_pred %>% as.vector() * attr(standardScaled, 'scaled:scale') + attr(standardScaled, 'scaled:center')) %>% summary()
-
-MAPE <- mean(abs((tokens_test$token_y-y_pred)/tokens_test$token_y))*100
-MAPE
-r2_score <- cor(tokens_test$token_y,y_pred)^2
-r2_score
-
-Metrics::mae(tokens_test$token_y, y_pred)
-Metrics::rmse(tokens_test$token_y, y_pred)
+set.seed(123)
+split <- split_train_test(df, split = 0.7, trace_length_bins = 5)
+split
+split$train_df -> df_train
+split$test_df -> df_test
 ```
 
-### tensorboard
+### define transformer model
 
 ``` r
-keras::tensorboard(log_dir = "tensorboard/")
+model <- create_model(df)
+model
+```
+
+### compile transformer model
+
+``` r
+compile_model(transformer_model = model, learning_rate = 0.001)
+```
+
+### fit transformer model
+
+``` r
+fit_model(model, train_data = df_train, num_epochs = 5, batch_size = 10, file = "remaining_trace")
+```
+
+### predict on test data
+
+``` r
+result <- predict_model(transformer_model = model, test_data = df_test)
+result
 ```
 
 </p>
