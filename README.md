@@ -52,7 +52,7 @@ split$test_df -> df_test
 ### define transformer model
 
 ``` r
-model <- create_model(df)
+model <- create_model(df, custom_model_py = "default")
 model
 ```
 
@@ -92,7 +92,7 @@ Next activity prediction
 ### preprocess dataset
 
 ``` r
-df <- prepare_examples(patients, task = "next_activity")
+df <- prepare_examples(traffic_fines, task = "next_activity")
 df
 ```
 
@@ -109,7 +109,7 @@ split$test_df -> df_test
 ### define transformer model
 
 ``` r
-model <- create_model(df)
+model <- create_model(df, custom_model_py = "default")
 model
 ```
 
@@ -122,7 +122,7 @@ compile_model(transformer_model = model, learning_rate = 0.001)
 ### fit transformer model
 
 ``` r
-fit_model(model, train_data = df_train, num_epochs = 5, batch_size = 10, file = "next_activity")
+fit_model(model, train_data = df_train, num_epochs = 50, batch_size = 10, file = "next_activity")
 ```
 
 ### predict on test data
@@ -160,7 +160,7 @@ split$test_df -> df_test
 ### define transformer model
 
 ``` r
-model <- create_model(df)
+model <- create_model(df, custom_model_py = "default")
 model
 ```
 
@@ -266,7 +266,7 @@ split$test_df -> df_test
 ### define transformer model
 
 ``` r
-model <- create_model(df)
+model <- create_model(df, custom_model_py = "default")
 model
 ```
 
@@ -291,6 +291,22 @@ result
 
 </p>
 </details>
+
+## Customize transformer model
+
+``` r
+model <- prepare_examples(patients) %>% create_model(custom_model_py = "custom")
+model
+
+model$output %>% 
+  keras::layer_dropout(rate = 0.1) %>%
+  keras::layer_dense(units = 64, activation = 'relu') %>% 
+  keras::layer_dropout(rate = 0.1) %>%
+  keras::layer_dense(units = num_outputs(prepare_examples(patients)), activation = 'linear') -> new_output
+
+custom_model <- keras::keras_model(inputs = model$input, outputs = new_output, name = "outcome")
+custom_model
+```
 
 ## Attribution
 

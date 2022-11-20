@@ -99,7 +99,7 @@ def get_remaining_time_model(max_case_length, num_features, vocab_size, output_d
 
 
 
-def get_remaining_trace_model(max_case_length, num_features, vocab_size, output_dim, name, embed_dim = 36, num_heads = 4, ff_dim = 64):
+def get_remaining_trace_model(max_case_length, num_features, vocab_size, output_dim, name, custom, embed_dim = 36, num_heads = 4, ff_dim = 64):
   inputs = layers.Input(shape=(max_case_length,))
   if num_features > 0: 
     extra_inputs = layers.Input(shape=(num_features,))

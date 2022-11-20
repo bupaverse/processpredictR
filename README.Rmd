@@ -271,7 +271,7 @@ split$test_df -> df_test
 
 ### define transformer model
 ``` {r}
-model <- create_model(df)
+model <- create_model(df, custom_model_py = "default")
 model
 ```
 
@@ -295,6 +295,20 @@ result
 </details>
 
 
+## Customize transformer model
+```{r}
+model <- prepare_examples(patients) %>% create_model(custom_model_py = "custom")
+model
+
+model$output %>% 
+  keras::layer_dropout(rate = 0.1) %>%
+  keras::layer_dense(units = 64, activation = 'relu') %>% 
+  keras::layer_dropout(rate = 0.1) %>%
+  keras::layer_dense(units = num_outputs(prepare_examples(patients)), activation = 'linear') -> new_output
+
+custom_model <- keras::keras_model(inputs = model$input, outputs = new_output, name = "outcome")
+custom_model
+```
 
 
 ## Attribution
