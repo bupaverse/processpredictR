@@ -29,8 +29,8 @@ fit_model.ppred_model <- function(transformer_model, train_data, num_epochs, bat
   train_token_y <- tokens_train$token_y  %>% reticulate::np_array(dtype = "float32")
 
   # features
-  if (attr(model, "num_features") > 0) {
-  train_time_x <- matrix(attr(model, "features"), ncol = attr(model, "num_features")) %>%
+  if (attr(transformer_model, "num_features") > 0) {
+  train_time_x <- matrix(attr(transformer_model, "features"), ncol = attr(transformer_model, "num_features")) %>%
     reticulate::np_array(dtype = "float32")
 
   source_python("inst/fit_time.py")

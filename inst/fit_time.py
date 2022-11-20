@@ -26,7 +26,7 @@ def fit_model_py(transformer_model, train_token_x, train_time_x, train_token_y, 
     [train_token_x, train_time_x], train_token_y,
     epochs=num_epochs,
     batch_size=batch_size,
-    shuffle=True
+    shuffle=True,
     verbose=1,
     validation_split=0.2,
     callbacks= callback_list)

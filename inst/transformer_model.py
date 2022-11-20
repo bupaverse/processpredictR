@@ -62,7 +62,7 @@ def get_outcome_transformer_model(max_case_length, num_features, vocab_size, out
 
 
 
-def get_next_time_model(max_case_length, num_features, vocab_size, output_dim, name, embed_dim = 36, num_heads = 4, ff_dim = 64):
+def get_next_time_model(max_case_length, num_features, vocab_size, output_dim, name, custom, embed_dim = 36, num_heads = 4, ff_dim = 64):
   inputs = layers.Input(shape=(max_case_length,))
   # Three time-based features
   time_inputs = layers.Input(shape=(num_features,)) 
@@ -73,14 +73,14 @@ def get_next_time_model(max_case_length, num_features, vocab_size, output_dim, n
   x = layers.Concatenate()([x, x_t])
   if custom == "default":
     x = layers.Dropout(0.1)(x)
-    x = layers.Dense(64*(num_features+1), activation="relu")(x)
+    x = layers.Dense(64*2, activation="relu")(x)
     x = layers.Dropout(0.1)(x)
     x = layers.Dense(output_dim, activation="linear")(x)
   transformer = tf.keras.Model(inputs=[inputs, time_inputs], outputs=x, name = name)
   return transformer
 
 
-def get_remaining_time_model(max_case_length, num_features, vocab_size, output_dim, name, embed_dim = 36, num_heads = 4, ff_dim = 64):
+def get_remaining_time_model(max_case_length, num_features, vocab_size, output_dim, name, custom, embed_dim = 36, num_heads = 4, ff_dim = 64):
   inputs = layers.Input(shape=(max_case_length,))
   # Three time-based features
   time_inputs = layers.Input(shape=(num_features,)) 
