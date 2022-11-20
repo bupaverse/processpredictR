@@ -55,7 +55,7 @@ split$test_df -> df_test
 
 ### define transformer model
 ``` {r}
-model <- create_model(df)
+model <- create_model(df, custom_model_py = "custom")
 model
 ```
 

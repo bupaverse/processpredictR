@@ -16,5 +16,3 @@ get_vocabulary <- function(examples) {
 get_task <- function(examples) {
   attr(examples, "task")
 }
-
-

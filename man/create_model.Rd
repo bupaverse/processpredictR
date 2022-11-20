@@ -4,14 +4,18 @@
 \alias{create_model}
 \title{Define transformer model}
 \usage{
-create_model(processed_df, custom_model_py = NULL, name = NULL)
+create_model(
+  processed_df,
+  custom_model_py = c("default", "custom"),
+  name = NULL
+)
 }
 \arguments{
-\item{processed_df}{A processed \code{\link{data.frame}} from prepare_examples}
+\item{processed_df}{\code{\link{data.frame}}: A processed \code{\link{data.frame}} from prepare_examples}
 
-\item{custom_model_py}{A custom .py model}
+\item{custom_model_py}{\code{\link{character}} (default \code{\link{"default"}}): A default or a custom .py model}
 
-\item{name}{\code{\link{data.frame}}: A name for the model}
+\item{name}{\code{\link{character}}: A name for the model}
 }
 \value{
 A transformer model

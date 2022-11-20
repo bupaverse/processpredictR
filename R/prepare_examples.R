@@ -331,7 +331,7 @@ prepare_examples.log <- function(log, task = c("outcome", "next_activity",
 
     attr(output, "task") <- task
     attr(output, "y_var") <- "remaining_trace"
-    attr(output, "features") <- c()
+    attr(output, "features") <- features
     attr(output, "mapping") <- mapping(log)
     attr(output, "vocabulary") <- create_vocabulary(output)
 

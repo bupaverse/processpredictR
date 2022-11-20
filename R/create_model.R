@@ -2,18 +2,18 @@
 #'
 #' (WIP)
 #'
-#' @param processed_df A processed [`data.frame`] from prepare_examples
-#' @param custom_model_py A custom .py model
-#' @param name [`data.frame`]: A name for the model
+#' @param processed_df [`data.frame`]: A processed [`data.frame`] from prepare_examples
+#' @param custom_model_py [`character`] (default [`"default"`]): A default or a custom .py model
+#' @param name [`character`]: A name for the model
 #' @return A transformer model
 #'
 #' @export
-create_model <- function(processed_df, custom_model_py = NULL, name = NULL) {
+create_model <- function(processed_df, custom_model_py = c("default", "custom"), name = NULL) {
   UseMethod("create_model")
 }
 
 #' @export
-create_model.ppred_examples_df <- function(processed_df, custom_model_py = NULL, name = NULL) {
+create_model.ppred_examples_df <- function(processed_df, custom_model_py = c("default", "custom"), name = NULL) {
 
   # tf <- import("tensorflow")
   # layers <- import("keras")$layers
@@ -35,11 +35,12 @@ create_model.ppred_examples_df <- function(processed_df, custom_model_py = NULL,
     # parameters of the model
     maxlen <- max_case_length(processed_df)
     vocab_size <- vocab_size(processed_df)
-    if (is.null(custom_model_py)) { # model is custom if the user passed keras:: functions to custom_model_py
-      custom <- "default"
-    }
-    else custom <- "custom"
+    # if (is.null(custom_model_py)) { # model is custom if the user passed keras:: functions to custom_model_py
+    #   custom <- "default"
+    # }
+    # else custom <- "custom"
 
+    custom <- custom_model_py
     name <- task
 
     if (!is.null(attr(processed_df, "features"))) {
