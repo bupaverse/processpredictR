@@ -19,23 +19,18 @@ You can install the development version of processpredictR from
 devtools::install_github("bupaverse/processpredictR")
 ```
 
+## Examples
+
 ``` r
 library(processpredictR)
 library(eventdataR)
 ```
-
-## Examples
 
 <details>
 <summary>
 Outcome prediction
 </summary>
 <p>
-
-``` r
-library(processpredictR)
-library(eventdataR)
-```
 
 ### preprocess dataset
 
