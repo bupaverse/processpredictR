@@ -19,12 +19,12 @@ You can install the development version of processpredictR from
 devtools::install_github("bupaverse/processpredictR")
 ```
 
-## Examples
-
 ``` r
 library(processpredictR)
 library(eventdataR)
 ```
+
+## Examples
 
 <details>
 <summary>

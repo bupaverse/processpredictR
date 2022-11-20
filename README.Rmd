@@ -30,11 +30,12 @@ You can install the development version of processpredictR from [GitHub](https:/
 devtools::install_github("bupaverse/processpredictR")
 ```
 
-## Examples
 ``` {r}
 library(processpredictR)
 library(eventdataR)
 ```
+
+## Examples
 
 <details><summary>Outcome prediction</summary>
 <p>
