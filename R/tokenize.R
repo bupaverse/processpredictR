@@ -143,7 +143,7 @@ tokenize.ppred_examples_df <- function(processed_df) {
     # time_x <- list(recent_time = recent_time, latest_time = latest_time, time_passed = time_passed)
 
     #time_y (output)
-    time_y <- processed_df %>% as_tibble() %>% select(attr(processed_df, "y_var")) %>% as.list() %>%
+    time_y <- processed_df %>% as_tibble() %>% select(attr(processed_df, "y_var")) %>% #as.list() %>%
       purrr::map(scale) %>%
       purrr::map(as.vector)
 
