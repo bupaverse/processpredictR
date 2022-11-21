@@ -31,8 +31,10 @@ fit_model.ppred_model <- function(transformer_model, train_data, num_epochs, bat
   # features
   if (attr(transformer_model, "num_features") > 0) {
     train_features_x <- tokens_train$time_x %>%
-      as_tibble() %>%
-      data.matrix() %>% reticulate::np_array(dtype = "float32")
+      reticulate::np_array(dtype = "float32")
+
+    #feats %>% purrr::map_if(is.numeric, scale) %>% as_tibble() %>% data.matrix
+
     # train_features_x <- matrix(feats, ncol = attr(transformer_model, "num_features")) %>%
     # reticulate::np_array(dtype = "float32")
 
