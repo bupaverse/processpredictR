@@ -312,6 +312,8 @@ result
 model <- prepare_examples(patients) %>% create_model(custom_model_py = "custom")
 model
 
+model <- map_attributes(model, prepare_examples(patients))
+
 model$output %>% 
   keras::layer_dropout(rate = 0.1) %>%
   keras::layer_dense(units = 64, activation = 'relu') %>% 

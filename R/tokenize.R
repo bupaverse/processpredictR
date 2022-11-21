@@ -45,9 +45,31 @@ tokenize.ppred_examples_df <- function(processed_df) {
   # time_x (extra features)
   time_x <- NULL
   if (!is.null(attr(processed_df, "features"))) {
-  time_x <- processed_df %>% as_tibble() %>% select(attr(processed_df, "features")) %>% as.list() %>%
-    purrr::map(scale) %>%
-    purrr::map(as.vector)
+    time_x <- processed_df %>%
+      as_tibble() %>%
+      select(attr(processed_df, "features")) %>%
+
+
+
+    time_x <- processed_df %>% as_tibble() %>% select(attr(processed_df, "features")) %>% as.list()
+
+    # purrr::map(time_x)
+    # newdata <- reshape2::dcast(data = tmp, handling_id ~ employee, length)
+
+    # feats <- time_x %>%
+    #   purrr::map_if(is.numeric, scale, .else = ~caret::dummyVars("~.", ., fullRank = TRUE)) %>%
+    #   purrr::map(as.vector) %>%
+    #   purrr::map_if(is.numeric, ~append(feats), ~append(predict(feats, time_x)))
+    #
+    # for (i in 1:length(time_x)) {
+    #   if (is.numeric(time_x[i])) {
+    #     scale(time_x[i]) %>% as.vector()
+    #   }
+    #   else {
+    #     #caret::dummyVars("~.", ., fullRank = TRUE))
+    #     cat_feats <- append(time_x[i])
+    #   }
+    # }
   }
 
   #algorithm to produce token_y
