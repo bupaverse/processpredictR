@@ -56,7 +56,7 @@ tokenize.ppred_examples_df <- function(processed_df) {
     if (cat_feats %>% length() > 0) {
       time_x <- num_feats %>% cbind(cat_feats)
     }
-    time_x <- time_x %>% data.matrix()
+    time_x <- num_feats %>% data.matrix()
 
     # purrr::map(time_x)
     # newdata <- reshape2::dcast(data = tmp, handling_id ~ employee, length)
