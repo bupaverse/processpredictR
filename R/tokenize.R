@@ -51,7 +51,7 @@ tokenize.ppred_examples_df <- function(processed_df) {
       as.list()
 
     num_feats <- time_x %>% purrr::map_if(is.numeric, scale) %>% as.vector() %>% as_tibble() %>% select(is.numeric)
-    cat_feats <- time_x %>% as.data.table() %>% select(is.factor) %>% one_hot()
+    cat_feats <- time_x %>% data.table::as.data.table() %>% select(is.factor) %>% mltools::one_hot()
 
     time_x <- num_feats %>% cbind(cat_feats)
     time_x <- time_x %>% data.matrix()
