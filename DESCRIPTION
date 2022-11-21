@@ -32,6 +32,9 @@ Imports:
     stringr, 
     keras,
     lubridate, 
-    rlang
+    rlang, 
+    caret,
+    data.table,
+    mltools
 Roxygen: list(markdown = TRUE)
 Config/testthat/edition: 3

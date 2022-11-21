@@ -39,7 +39,7 @@ class TokenAndPositionEmbedding(layers.Layer):
 
 
 
-def get_outcome_transformer_model(max_case_length, num_features, vocab_size, output_dim, name, embed_dim = 36, num_heads = 4, ff_dim = 64):
+def get_outcome_transformer_model(max_case_length, num_features, vocab_size, output_dim, name, custom, embed_dim = 36, num_heads = 4, ff_dim = 64):
   inputs = layers.Input(shape=(max_case_length,))
   if num_features > 0: 
     extra_inputs = layers.Input(shape=(num_features,))
@@ -49,17 +49,20 @@ def get_outcome_transformer_model(max_case_length, num_features, vocab_size, out
   if num_features > 0: 
     x_extra = layers.Dense(32, activation="relu")(extra_inputs)
     x = layers.Concatenate()([x, extra_inputs])
-  x = layers.Dropout(0.1)(x)
-  x = layers.Dense(64, activation="relu")(x)
-  x = layers.Dropout(0.1)(x)
-  outputs = layers.Dense(output_dim, activation="linear")(x)
-  transformer = tf.keras.Model(inputs=inputs, outputs=outputs, name = name) #name = "outcome_OR_nextActivity_transformer")
-  
+  if custom == "default":
+    x = layers.Dropout(0.1)(x)
+    x = layers.Dense(64*(num_features+1), activation="relu")(x)
+    x = layers.Dropout(0.1)(x)
+    x = layers.Dense(output_dim, activation="linear")(x)
+  if num_features > 0: 
+    transformer = tf.keras.Model(inputs=[inputs, extra_inputs], outputs=x, name = name) #name = "outcome_OR_nextActivity_transformer")
+  else:
+    transformer = tf.keras.Model(inputs=inputs, outputs=x, name = name)
   return transformer
 
 
 
-def get_next_time_model(max_case_length, num_features, vocab_size, output_dim, name, embed_dim = 36, num_heads = 4, ff_dim = 64):
+def get_next_time_model(max_case_length, num_features, vocab_size, output_dim, name, custom, embed_dim = 36, num_heads = 4, ff_dim = 64):
   inputs = layers.Input(shape=(max_case_length,))
   # Three time-based features
   time_inputs = layers.Input(shape=(num_features,)) 
@@ -68,16 +71,16 @@ def get_next_time_model(max_case_length, num_features, vocab_size, output_dim, n
   x = layers.GlobalAveragePooling1D()(x)
   x_t = layers.Dense(32, activation="relu")(time_inputs)
   x = layers.Concatenate()([x, x_t])
-  x = layers.Dropout(0.1)(x)
-  x = layers.Dense(128, activation="relu")(x)
-  x = layers.Dropout(0.1)(x)
-  outputs = layers.Dense(output_dim, activation="linear")(x)
-  transformer = tf.keras.Model(inputs=[inputs, time_inputs], outputs=outputs, name = name)
-  
+  if custom == "default":
+    x = layers.Dropout(0.1)(x)
+    x = layers.Dense(64*2, activation="relu")(x)
+    x = layers.Dropout(0.1)(x)
+    x = layers.Dense(output_dim, activation="linear")(x)
+  transformer = tf.keras.Model(inputs=[inputs, time_inputs], outputs=x, name = name)
   return transformer
 
 
-def get_remaining_time_model(max_case_length, num_features, vocab_size, output_dim, name, embed_dim = 36, num_heads = 4, ff_dim = 64):
+def get_remaining_time_model(max_case_length, num_features, vocab_size, output_dim, name, custom, embed_dim = 36, num_heads = 4, ff_dim = 64):
   inputs = layers.Input(shape=(max_case_length,))
   # Three time-based features
   time_inputs = layers.Input(shape=(num_features,)) 
@@ -86,18 +89,17 @@ def get_remaining_time_model(max_case_length, num_features, vocab_size, output_d
   x = layers.GlobalAveragePooling1D()(x)
   x_t = layers.Dense(32, activation="relu")(time_inputs)
   x = layers.Concatenate()([x, x_t])
-  x = layers.Dropout(0.1)(x)
-  x = layers.Dense(128, activation="relu")(x)
-  x = layers.Dropout(0.1)(x)
-  outputs = layers.Dense(output_dim, activation="linear")(x)
-  transformer = tf.keras.Model(inputs=[inputs, time_inputs], outputs=outputs,
-  name = name)
-
+  if custom == "default":
+    x = layers.Dropout(0.1)(x)
+    x = layers.Dense(64*(num_features+1), activation="relu")(x)
+    x = layers.Dropout(0.1)(x)
+    x = layers.Dense(output_dim, activation="linear")(x)
+  transformer = tf.keras.Model(inputs=[inputs, time_inputs], outputs=x, name = name)
   return transformer
 
 
 
-def get_remaining_trace_model(max_case_length, num_features, vocab_size, output_dim, name, embed_dim = 36, num_heads = 4, ff_dim = 64):
+def get_remaining_trace_model(max_case_length, num_features, vocab_size, output_dim, name, custom, embed_dim = 36, num_heads = 4, ff_dim = 64):
   inputs = layers.Input(shape=(max_case_length,))
   if num_features > 0: 
     extra_inputs = layers.Input(shape=(num_features,))
@@ -107,11 +109,14 @@ def get_remaining_trace_model(max_case_length, num_features, vocab_size, output_
   if num_features > 0: 
     x_extra = layers.Dense(32, activation="relu")(extra_inputs)
     x = layers.Concatenate()([x, x_extra])
-  x = layers.Dropout(0.1)(x)
-  x = layers.Dense(64, activation="relu")(x)
-  x = layers.Dropout(0.1)(x)
-  outputs = layers.Dense(output_dim, activation="linear")(x)
-  transformer = tf.keras.Model(inputs=inputs, outputs=outputs, name = name)
-  
+  if custom == "default":
+    x = layers.Dropout(0.1)(x)
+    x = layers.Dense(64*(num_features+1), activation="relu")(x) # * num_features
+    x = layers.Dropout(0.1)(x)
+    x = layers.Dense(output_dim, activation="linear")(x)
+  if num_features > 0: 
+    transformer = tf.keras.Model(inputs=[inputs, extra_inputs], outputs=x, name = name)
+  else:
+    transformer = tf.keras.Model(inputs=inputs, outputs=x, name = name)
   return transformer
 

@@ -32,11 +32,6 @@ Outcome prediction
 </summary>
 <p>
 
-``` r
-library(processpredictR)
-library(eventdataR)
-```
-
 ### preprocess dataset
 
 ``` r
@@ -57,7 +52,7 @@ split$test_df -> df_test
 ### define transformer model
 
 ``` r
-model <- create_model(df)
+model <- create_model(df, custom_model_py = "default")
 model
 ```
 
@@ -71,6 +66,20 @@ compile_model(transformer_model = model, learning_rate = 0.001)
 
 ``` r
 fit_model(model, train_data = df_train, num_epochs = 5, batch_size = 10, file = "outcome")
+```
+
+### fit transformer model v2
+
+``` r
+
+tokens_train <- df_train %>% tokenize()
+train_token_x <- tokens_train$token_x %>% keras::pad_sequences(maxlen = maxlen, value = 0)
+train_token_x <- train_token_x %>% reticulate::np_array(dtype = "float32")
+train_token_y <- tokens_train$token_y  %>% reticulate::np_array(dtype = "float32")
+
+model %>% 
+  keras::fit(train_token_x, train_token_y, batch_size = 10, verbose = 1, epochs = 5)
+  
 ```
 
 ### predict on test data
@@ -97,7 +106,7 @@ Next activity prediction
 ### preprocess dataset
 
 ``` r
-df <- prepare_examples(patients, task = "next_activity")
+df <- prepare_examples(traffic_fines, task = "next_activity")
 df
 ```
 
@@ -114,7 +123,7 @@ split$test_df -> df_test
 ### define transformer model
 
 ``` r
-model <- create_model(df)
+model <- create_model(df, custom_model_py = "default")
 model
 ```
 
@@ -127,7 +136,7 @@ compile_model(transformer_model = model, learning_rate = 0.001)
 ### fit transformer model
 
 ``` r
-fit_model(model, train_data = df_train, num_epochs = 5, batch_size = 10, file = "next_activity")
+fit_model(model, train_data = df_train, num_epochs = 50, batch_size = 10, file = "next_activity")
 ```
 
 ### predict on test data
@@ -165,7 +174,7 @@ split$test_df -> df_test
 ### define transformer model
 
 ``` r
-model <- create_model(df)
+model <- create_model(df, custom_model_py = "default")
 model
 ```
 
@@ -271,7 +280,7 @@ split$test_df -> df_test
 ### define transformer model
 
 ``` r
-model <- create_model(df)
+model <- create_model(df, custom_model_py = "default")
 model
 ```
 
@@ -296,6 +305,24 @@ result
 
 </p>
 </details>
+
+## Customize transformer model
+
+``` r
+model <- prepare_examples(patients) %>% create_model(custom_model_py = "custom")
+model
+
+model <- map_attributes(model, prepare_examples(patients))
+
+model$output %>% 
+  keras::layer_dropout(rate = 0.1) %>%
+  keras::layer_dense(units = 64, activation = 'relu') %>% 
+  keras::layer_dropout(rate = 0.1) %>%
+  keras::layer_dense(units = num_outputs(prepare_examples(patients)), activation = 'linear') -> new_output
+
+custom_model <- keras::keras_model(inputs = model$input, outputs = new_output, name = "outcome")
+custom_model
+```
 
 ## Attribution
 

@@ -29,12 +29,17 @@ fit_model.ppred_model <- function(transformer_model, train_data, num_epochs, bat
   train_token_y <- tokens_train$token_y  %>% reticulate::np_array(dtype = "float32")
 
   # features
-  if (attr(model, "num_features") > 0) {
-  train_time_x <- matrix(attr(model, "features"), ncol = attr(model, "num_features")) %>%
-    reticulate::np_array(dtype = "float32")
+  if (attr(transformer_model, "num_features") > 0) {
+    train_features_x <- tokens_train$time_x %>%
+      reticulate::np_array(dtype = "float32")
 
-  source_python("inst/fit_time.py")
-  fit_model_py(transformer_model, train_token_x, train_features_x, train_token_y, num_epochs, batch_size, file)
+    #feats %>% purrr::map_if(is.numeric, scale) %>% as_tibble() %>% data.matrix
+
+    # train_features_x <- matrix(feats, ncol = attr(transformer_model, "num_features")) %>%
+    # reticulate::np_array(dtype = "float32")
+
+    source_python("inst/fit_time.py")
+    fit_model_py(transformer_model, train_token_x, train_features_x, train_token_y, num_epochs, batch_size, file)
 
   }
 
