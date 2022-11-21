@@ -120,6 +120,10 @@ prepare_examples.log <- function(log, task = c("outcome", "next_activity",
     attr(output, "features") <- features
     attr(output, "mapping") <- mapping(log)
     attr(output, "vocabulary") <- create_vocabulary(output)
+
+    if (!is.null(features)) {
+      output <- hot_encode_feats(output)
+    }
   }
 
   #   traces_per_case <- case_list(log, .keep_trace_list = TRUE) %>%
@@ -159,37 +163,41 @@ prepare_examples.log <- function(log, task = c("outcome", "next_activity",
 
   # NEXT_ACTIVITY
   else if (task == "next_activity") {
-  traces_per_case <- case_list(log, .keep_trace_list = TRUE)
+    traces_per_case <- case_list(log, .keep_trace_list = TRUE)
 
-  log %>%
-    left_join(traces_per_case, by = case_id(log)) %>%
-    # if start is missing, set equal to complete
-    # if complete is missing, set equal to start
-    group_by_case() %>%
-    mutate(ith_case = cur_group_id(),
-           k = row_number() - 1,
-           current_activity = !!bupaR:::activity_id_(log),
-           prefix_list = purrr::accumulate(as.character(current_activity), c),
-           prefix = purrr::accumulate(as.character(current_activity), paste, sep = " - ")) %>%
-    arrange(!!bupaR:::case_id_(log)) %>%
-    distinct(!!bupaR:::activity_instance_id_(log), .keep_all = T) %>%
-    mutate(
-      next_activity = lead(current_activity),
-      next_activity = if_else(is.na(next_activity), "endpoint", as.character(next_activity)),
-      outcome = last(current_activity)) %>%
-    select(ith_case, !!bupaR:::case_id_(log), prefix_list, prefix, outcome, k, features,
-           everything(),
-           -current_activity, - trace_id) %>%
-    assign_outcome_labels(...) %>%
-    re_map(mapping = mapping(log)) -> output
+    log %>%
+      left_join(traces_per_case, by = case_id(log)) %>%
+      # if start is missing, set equal to complete
+      # if complete is missing, set equal to start
+      group_by_case() %>%
+      mutate(ith_case = cur_group_id(),
+             k = row_number() - 1,
+             current_activity = !!bupaR:::activity_id_(log),
+             prefix_list = purrr::accumulate(as.character(current_activity), c),
+             prefix = purrr::accumulate(as.character(current_activity), paste, sep = " - ")) %>%
+      arrange(!!bupaR:::case_id_(log)) %>%
+      distinct(!!bupaR:::activity_instance_id_(log), .keep_all = T) %>%
+      mutate(
+        next_activity = lead(current_activity),
+        next_activity = if_else(is.na(next_activity), "endpoint", as.character(next_activity)),
+        outcome = last(current_activity)) %>%
+      select(ith_case, !!bupaR:::case_id_(log), prefix_list, prefix, outcome, k, features,
+             everything(),
+             -current_activity, - trace_id) %>%
+      assign_outcome_labels(...) %>%
+      re_map(mapping = mapping(log)) -> output
 
-  class(output) <- c("ppred_examples_df", class(output))
+    class(output) <- c("ppred_examples_df", class(output))
 
-  attr(output, "task") <- task
-  attr(output, "y_var") <- "next_activity"
-  attr(output, "features") <- features
-  attr(output, "mapping") <- mapping(log)
-  attr(output, "vocabulary") <- create_vocabulary(output)
+    attr(output, "task") <- task
+    attr(output, "y_var") <- "next_activity"
+    attr(output, "features") <- features
+    attr(output, "mapping") <- mapping(log)
+    attr(output, "vocabulary") <- create_vocabulary(output)
+
+    if (!is.null(features)) {
+      output <- hot_encode_feats(output)
+    }
   }
 
 
@@ -262,6 +270,10 @@ prepare_examples.log <- function(log, task = c("outcome", "next_activity",
         append(features)
       attr(output, "mapping") <- mapping(log)
       attr(output, "vocabulary") <- create_vocabulary(output)
+
+      if (!is.null(features)) {
+        output <- hot_encode_feats(output)
+      }
   }
 
   # REMAINING_TIME
@@ -335,6 +347,9 @@ prepare_examples.log <- function(log, task = c("outcome", "next_activity",
     attr(output, "mapping") <- mapping(log)
     attr(output, "vocabulary") <- create_vocabulary(output)
 
+    if (!is.null(features)) {
+      output <- hot_encode_feats(output)
+    }
   }
   return(output)
 }

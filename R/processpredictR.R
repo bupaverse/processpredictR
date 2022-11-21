@@ -7,11 +7,12 @@
 #' @importFrom stringr str_split
 #' @importFrom reticulate source_python
 #' @importFrom keras pad_sequences
+#' @importFrom mltools one_hot
 #' @import bupaR
 #' @import dplyr
 #' @import eventdataR
 #' @import tidyr
-
+#' @import data.table
 
 
 

@@ -3,16 +3,16 @@
 #' Transforms predicted y_values back from tokens to labels
 #'
 #' @inheritParams tokenize
-#' @param y_pred [`array`] A vector of predicted values.
-#' @param y_actual [`array`] (default [`NULL`]) A vector of actual values.
+#' @param y_pred [`array`] An array of predicted values.
+#' @param y_actual [`array`] (default [`NULL`]) An array of actual values.
 #'
 #' @export
-detokenize <- function(processed_df, y_pred, y_actual = NULL) {
+detokenize <- function(y_pred, y_actual = NULL, processed_df) {
   UseMethod("detokenize")
 }
 
 #' @export
-detokenize.tokens_y_pred <- function(processed_df, y_pred, y_actual) {
+detokenize.tokens_y_pred <- function(y_pred, y_actual = NULL, processed_df) {
 
   y_pred <- y_pred + 1
   vocabulary <- get_vocabulary(processed_df)
