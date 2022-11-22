@@ -15,10 +15,10 @@ predict_model <- function(transformer_model, test_data, metrics = FALSE) {
 predict_model.ppred_model <- function(transformer_model, test_data, metrics = FALSE) {
 
   # tokenizing activities from the train dataset
-  tokens_train <- tokenize(test_data)
+  tokens_test <- tokenize(test_data)
 
   # other parameters
-  num_features <- attr(model, "num_features")
+  num_features <- attr(transformer_model, "num_features")
   maxlen <- attr(transformer_model, "max_case_length") %>% as.integer()
   test_token_x <- tokens_test$token_x %>% keras::pad_sequences(maxlen = maxlen, value = 0)
   test_token_x <- test_token_x %>% reticulate::np_array(dtype = "float32")
@@ -36,7 +36,7 @@ predict_model.ppred_model <- function(transformer_model, test_data, metrics = FA
 
   if (num_features > 0) {
 
-    test_time_x <- matrix(attr(model, "features"), ncol = num_features) %>%
+    test_time_x <- matrix(attr(transformer_model, "features"), ncol = num_features) %>%
       reticulate::np_array(dtype = "float32")
 
     output <- predict_model_next_time(transformer_model, test_token_x, test_time_x, test_token_y, predict_type)

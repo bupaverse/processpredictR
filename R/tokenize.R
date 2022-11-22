@@ -47,16 +47,33 @@ tokenize.ppred_examples_df <- function(processed_df) {
   if (!is.null(attr(processed_df, "features"))) {
     time_x <- processed_df %>%
       as_tibble() %>%
-      select(attr(processed_df, "features")) %>%
-      as.list()
+      select(attr(processed_df, "numeric_features")) %>%
+      as.list() %>%
+      purrr::map(scale) %>%
+      purrr::map(as.vector) %>%
+      as_tibble()
 
-    num_feats <- time_x %>% purrr::map_if(is.numeric, scale) %>% as.vector() %>% as_tibble() %>% select(is.numeric)
-    cat_feats <- time_x %>% data.table::as.data.table() %>% mltools::one_hot() %>% select(is.factor)
+    cat_features <- processed_df %>%
+      as_tibble() %>%
+      select(attr(processed_df, "hot_encoded_categorical_features"))
 
-    if (cat_feats %>% length() > 0) {
-      time_x <- num_feats %>% cbind(cat_feats)
-    }
-    time_x <- num_feats %>% data.matrix()
+    time_x <- time_x %>% cbind(cat_features) %>% data.matrix()
+
+
+    #num_feats <- time_x %>% purrr::map_if(is.numeric, scale) %>% as.vector() %>% as_tibble() %>% select(is.numeric)
+    # cat_feats <- time_x %>% data.table::as.data.table() %>% select(is.factor)
+    #
+    # if (length(cat_feats) > 0) {
+    #   cat_feats <- cat_feats %>% mltools::one_hot()
+    #   num_cat_feats <- num_feats %>% cbind(cat_feats)
+    #   time_x <- num_cat_feats %>% data.matrix()
+    #
+    #   # number of features increases
+    #   number_features <- num_cat_feats %>% length
+    # }
+    # else {
+    #   time_x <- num_feats %>% data.matrix()
+    # }
 
     # purrr::map(time_x)
     # newdata <- reshape2::dcast(data = tmp, handling_id ~ employee, length)
@@ -143,9 +160,11 @@ tokenize.ppred_examples_df <- function(processed_df) {
     # time_x <- list(recent_time = recent_time, latest_time = latest_time, time_passed = time_passed)
 
     #time_y (output)
-    time_y <- processed_df %>% as_tibble() %>% select(attr(processed_df, "y_var")) %>% as.list() %>%
-      purrr::map(scale) %>%
-      purrr::map(as.vector)
+    time_y <- processed_df %>% as_tibble() %>% select(attr(processed_df, "y_var")) %>% #as.list() %>%
+      scale() %>%
+      as.vector()
+      # purrr::map(scale) %>%
+      # purrr::map(as.vector)
 
     # return:
     # token_x, i.e. activity prefixes

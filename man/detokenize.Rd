@@ -4,14 +4,14 @@
 \alias{detokenize}
 \title{Detokenize predicted values}
 \usage{
-detokenize(processed_df, y_pred, y_actual = NULL)
+detokenize(y_pred, y_actual = NULL, processed_df)
 }
 \arguments{
+\item{y_pred}{\code{\link{array}} An array of predicted values.}
+
+\item{y_actual}{\code{\link{array}} (default \code{\link{NULL}}) An array of actual values.}
+
 \item{processed_df}{A preprocessed object of type \code{\link{log}} or \code{\link{data.frame}} from prepare_examples function.}
-
-\item{y_pred}{\code{\link{array}} A vector of predicted values.}
-
-\item{y_actual}{\code{\link{array}} (default \code{\link{NULL}}) A vector of actual values.}
 }
 \description{
 Transforms predicted y_values back from tokens to labels
