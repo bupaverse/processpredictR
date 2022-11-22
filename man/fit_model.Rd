@@ -4,7 +4,7 @@
 \alias{fit_model}
 \title{Fit model (test)}
 \usage{
-fit_model(transformer_model, train_data, num_epochs, batch_size, file)
+fit_model(transformer_model, train_data, num_epochs, batch_size, output_folder)
 }
 \arguments{
 \item{transformer_model}{A defined transformer model}
@@ -15,7 +15,7 @@ fit_model(transformer_model, train_data, num_epochs, batch_size, file)
 
 \item{batch_size}{A batch size}
 
-\item{file}{Name of saved model (weights)}
+\item{output_folder}{Name of saved model (weights)}
 }
 \description{
 (test)
