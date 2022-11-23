@@ -20,7 +20,7 @@ model
 compile_model(transformer_model = model, learning_rate = 0.001)
 
 # fit model
-model %>% fit_model(train_data = df_train, num_epochs = 2, batch_size = 10, file = "demo")
+model %>% fit_model(train_data = df_train, num_epochs = 2, batch_size = 10, output_folder = "demo")
 
 # make predictions
 y_pred <- model %>% predict_model(test_data = df_test)
@@ -50,7 +50,7 @@ model_time <- create_model(processed_df = df_time)
 model_time
 
 compile_model(model_time, learning_rate = 0.001)
-fit_model(model_time, df_time, num_epochs = 1, batch_size = 15, file = "demo")
+fit_model(model_time, df_time, num_epochs = 1, batch_size = 15, output_folder = "demo")
 
 df_time %>% tokenize() %>% print.default()
 

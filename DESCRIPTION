@@ -10,15 +10,6 @@ License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
 RoxygenNote: 7.2.1
-Config/reticulate:
-  list(
-    packages = list(
-      list(package = "tensorflow", pip = TRUE),
-      list(package = "keras", pip = TRUE),
-      list(package = "numpy", pip = TRUE, 
-      list(package = "pandas", pip = TRUE))
-    )
-  )
 Imports: 
     bupaR,
     edeaR,
@@ -31,6 +22,7 @@ Imports:
     purrr, 
     stringr, 
     keras,
+    tensorflow,
     lubridate, 
     rlang, 
     caret,
@@ -38,3 +30,5 @@ Imports:
     mltools
 Roxygen: list(markdown = TRUE)
 Config/testthat/edition: 3
+Depends: 
+    R (>= 2.10)
