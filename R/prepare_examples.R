@@ -119,11 +119,14 @@ prepare_examples.log <- function(log, task = c("outcome", "next_activity",
     attr(output, "y_var") <- "outcome"
     attr(output, "features") <- features
     attr(output, "mapping") <- mapping(log)
-    attr(output, "vocabulary") <- create_vocabulary(output)
+    attr(output, "max_case_length") <- max_case_length(output)
+    vocabulary <- create_vocabulary(output)
+    attr(output, "vocab_size") <- vocabulary$keys_x %>% length() %>% as.integer()
+    attr(output, "vocabulary") <- vocabulary
 
-    if (!is.null(features)) {
-      output <- hot_encode_feats(output)
-    }
+    # if (!is.null(features)) {
+    #   output <- hot_encode_feats(output)
+    # }
   }
 
   #   traces_per_case <- case_list(log, .keep_trace_list = TRUE) %>%
@@ -193,11 +196,16 @@ prepare_examples.log <- function(log, task = c("outcome", "next_activity",
     attr(output, "y_var") <- "next_activity"
     attr(output, "features") <- features
     attr(output, "mapping") <- mapping(log)
-    attr(output, "vocabulary") <- create_vocabulary(output)
+    attr(output, "max_case_length") <- max_case_length(output)
+    vocabulary <- create_vocabulary(output)
+    attr(output, "vocab_size") <- vocabulary$keys_x %>% length() %>% as.integer()
+    attr(output, "vocabulary") <- vocabulary
 
-    if (!is.null(features)) {
-      output <- hot_encode_feats(output)
-    }
+    # # hot-encoding of categorical features (if present) and remapping of attributes
+    # # extra attribute number_features, because the total number of features changed
+    # if (!is.null(features)) {
+    #   output <- hot_encode_feats(output)
+    # }
   }
 
 
@@ -269,11 +277,14 @@ prepare_examples.log <- function(log, task = c("outcome", "next_activity",
       attr(output, "features") <- c("latest_duration", "throughput_time","time_before_activity","processing_time") %>%
         append(features)
       attr(output, "mapping") <- mapping(log)
-      attr(output, "vocabulary") <- create_vocabulary(output)
+      attr(output, "max_case_length") <- max_case_length(output)
+      vocabulary <- create_vocabulary(output)
+      attr(output, "vocab_size") <- vocabulary$keys_x %>% length() %>% as.integer()
+      attr(output, "vocabulary") <- vocabulary
 
-      if (!is.null(features)) {
-        output <- hot_encode_feats(output)
-      }
+      # if (!is.null(features)) {
+      #   output <- hot_encode_feats(output)
+      # }
   }
 
   # REMAINING_TIME
@@ -315,8 +326,10 @@ prepare_examples.log <- function(log, task = c("outcome", "next_activity",
     attr(output, "y_var") <- "remaining_time"
     attr(output, "features") <- c("throughput_time","processing_time","previous_duration") %>% append(features)
     attr(output, "mapping") <- mapping(log)
-    attr(output, "vocabulary") <- create_vocabulary(output)
-  }
+    attr(output, "max_case_length") <- max_case_length(output)
+    vocabulary <- create_vocabulary(output)
+    attr(output, "vocab_size") <- vocabulary$keys_x %>% length() %>% as.integer()
+    attr(output, "vocabulary") <- vocabulary  }
 
   # REMAINING_TRACE
   else if (task == "remaining_trace") {
@@ -345,11 +358,20 @@ prepare_examples.log <- function(log, task = c("outcome", "next_activity",
     attr(output, "y_var") <- "remaining_trace"
     attr(output, "features") <- features
     attr(output, "mapping") <- mapping(log)
-    attr(output, "vocabulary") <- create_vocabulary(output)
+    attr(output, "max_case_length") <- max_case_length(output)
+    vocabulary <- create_vocabulary(output)
+    attr(output, "vocab_size") <- vocabulary$keys_x %>% length() %>% as.integer()
+    attr(output, "vocabulary") <- vocabulary
 
-    if (!is.null(features)) {
-      output <- hot_encode_feats(output)
-    }
+    # if (!is.null(features)) {
+    #   output <- hot_encode_feats(output)
+    # }
+  }
+
+  # hot-encoding of categorical features (if present) and remapping of attributes
+  # extra attribute number_features, because the total number of features changed
+  if (!is.null(features)) {
+    output <- hot_encode_feats(output)
   }
   return(output)
 }
