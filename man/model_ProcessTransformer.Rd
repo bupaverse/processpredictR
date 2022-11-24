@@ -4,10 +4,14 @@
 \alias{model_ProcessTransformer}
 \title{Define transformer model}
 \usage{
-model_ProcessTransformer(df, ...)
+model_ProcessTransformer(df, custom = FALSE, ...)
 }
 \arguments{
 \item{df}{\code{\link{data.frame}}: A processed \code{\link{data.frame}} from prepare_examples}
+
+\item{custom}{\code{\link{logical}} (default \code{\link{FALSE}}): If \code{\link{TRUE}}, returns a custom model.}
+
+\item{...}{you can pass additional arguments to keras::keras_model (ex.: name)}
 }
 \description{
 Defines the model using the keras functional API.
