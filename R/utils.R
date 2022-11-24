@@ -46,7 +46,7 @@ hot_encode_feats <- function(examples) {
   attr(output, "features") <- names_num_features %>% append(names_hotencoded_features)
   attr(output, "numeric_features") <- names_num_features
   attr(output, "hot_encoded_categorical_features") <- names_hotencoded_features
-  attr(output, "number_features") <- names_num_features %>% append(names_hotencoded_features) %>% length
+  #attr(output, "number_features") <- names_num_features %>% append(names_hotencoded_features) %>% length
 
   attr(output, "mapping") <- mapping
   attr(output, "vocabulary") <- attr(examples, "vocabulary")
