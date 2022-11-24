@@ -44,7 +44,7 @@ model_ProcessTransformer.ppred_examples_df <- function(df, custom = FALSE, ...) 
   }
 
   if (!custom) {
-    predictions %>%
+    predictions <- predictions %>%
       keras::layer_dropout(rate = 0.1) %>%
       keras::layer_dense(units = 64, activation = 'relu') %>%
       keras::layer_dropout(rate = 0.1) %>%
