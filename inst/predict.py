@@ -30,6 +30,8 @@ def predict_model_next_time(transformer_model, test_token_x, test_time_x, test_t
 
 def predict_model(transformer_model, test_token_x, test_token_y, predict_type):
   
+  #y_pred = transformer_model.predict(test_token_x)
+
   y_pred = np.argmax(transformer_model.predict(test_token_x), axis=1)
   
   if predict_type == "y_pred": # transform back to outcome_names
