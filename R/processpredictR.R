@@ -9,10 +9,12 @@
 #' @importFrom keras pad_sequences
 #' @importFrom mltools one_hot
 #' @import bupaR
-#' @import dplyr
 #' @import eventdataR
+#' @import dplyr
 #' @import tidyr
-#' @import data.table
+#' @import keras
+#' @import tensorflow
+#' @importFrom data.table as.data.table
 
 
 
