@@ -79,7 +79,6 @@ TransformerBlock <- function() {
       return(self$layernorm_b(out_a + ffn_output))
     }
   )
-
 }
 
 

@@ -58,14 +58,22 @@ model_ProcessTransformer.ppred_examples_df <- function(df, custom = FALSE, ...) 
     model <- keras::keras_model(inputs = inputs, outputs = predictions)
   }
 
-  class(model) <- c("ppred_model", class(model))
-  attr(model, "max_case_length") <- max_case_length
-  attr(model, "features") <- features
-  attr(model, "number_features") <- num_features
-  attr(model, "task") <- task
+ output <- list()
+ class(output) <- c("ppred_model", class(output))
+ output$model <- model
+ # Attributes now stored as list-object components
+ output$max_case_length <- max_case_length
+ output$features <- features
+ output$number_features <- num_features
+ output$task <- task
 
+ # Attributes for temporary backwards compatitibility
+  attr(output, "max_case_length") <- max_case_length
+  attr(output, "features") <- features
+  attr(output, "number_features") <- num_features
+  attr(output, "task") <- task
 
-  model
+  output
 }
 
 

@@ -22,3 +22,10 @@ print.ppred_examples_tokens <- function(x, ...) {
   }
 
 }
+
+
+#' @export
+
+print.ppred_model <- function(x, ...) {
+  print(x$model)
+}
