@@ -1,4 +1,4 @@
-#' Generic predict function for ppred_model class.
+#' Generic evaluate function for ppred_model class.
 #'
 #' wip
 #'
@@ -7,18 +7,15 @@
 #' @param ... Additional arguments
 #'
 #' @export
-predict.ppred_model <- function(object, test_data, ...) {
+evaluate_ProcessTransformer <- function(object, test_data, ...) {
   tokens_test <- test_data %>% tokenize()
   x_tokens_test <- tokens_test$token_x %>% keras::pad_sequences(maxlen = attr(object, "max_case_length"), value = 0)
-  #y_tokens_test <- tokens_test$token_y
+  y_tokens_test <- tokens_test$token_y
 
-  y_pred <- stats::predict(model, x_tokens_test) %>% keras::k_argmax(axis = -1) %>% as.integer()
+  results <- keras::evaluate(model, x_tokens_test, y_tokens_test) %>% keras::k_argmax(axis = -1) %>% as.integer()
 
-  return(y_pred)
+  return(results)
 
 }
-
-
-
 
 
