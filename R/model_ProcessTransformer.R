@@ -27,8 +27,8 @@ model_ProcessTransformer.ppred_examples_df <- function(df, custom = FALSE, ...) 
 
   inputs <- keras::layer_input(shape = c(max_case_length))
   predictions <- inputs %>%
-    TokenAndPositionEmbedding(maxlen = max_case_length, vocab_size = vocab_size, embed_dim = embed_dim) %>%
-    TransformerBlock(embed_dim = embed_dim, num_heads = num_heads, ff_dim = ff_dim) %>%
+    TokenAndPositionEmbedding()(maxlen = max_case_length, vocab_size = vocab_size, embed_dim = embed_dim) %>%
+    TransformerBlock()(embed_dim = embed_dim, num_heads = num_heads, ff_dim = ff_dim) %>%
     keras::layer_global_average_pooling_1d() #%>%
   # keras::layer_dropout(rate = 0.1) %>%
   # keras::layer_dense(units = 64, activation = 'relu') %>%
