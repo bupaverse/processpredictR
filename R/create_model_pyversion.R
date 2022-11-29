@@ -8,12 +8,12 @@
 #' @return A transformer model
 #'
 #' @export
-create_model <- function(processed_df, custom_model_py = c("default", "custom"), name = NULL) {
+create_model_pyversion <- function(processed_df, custom_model_py = c("default", "custom"), name = NULL) {
   UseMethod("create_model")
 }
 
 #' @export
-create_model.ppred_examples_df <- function(processed_df, custom_model_py = c("default", "custom"), name = NULL) {
+create_model_pyversion.ppred_examples_df <- function(processed_df, custom_model_py = c("default", "custom"), name = NULL) {
 
   # tf <- import("tensorflow")
   # layers <- import("keras")$layers

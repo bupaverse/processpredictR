@@ -7,12 +7,12 @@
 #' @param metrics [`logical`] (default [`FALSE`]): Returns a vector of predicted values.
 #'
 #' @export
-predict_model <- function(transformer_model, test_data, metrics = FALSE) {
+predict_model_pyversion <- function(transformer_model, test_data, metrics = FALSE) {
   UseMethod("predict_model")
 }
 
 #' @export
-predict_model.ppred_model <- function(transformer_model, test_data, metrics = FALSE) {
+predict_model_pyversion.ppred_model <- function(transformer_model, test_data, metrics = FALSE) {
 
   # tokenizing activities from the train dataset
   tokens_test <- tokenize(test_data)

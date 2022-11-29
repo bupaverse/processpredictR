@@ -6,12 +6,12 @@
 #' @param learning_rate A learning rate of a model
 #'
 #' @export
-compile_model <- function(transformer_model, learning_rate) {
+compile_model_pyversion <- function(transformer_model, learning_rate) {
   UseMethod("compile_model")
 }
 
 #' @export
-compile_model.ppred_model <- function(transformer_model, learning_rate) {
+compile_model_pyversion.ppred_model <- function(transformer_model, learning_rate) {
 
   if (transformer_model$name %in% c("outcome", "next_activity", "remaining_trace")) {
 

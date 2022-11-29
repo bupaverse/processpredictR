@@ -9,11 +9,11 @@
 #' @param output_folder Name of saved model (weights)
 #'
 #' @export
-fit_model <- function(transformer_model, train_data, num_epochs, batch_size, output_folder) {
+fit_model_pyversion <- function(transformer_model, train_data, num_epochs, batch_size, output_folder) {
   UseMethod("fit_model")
 }
 #' @export
-fit_model.ppred_model <- function(transformer_model, train_data, num_epochs, batch_size, output_folder) {
+fit_model_pyversion.ppred_model <- function(transformer_model, train_data, num_epochs, batch_size, output_folder) {
 
   # max_case_length
   maxlen <- attr(transformer_model, "max_case_length") %>% as.integer()
