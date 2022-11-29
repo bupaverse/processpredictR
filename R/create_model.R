@@ -18,7 +18,11 @@ create_model.ppred_examples_df <- function(df, custom = FALSE, ...) {
   task <- attr(df, "task")
   features <- attr(df, "features")
   num_features <- features %>% length() %>% as.integer()
-  num_outputs <- num_outputs(df) %>% as.integer()
+  if (task %in% c("outcome", "next_activity", "remaining_trace")) {
+    num_outputs <- num_outputs(df) %>% as.integer()
+  }
+  else num_outputs <- as.integer(1)
+
   max_case_length <- attr(df, "max_case_length") %>% as.integer()
   vocab_size <- attr(df, "vocab_size") %>% as.integer()
   embed_dim <- 36 %>% as.integer()

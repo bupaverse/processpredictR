@@ -24,18 +24,27 @@ hot_encode_feats <- function(examples) {
 
   # categorical features original and new hot-encoded features' names
   feats <- examples %>% as_tibble() %>% select(features)
-  cat_features <- feats %>% select(is.factor)
-  cat_features %>%
-    data.table::as.data.table() %>%
-    mltools::one_hot(cols = names(cat_features)) %>% names -> names_hotencoded_features
+  cat_features <- feats %>% select(where(is.factor))
 
+  if (length(cat_features) > 0) {
+    cat_features %>%
+      data.table::as.data.table() %>%
+      mltools::one_hot(cols = names(cat_features)) %>% names -> names_hotencoded_features
+
+    output <- examples %>%
+      data.table::as.data.table() %>%
+      mltools::one_hot(cols = names(cat_features), dropCols = F) %>%
+      re_map(mapping = mapping)
+  }
+
+  else {
+    names_hotencoded_features <- NULL
+    output <- examples
+  }
   # names numeric features
-  names_num_features <- feats %>% select(is.numeric) %>% names
+  names_num_features <- feats %>% select(where(is.double)) %>% names
 
-  output <- examples %>%
-    data.table::as.data.table() %>%
-    mltools::one_hot(cols = names(cat_features), dropCols = F) %>%
-    re_map(mapping = mapping)
+
 
   class(output) <- c("ppred_examples_df", class(output))
   attr(output, "task") <- attr(examples, "task")
@@ -43,8 +52,8 @@ hot_encode_feats <- function(examples) {
   attr(output, "max_case_length") <- attr(examples, "max_case_length")
   attr(output, "vocab_size") <- attr(examples, "vocab_size")
 
-  attr(output, "features") <- names_num_features %>% append(names_hotencoded_features)
   attr(output, "numeric_features") <- names_num_features
+  attr(output, "features") <- names_num_features %>% append(names_hotencoded_features)
   attr(output, "hot_encoded_categorical_features") <- names_hotencoded_features
   #attr(output, "number_features") <- names_num_features %>% append(names_hotencoded_features) %>% length
 

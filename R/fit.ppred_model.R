@@ -19,7 +19,7 @@ fit.ppred_model <- function(object,
                             batch_size = 10,
                             epochs,
                             verbose = 1,
-                            callbacks = list(keras::callback_csv_logger(filename = "fit_outcome"), #or NULL
+                            callbacks = list(keras::callback_csv_logger(filename = paste("log_", object$task)), #or NULL
                                              keras::callback_tensorboard()),
                             shuffle = TRUE,
                             validation_split = 0.2,

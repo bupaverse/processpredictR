@@ -53,12 +53,17 @@ tokenize.ppred_examples_df <- function(processed_df) {
       purrr::map(as.vector) %>%
       as_tibble()
 
-    cat_features <- processed_df %>%
-      as_tibble() %>%
-      select(attr(processed_df, "hot_encoded_categorical_features"))
+    if (!is.null(attr(processed_df, "hot_encoded_categorical_features"))) {
 
-    time_x <- time_x %>% cbind(cat_features) %>% data.matrix()
+      cat_features <- processed_df %>%
+        as_tibble() %>%
+        select(attr(processed_df, "hot_encoded_categorical_features"))
 
+      time_x <- time_x %>% cbind(cat_features) %>% data.matrix()
+
+    } else time_x <- time_x %>% data.matrix()
+
+  }
 
     #num_feats <- time_x %>% purrr::map_if(is.numeric, scale) %>% as.vector() %>% as_tibble() %>% select(is.numeric)
     # cat_feats <- time_x %>% data.table::as.data.table() %>% select(is.factor)
@@ -92,7 +97,6 @@ tokenize.ppred_examples_df <- function(processed_df) {
     #     cat_feats <- append(time_x[i])
     #   }
     # }
-  }
 
   #algorithm to produce token_y
 

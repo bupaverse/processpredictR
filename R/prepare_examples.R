@@ -329,7 +329,8 @@ prepare_examples.log <- function(log, task = c("outcome", "next_activity",
     attr(output, "max_case_length") <- max_case_length(output)
     vocabulary <- create_vocabulary(output)
     attr(output, "vocab_size") <- vocabulary$keys_x %>% length() %>% as.integer()
-    attr(output, "vocabulary") <- vocabulary  }
+    attr(output, "vocabulary") <- vocabulary
+    }
 
   # REMAINING_TRACE
   else if (task == "remaining_trace") {
@@ -370,7 +371,7 @@ prepare_examples.log <- function(log, task = c("outcome", "next_activity",
 
   # hot-encoding of categorical features (if present) and remapping of attributes
   # extra attribute number_features, because the total number of features changed
-  if (!is.null(features)) {
+  if (!is.null(attr(output, "features"))) {
     output <- hot_encode_feats(output)
   }
   return(output)
