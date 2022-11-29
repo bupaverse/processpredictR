@@ -44,7 +44,8 @@ tokenize.ppred_examples_df <- function(processed_df) {
 
   # time_x (extra features)
   time_x <- NULL
-  if (!is.null(attr(processed_df, "features"))) {
+  cat_features <- NULL
+  if (!is.null(attr(processed_df, "numeric_features"))) {
     time_x <- processed_df %>%
       as_tibble() %>%
       select(attr(processed_df, "numeric_features")) %>%
@@ -52,18 +53,20 @@ tokenize.ppred_examples_df <- function(processed_df) {
       purrr::map(scale) %>%
       purrr::map(as.vector) %>%
       as_tibble()
-
-    if (!is.null(attr(processed_df, "hot_encoded_categorical_features"))) {
-
-      cat_features <- processed_df %>%
-        as_tibble() %>%
-        select(attr(processed_df, "hot_encoded_categorical_features"))
-
-      time_x <- time_x %>% cbind(cat_features) %>% data.matrix()
-
-    } else time_x <- time_x %>% data.matrix()
-
   }
+
+  if (!is.null(attr(processed_df, "hot_encoded_categorical_features"))) {
+
+    cat_features <- processed_df %>%
+      as_tibble() %>%
+      select(attr(processed_df, "hot_encoded_categorical_features"))
+  }
+
+  if (!is.null(time_x) && !is.null(cat_features)) time_x <- time_x %>% cbind(cat_features) %>% data.matrix()
+  else if (is.null(time_x) && !is.null(cat_features)) time_x <- cat_features %>% data.matrix
+  else if (!is.null(time_x) && is.null(cat_features)) time_x <- time_x %>% data.matrix()
+
+
 
     #num_feats <- time_x %>% purrr::map_if(is.numeric, scale) %>% as.vector() %>% as_tibble() %>% select(is.numeric)
     # cat_feats <- time_x %>% data.table::as.data.table() %>% select(is.factor)

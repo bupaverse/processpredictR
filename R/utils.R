@@ -43,7 +43,7 @@ hot_encode_feats <- function(examples) {
   }
   # names numeric features
   names_num_features <- feats %>% select(where(is.double)) %>% names
-
+  if (length(names_num_features) == 0) names_num_features <- NULL
 
 
   class(output) <- c("ppred_examples_df", class(output))
