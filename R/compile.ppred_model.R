@@ -1,5 +1,8 @@
 #' @title Default compile function for ProcessTransformer model
 #' @param object Object of class [ppred_model]
+#' @param optimizer Default optimizer for ppred_model
+#' @param loss Default loss for ppred_model
+#' @param metrics Default metrics for ppred_model
 #' @param ... Additional Arguments
 #' @importFrom keras compile
 #' @export
@@ -13,18 +16,18 @@ compile.ppred_model <- function(object,
                                 metrics = if(object$task %in% c("outcome", "next_activity", "remaining_trace")) metric_sparse_categorical_accuracy() else NULL,
                                 ...) {
 
-  if (object$task %in% c("outcome", "next_activity", "remaining_trace")) {
+  # if (object$task %in% c("outcome", "next_activity", "remaining_trace")) {
     keras::compile(object$model,
                    optimizer = optimizer,
                    loss = loss,
                    metrics = metrics,
                    ...)
-  }
-  else {
-    keras::compile(object$model,
-                   optimizer = optimizer,
-                   loss = loss,
-                   ...)
-  }
+  # }
+  # else {
+  #   keras::compile(object$model,
+  #                  optimizer = optimizer,
+  #                  loss = loss,
+  #                  ...)
+  # }
   message("Compilation complete!")
 }

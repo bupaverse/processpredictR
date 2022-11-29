@@ -8,6 +8,12 @@
 \arguments{
 \item{object}{Object of class \link{ppred_model}}
 
+\item{optimizer}{Default optimizer for ppred_model}
+
+\item{loss}{Default loss for ppred_model}
+
+\item{metrics}{Default metrics for ppred_model}
+
 \item{...}{Additional Arguments}
 }
 \keyword{internal}
