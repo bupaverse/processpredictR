@@ -314,7 +314,7 @@ prepare_examples.log <- function(log, task = c("outcome", "next_activity",
              #next_time = lead(activity_duration),
              previous_duration = lag(activity_duration),
              previous_duration = if_else(is.na(previous_duration), 0, previous_duration),
-             remaining_time = last(complete) -complete) %>%
+             remaining_time = as.double(last(complete) -complete)) %>%
       select(ith_case, !!bupaR:::case_id_(log), prefix_list, prefix, k,
              throughput_time, processing_time, previous_duration, remaining_time,
              features, everything()) %>%
