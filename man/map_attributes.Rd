@@ -6,9 +6,6 @@
 \usage{
 map_attributes(model, processed_df)
 }
-\arguments{
-\item{processed_df}{\code{\link{data.frame}}: A processed \code{\link{data.frame}} from prepare_examples}
-}
 \description{
 Maps attributes and class \code{\link{"ppred_model"}} of a processed \code{\link{data.frame}} to a (custom) model.
 }

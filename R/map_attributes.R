@@ -2,8 +2,8 @@
 #'
 #' @description Maps attributes and class [`"ppred_model"`] of a processed [`data.frame`] to a (custom) model.
 #'
-#' @inheritParams compile_model
-#' @inheritParams create_model
+#' @param object Object of class [ppred_model]
+#' @param df [`data.frame`]: A processed [`data.frame`] from prepare_examples
 #'
 #'
 #' @export

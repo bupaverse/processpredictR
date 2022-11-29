@@ -4,22 +4,15 @@
 \alias{create_model}
 \title{Define transformer model}
 \usage{
-create_model(
-  processed_df,
-  custom_model_py = c("default", "custom"),
-  name = NULL
-)
+create_model(df, custom = FALSE, ...)
 }
 \arguments{
-\item{processed_df}{\code{\link{data.frame}}: A processed \code{\link{data.frame}} from prepare_examples}
+\item{df}{\code{\link{data.frame}}: A processed \code{\link{data.frame}} from prepare_examples}
 
-\item{custom_model_py}{\code{\link{character}} (default \code{\link{"default"}}): A default or a custom .py model}
+\item{custom}{\code{\link{logical}} (default \code{\link{FALSE}}): If \code{\link{TRUE}}, returns a custom model.}
 
-\item{name}{\code{\link{character}}: A name for the model}
-}
-\value{
-A transformer model
+\item{...}{you can pass additional arguments to keras::keras_model (ex.: name)}
 }
 \description{
-(WIP)
+Defines the model using the keras functional API.
 }

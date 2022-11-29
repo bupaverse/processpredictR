@@ -7,12 +7,12 @@
 #' @param ... you can pass additional arguments to keras::keras_model (ex.: name)
 #'
 #' @export
-model_ProcessTransformer <- function(df, custom = FALSE, ...) {
-  UseMethod("model_ProcessTransformer")
+create_model <- function(df, custom = FALSE, ...) {
+  UseMethod("create_model")
 }
 
 #' @export
-model_ProcessTransformer.ppred_examples_df <- function(df, custom = FALSE, ...) {
+create_model.ppred_examples_df <- function(df, custom = FALSE, ...) {
 
   # parameters of the model
   task <- attr(df, "task")
