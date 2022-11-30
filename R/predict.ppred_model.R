@@ -1,12 +1,11 @@
 #' Generic predict function for ppred_model class.
-#'
-#' wip
-#'
 #' @param object [`ppred_model`] (default [`NULL`]): ProcessTransformer model of class [`ppred_model`].
 #' @param test_data [`ppred_examples_df`] (default [`NULL`]): preprocessed test data.
 #' @param ... Additional arguments
 #'
 #' @importFrom stats predict
+#' @export
+stats::predict
 
 #' @export
 predict.ppred_model <- function(object, test_data, ...) {

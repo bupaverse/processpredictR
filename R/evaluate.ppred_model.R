@@ -1,12 +1,11 @@
 #' Generic evaluate function for ppred_model class.
-#'
-#' wip
-#'
 #' @param object [`ppred_model`] (default [`NULL`]): ProcessTransformer model of class [`ppred_model`].
 #' @param test_data [`ppred_examples_df`] (default [`NULL`]): preprocessed test data.
 #' @param ... Additional arguments
 #'
 #' @importFrom keras evaluate
+#' @export
+keras::evaluate
 
 #' @export
 evaluate.ppred_model <- function(object, test_data, ...) {
