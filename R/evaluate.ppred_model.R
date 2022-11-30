@@ -6,7 +6,7 @@
 #' @param test_data [`ppred_examples_df`] (default [`NULL`]): preprocessed test data.
 #' @param ... Additional arguments
 #'
-#' @importFrom tensorflow evaluate
+#' @importFrom keras evaluate
 
 #' @export
 evaluate.ppred_model <- function(object, test_data, ...) {
