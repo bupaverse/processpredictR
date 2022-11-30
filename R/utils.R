@@ -95,8 +95,11 @@ TransformerBlock <- function() {
 TokenAndPositionEmbedding  <- function() {
   keras::new_layer_class(
     classname = "TokenAndPositionEmbedding",
-    initialize = function(self, maxlen, vocab_size, embed_dim) {
+    initialize = function(self, maxlen, vocab_size, embed_dim, ...) {
       super$initialize()
+      self$maxlen <- maxlen
+      self$vocab_size <- vocab_size
+      self$embed_dim <- embed_dim
 
       self$token_emb <- keras::layer_embedding(input_dim = vocab_size, output_dim = embed_dim) #layers.Embedding(input_dim=vocab_size, output_dim=embed_dim)
       self$pos_emb <- keras::layer_embedding(input_dim = maxlen, output_dim = embed_dim) #layers.Embedding(input_dim=maxlen, output_dim=embed_dim)
@@ -108,6 +111,20 @@ TokenAndPositionEmbedding  <- function() {
       positions <- self$pos_emb(positions)
       x <- self$token_emb(x)
       return(x + positions)
+    },
+
+    get_config = function() {
+      # base_config <- super(TokenAndPositionEmbedding, self)$get_config()
+      # list(maxlen = self$maxlen,
+      #      vocab_size = self$vocab_size,
+      #      embed_dim = self$embed_dim)
+
+      # CUSTOM OBJECTS section (https://tensorflow.rstudio.com/guides/keras/serialization_and_saving)
+      config <- super()$get_config()
+      config$maxlen <- self$maxlen
+      config$vocab_size <- self$vocab_size
+      config$embed_dim <- self$embed_dim
+      config
     }
   )
 }

@@ -26,12 +26,13 @@ evaluate.ppred_model <- function(object, test_data, ...) {
   # add extra features to a list of inputs
   if (object$number_features > 0) {
     x_features <- tokens_test$time_x
-    results <- keras::evaluate(object$model, list(x_tokens_test, x_features), y_tokens_test, ...) %>% keras::k_argmax(axis = -1) %>% as.integer()
+  results <- keras::evaluate(object$model, list(x_tokens_test, x_features), y_tokens_test, ...) #%>% keras::k_argmax(axis = -1)
   }
   else {
-    results <- keras::evaluate(object$model, x_tokens_test, y_tokens_test, ...) %>% keras::k_argmax(axis = -1) %>% as.integer()
+    results <- keras::evaluate(object$model, x_tokens_test, y_tokens_test, ...) #%>% keras::k_argmax(axis = -1)
   }
 
+  results <- results %>% as.numeric()
   return(results)
 }
 

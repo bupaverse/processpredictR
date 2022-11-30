@@ -24,12 +24,14 @@ predict.ppred_model <- function(object, test_data, ...) {
 
   if (object$number_features > 0) {
     x_features <- tokens_test$time_x
-    y_pred <- stats::predict(object$model, list(x_tokens_test, x_features), ...) %>% keras::k_argmax(axis = -1) %>% as.integer()
+    y_pred <- stats::predict(object$model, list(x_tokens_test, x_features), ...) #%>% keras::k_argmax(axis = -1)
   }
 
   else {
-    y_pred <- stats::predict(object$model, x_tokens_test, ...) %>% keras::k_argmax(axis = -1) %>% as.integer()
+    y_pred <- stats::predict(object$model, x_tokens_test, ...) #%>% keras::k_argmax(axis = -1)
   }
+
+  if (object$task %in% c("outcome", "next_activity", "remaining_trace")) y_pred <- y_pred %>% keras::k_argmax(axis = -1) %>% as.numeric()
   return(y_pred)
 }
 

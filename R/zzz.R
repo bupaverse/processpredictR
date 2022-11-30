@@ -6,7 +6,7 @@
 
 .onLoad <- function(libname, pkgname) {
 
-    # create layer TransformerBlock
+  # create layer TransformerBlock
   # TransformerBlock <- keras::new_layer_class(
   #   classname = "TransformerBlock",
   #   initialize = function(self, embed_dim, num_heads, ff_dim, rate = 0.1) {
