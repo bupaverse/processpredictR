@@ -23,6 +23,8 @@ tokenize.ppred_examples_df <- function(processed_df) {
   # vocabulary and task
   vocabulary <- attr(processed_df, "vocabulary")
   task <- attr(processed_df, "task")
+  numeric_features <- attr(processed_df, "numeric_features")
+  hot_encoded_categorical_features <- attr(processed_df, "hot_encoded_categorical_features")
 
   # algorithm to produce token_x (same for all tasks)
   token_x <- list()
@@ -117,6 +119,8 @@ tokenize.ppred_examples_df <- function(processed_df) {
     # return a list of tokens
     tokens <- list(token_x = token_x, time_x = time_x, token_y = token_y)
     class(tokens) <- c("ppred_examples_tokens", "list")
+    attr(tokens, "numeric_features") <- numeric_features
+    attr(tokens, "hot_encoded_categorical_features") <- hot_encoded_categorical_features
     tokens
   }
 
@@ -132,6 +136,8 @@ tokenize.ppred_examples_df <- function(processed_df) {
     # return a list of tokens
     tokens <- list(token_x = token_x, time_x = time_x, token_y = token_y)
     class(tokens) <- c("ppred_examples_tokens", "list")
+    attr(tokens, "numeric_features") <- numeric_features
+    attr(tokens, "hot_encoded_categorical_features") <- hot_encoded_categorical_features
     tokens
 
   }
@@ -148,6 +154,8 @@ tokenize.ppred_examples_df <- function(processed_df) {
     # return a list of tokens:
     tokens <- list(token_x = token_x, time_x = time_x, token_y = token_y)
     class(tokens) <- c("ppred_examples_tokens", "list")
+    attr(tokens, "numeric_features") <- numeric_features
+    attr(tokens, "hot_encoded_categorical_features") <- hot_encoded_categorical_features
     tokens
   }
 
@@ -179,6 +187,8 @@ tokenize.ppred_examples_df <- function(processed_df) {
     # time_y, i.e. a next_activity duration
     tokens <- list(token_x = token_x, time_x = time_x, token_y = time_y)
     class(tokens) <- c("ppred_examples_tokens", "list")
+    attr(tokens, "numeric_features") <- numeric_features
+    attr(tokens, "hot_encoded_categorical_features") <- hot_encoded_categorical_features
     tokens
   } # followed by train_token_x %>% reticulate::np_array(dtype = "float32") in transformer_fit or predict
 
