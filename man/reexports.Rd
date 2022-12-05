@@ -34,6 +34,8 @@
 
 \item{test_data}{\code{\link{ppred_examples_df}} (default \code{\link{NULL}}): preprocessed test data.}
 
+\item{append}{\code{\link{logical}} (default \code{\link{FALSE}}): if \code{\link{TRUE}}, returns a passed \code{\link{data.frame}} with predicted values.}
+
 \item{...}{Additional arguments}
 }
 \keyword{internal}

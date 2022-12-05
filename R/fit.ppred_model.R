@@ -47,10 +47,12 @@ fit.ppred_model <- function(object,
   y_token_train <- tokens_train$token_y #%>% reticulate::np_array(dtype = "float32")
 
   if (attr(train_data, "task") %in% c("next_time", "remaining_time")) {
-    normalize_y <- keras::layer_normalization(mean = as.double(object$y_normalize_layer$mean),
-                                              variance = as.double(object$y_normalize_layer$variance))
+    object$y_normalize_layer(y_token_train)
+
+    # normalize_y <- keras::layer_normalization(mean = as.double(object$y_normalize_layer$mean),
+    #                                           variance = as.double(object$y_normalize_layer$variance))
     #normalize_y %>% adapt(y_token_train)
-    y_token_train <- normalize_y(y_token_train)
+    #y_token_train <- normalize_y(y_token_train)
   }
 # keras::fit --------------------------------------------------------------
   #if (object$number_features > 0) {
