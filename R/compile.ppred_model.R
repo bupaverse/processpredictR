@@ -26,7 +26,12 @@ compile.ppred_model <- function(object,
   # Cross-Entropy > 1.00: Terrible.
   # Cross-Entropy > 2.00 Something is broken.
 
-  # if (object$task %in% c("outcome", "next_activity", "remaining_trace")) {
+  # metric_mean_absolute_error: absolute difference between the actual and predicted values; all errors are weighted equally
+  # metric_mean_squared_error: sensitive to outliers, high impact on network
+  # metric_root_mean_squared_error: more weightage to larger errors; sensitive to outliers
+  # log-cosh: less computations than for Huber-loss; best option for fair weightage of outliers
+
+
     keras::compile(object$model,
                    optimizer = optimizer,
                    loss = loss,
