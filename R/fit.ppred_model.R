@@ -24,25 +24,38 @@ fit.ppred_model <- function(object,
                             shuffle = TRUE,
                             validation_split = 0.2,
                             ...) {
-  # max_case_length
+
+
+# preparation -------------------------------------------------------------
+  # parameters
   maxlen <- object$max_case_length %>% as.integer()
   num_epochs <- epochs %>% as.integer()
   batch_size <- batch_size %>% as.integer()
 
-  # tokenizing activities from the train dataset
+  # tokenizing
   tokens_train <- tokenize(train_data)
 
-  # same for all tasks
+  # preparring x_train, y_train for keras::fit()
   x_token_train <- tokens_train$token_x %>% keras::pad_sequences(maxlen = maxlen, value = 0)
-  x_token_train <- x_token_train #%>% reticulate::np_array(dtype = "float32")
+  #x_token_train <- x_token_train #%>% reticulate::np_array(dtype = "float32")
+  x_numeric_features <- tokens_train$numeric_features
+  x_categorical_features <- tokens_train$categorical_features
+
+  x_train_list <- list(x_token_train)
+  if (!is.null(x_numeric_features)) x_train_list <- x_train_list %>% append(x_numeric_features)
+  if (!is.null(x_categorical_features)) x_train_list <- x_train_list %>% append(x_categorical_features)
   y_token_train <- tokens_train$token_y #%>% reticulate::np_array(dtype = "float32")
 
-  # keras::fit with extra features
-  if (object$number_features > 0) {
-    x_features_train <- tokens_train$time_x
-
+  if (attr(train_data, "task") %in% c("next_time", "remaining_time")) {
+    normalize_y <- keras::layer_normalization()
+    normalize_y %>% adapt(y_token_train)
+    y_token_train <- normalize_y(y_token_train)
+  }
+# keras::fit --------------------------------------------------------------
+  #if (object$number_features > 0) {
     keras::fit(object$model,
-               x = list(x_token_train, x_features_train),
+               #x = list(x_token_train, x_features_train),
+               x = x_train_list,
                y = y_token_train,
                batch_size = batch_size,
                epochs = epochs,
@@ -52,19 +65,19 @@ fit.ppred_model <- function(object,
                validation_split = validation_split,
                ...
     )
-  }
-  else {
-    keras::fit(object$model,
-               x = x_token_train,
-               y = y_token_train,
-               batch_size = batch_size,
-               epochs = epochs,
-               verbose = verbose,
-               callbacks = callbacks,
-               shuffle = shuffle,
-               validation_split = validation_split,
-               ...
-    )
-  }
+  #}
+  # else {
+  #   keras::fit(object$model,
+  #              x = x_token_train,
+  #              y = y_token_train,
+  #              batch_size = batch_size,
+  #              epochs = epochs,
+  #              verbose = verbose,
+  #              callbacks = callbacks,
+  #              shuffle = shuffle,
+  #              validation_split = validation_split,
+  #              ...
+  #   )
+  # }
 
 }

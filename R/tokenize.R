@@ -23,7 +23,6 @@ tokenize.ppred_examples_df <- function(processed_df) {
   # vocabulary and task
   vocabulary <- attr(processed_df, "vocabulary")
   task <- attr(processed_df, "task")
-  numeric_features <- attr(processed_df, "numeric_features")
   hot_encoded_categorical_features <- attr(processed_df, "hot_encoded_categorical_features")
 
   # algorithm to produce token_x (same for all tasks)
@@ -45,12 +44,13 @@ tokenize.ppred_examples_df <- function(processed_df) {
 
 
   # time_x (extra features)
-  time_x <- NULL
-  cat_features <- NULL
+  numeric_features <- NULL
+  categorical_features <- NULL
   if (!is.null(attr(processed_df, "numeric_features"))) {
-    time_x <- processed_df %>%
+    numeric_features <- processed_df %>%
       as_tibble() %>%
-      select(attr(processed_df, "numeric_features")) #%>%
+      select(attr(processed_df, "numeric_features")) %>%
+      data.matrix()
       #scale()
 
       # as.list() %>%
@@ -60,15 +60,15 @@ tokenize.ppred_examples_df <- function(processed_df) {
   }
 
   if (!is.null(attr(processed_df, "hot_encoded_categorical_features"))) {
-
-    cat_features <- processed_df %>%
+    categorical_features <- processed_df %>%
       as_tibble() %>%
-      select(attr(processed_df, "hot_encoded_categorical_features"))
+      select(attr(processed_df, "hot_encoded_categorical_features")) %>%
+      data.matrix()
   }
 
-  if (!is.null(time_x) && !is.null(cat_features)) time_x <- time_x %>% cbind(cat_features) %>% data.matrix()
-  else if (is.null(time_x) && !is.null(cat_features)) time_x <- cat_features %>% data.matrix
-  else if (!is.null(time_x) && is.null(cat_features)) time_x <- time_x %>% data.matrix()
+  # if (!is.null(time_x) && !is.null(cat_features)) time_x <- time_x %>% cbind(cat_features) %>% data.matrix()
+  # else if (is.null(time_x) && !is.null(cat_features)) time_x <- cat_features %>% data.matrix
+  # else if (!is.null(time_x) && is.null(cat_features)) time_x <- time_x %>% data.matrix()
 
 
   #algorithm to produce token_y
@@ -133,8 +133,10 @@ tokenize.ppred_examples_df <- function(processed_df) {
     # time_passed1 * attr(time_passed1, 'scaled:scale') + attr(time_passed1, 'scaled:center'))
 
     #time_y (output)
-    token_y <- processed_df %>% as_tibble() %>% select(attr(processed_df, "y_var")) %>% #as.list() %>%
-      scale() #%>%
+    token_y <- processed_df[[attr(processed_df, "y_var")]] %>% data.matrix()
+    #token_y <- processed_df %>% as_tibble() %>% select(attr(processed_df, "y_var")) #%>% #as.list() %>%
+      #as.vector()
+      #scale() #%>%
       # as.vector()
       # purrr::map(scale) %>%
       # purrr::map(as.vector)
@@ -152,9 +154,12 @@ tokenize.ppred_examples_df <- function(processed_df) {
 
   #center_scale <- data.frame(center = )
 
-  tokens <- list(token_x = token_x, time_x = time_x, token_y = token_y)
+  tokens <- list(token_x = token_x,
+                 numeric_features = numeric_features,
+                 categorical_features = categorical_features,
+                 token_y = token_y)
   class(tokens) <- c("ppred_examples_tokens", "list")
-  attr(tokens, "numeric_features") <- numeric_features
+  attr(tokens, "numeric_features") <- attr(processed_df, "numeric_features")
   attr(tokens, "hot_encoded_categorical_features") <- hot_encoded_categorical_features
   tokens
 
