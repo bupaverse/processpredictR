@@ -28,10 +28,17 @@ predict.ppred_model <- function(object, test_data, ...) {
   x_categorical_features <- tokens_test$categorical_features
 
   x_test_list <- list(x_tokens_test)
-  if (!is.null(x_numeric_features)) x_test_list <- x_test_list %>% append(x_numeric_features)
-  if (!is.null(x_categorical_features)) x_test_list <- x_test_list %>% append(x_categorical_features)
+  if (!is.null(x_numeric_features)) x_test_list <- x_test_list %>% append(list(x_numeric_features))
+  if (!is.null(x_categorical_features)) x_test_list <- x_test_list %>% append(list(x_categorical_features))
 
   y_pred <- stats::predict(object$model, x_test_list, ...) #%>% keras::k_argmax(axis = -1)
+  #model$model$get_layer("normalization_4")$mean ----> x_numeric_features mean
+
+  mean <- object$y_normalize_layer$mean %>% as.double()
+  variance <- object$y_normalize_layer$variance %>% as.double()
+
+  y_pred <- y_pred * sqrt(variance) + mean
+
   # }
 
   # else {

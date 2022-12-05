@@ -112,6 +112,18 @@ create_model.ppred_examples_df <- function(x_train, custom = FALSE, ...) {
  output$numeric_features <- numeric_features
  output$categorical_features <- categorical_features
 
+ if (task %in% c("next_time", "remaining_time")) {
+
+   y_token_train <- x_train %>%
+     as_tibble() %>%
+     select(attr(x_train, "y_var")) %>% data.matrix()
+
+   normalize_y <- keras::layer_normalization()
+   normalize_y %>% adapt(y_token_train)
+   output$y_normalize_layer <- normalize_y
+ }
+
+
  # Attributes for temporary backwards compatitibility
   attr(output, "max_case_length") <- max_case_length
   attr(output, "features") <- features

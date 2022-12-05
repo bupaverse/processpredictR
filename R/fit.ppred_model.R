@@ -42,13 +42,14 @@ fit.ppred_model <- function(object,
   x_categorical_features <- tokens_train$categorical_features
 
   x_train_list <- list(x_token_train)
-  if (!is.null(x_numeric_features)) x_train_list <- x_train_list %>% append(x_numeric_features)
-  if (!is.null(x_categorical_features)) x_train_list <- x_train_list %>% append(x_categorical_features)
+  if (!is.null(x_numeric_features)) x_train_list <- x_train_list %>% append(list(x_numeric_features))
+  if (!is.null(x_categorical_features)) x_train_list <- x_train_list %>% append(list(x_categorical_features))
   y_token_train <- tokens_train$token_y #%>% reticulate::np_array(dtype = "float32")
 
   if (attr(train_data, "task") %in% c("next_time", "remaining_time")) {
-    normalize_y <- keras::layer_normalization()
-    normalize_y %>% adapt(y_token_train)
+    normalize_y <- keras::layer_normalization(mean = as.double(object$y_normalize_layer$mean),
+                                              variance = as.double(object$y_normalize_layer$variance))
+    #normalize_y %>% adapt(y_token_train)
     y_token_train <- normalize_y(y_token_train)
   }
 # keras::fit --------------------------------------------------------------
@@ -65,6 +66,15 @@ fit.ppred_model <- function(object,
                validation_split = validation_split,
                ...
     )
+
+  # model$keras.engine.functional.Functional$y_normalization_layer <- normalize_y
+  # model
+
+  # output <- list()
+  # output$model <- model
+  # output$y_normalization_layer <- normalize_y
+  # return(output)
+
   #}
   # else {
   #   keras::fit(object$model,
