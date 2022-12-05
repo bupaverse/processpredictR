@@ -46,8 +46,8 @@ fit.ppred_model <- function(object,
   if (!is.null(x_categorical_features)) x_train_list <- x_train_list %>% append(list(x_categorical_features))
   y_token_train <- tokens_train$token_y #%>% reticulate::np_array(dtype = "float32")
 
-  if (attr(train_data, "task") %in% c("next_time", "remaining_time")) {
-    object$y_normalize_layer(y_token_train)
+  if (object$task %in% c("next_time", "remaining_time")) {
+    y_token_train <- object$y_normalize_layer(y_token_train)
 
     # normalize_y <- keras::layer_normalization(mean = as.double(object$y_normalize_layer$mean),
     #                                           variance = as.double(object$y_normalize_layer$variance))
