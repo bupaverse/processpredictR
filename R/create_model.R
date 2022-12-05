@@ -111,6 +111,7 @@ create_model.ppred_examples_df <- function(x_train, custom = FALSE, ...) {
  output$num_outputs <- num_outputs
  output$numeric_features <- numeric_features
  output$categorical_features <- categorical_features
+ output$vocabulary <- attr(x_train, "vocabulary")
 
  if (task %in% c("next_time", "remaining_time")) {
 

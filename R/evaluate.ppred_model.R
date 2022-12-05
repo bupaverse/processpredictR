@@ -53,6 +53,7 @@ evaluate.ppred_model <- function(object, test_data, ...) {
   # }
 
 
+  # should be based solely on the metrics from compile()
   results <- keras::evaluate(object$model, x_test_list, y_tokens_test, ...) #%>% keras::k_argmax(axis = -1)
   return(results)
 }

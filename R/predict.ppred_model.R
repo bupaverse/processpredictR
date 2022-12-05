@@ -62,8 +62,23 @@ predict.ppred_model <- function(object, test_data, append = FALSE, ...) {
     else if (object$task %in% c("outcome", "next_activity", "remaining_trace")) {
       y_pred <- y_pred %>% keras::k_argmax(axis = -1) %>% as.numeric()
 
-      tibble(y_pred = as.numeric(y_pred),
-             y_actual = as.numeric(tokens_test$token_y)) -> y_pred
+      # vocabulary <- test_data %>% attr("vocabulary")
+      vocabulary <- object$vocabulary
+      vocabulary <- vocabulary$keys_y %>% unlist() %>% as_tibble() %>%
+        mutate(key_y = row_number()) %>% rename(pred_label = "value")
+
+      if (any((test_data %>% class) == "ppred_examples_df")) {
+        test_data %>%
+          mutate(y_pred = y_pred + 1) %>%
+          left_join(vocabulary, by = c("y_pred" = "key_y")) -> y_pred
+      }
+      else {
+        tibble(y_pred = as.numeric(y_pred) + 1,
+               y_actual = as.numeric(tokens_test$token_y) + 1) %>%
+          left_join(vocabulary, by = c("y_pred" = "key_y")) %>%
+          left_join(vocabulary, by = c("y_actual" = "key_y")) %>%
+          setNames(c("y_pred", "y_actual", "pred_label", "actual_label")) -> y_pred
+      }
     }
   }
   return(y_pred)
