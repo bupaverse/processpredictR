@@ -4,10 +4,10 @@
 \alias{confusion_matrix}
 \title{Confusion matrix for}
 \usage{
-confusion_matrix(x, ...)
+confusion_matrix(predictions, ...)
 }
 \arguments{
-\item{x}{\code{\link{ppred_predictions}} An event log with predicted values}
+\item{predictions}{\code{\link{ppred_predictions}} An event log with predicted values}
 }
 \description{
 Confusion matrix for
