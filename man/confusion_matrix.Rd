@@ -8,8 +8,6 @@ confusion_matrix(x, ...)
 }
 \arguments{
 \item{x}{\code{\link{ppred_predictions}} An event log with predicted values}
-
-\item{as.tibble}{\code{\link{logical}} (default \code{\link{FALSE}}): if \code{\link{TRUE}} returns a tibble}
 }
 \description{
 Confusion matrix for

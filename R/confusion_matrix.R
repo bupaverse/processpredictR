@@ -9,12 +9,11 @@ confusion_matrix <- function(x, ...) {
 #' @export
 confusion_matrix.ppred_predictions <- function(x, ...)  {
 
-  # if test_data is a preprocessed test dataset (before tokenize)
+  y_var <- x %>% attr("y_var")
   if (any((class(x)) == "ppred_predictions")) {
-    output <- table(x$outcome, x$pred_label)
+    output <- table(x[[y_var]], x$pred_label)
   }
 
-  # if test_data is already tokenized
   else {
     simpleError("try again")
   }
