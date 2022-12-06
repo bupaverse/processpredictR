@@ -19,7 +19,7 @@ confusion_matrix <- function(y_pred, test_data, as.tibble = F)  {
     y_tokens_test <- tokens_test$token_y
   }
 
-  output <- table(y_pred, y_tokens_test)
+  output <- table(as.numeric(y_pred), y_tokens_test)
 
   if (!as.tibble) output
   else output %>% as_tibble()

@@ -9,7 +9,9 @@
 stats::predict
 
 #' @export
-predict.ppred_model <- function(object, test_data, append = FALSE, ...) {
+predict.ppred_model <- function(object, test_data, output = c("append", "y_pred", "raw"), ...) {
+
+  output <- rlang::arg_match(output)
 
   # if test_data is a preprocessed test dataset (before tokenize)
   if (any((test_data %>% class) == "ppred_examples_df")) {
@@ -32,19 +34,55 @@ predict.ppred_model <- function(object, test_data, append = FALSE, ...) {
   if (!is.null(x_numeric_features)) x_test_list <- x_test_list %>% append(list(x_numeric_features))
   if (!is.null(x_categorical_features)) x_test_list <- x_test_list %>% append(list(x_categorical_features))
 
-  y_pred <- stats::predict(object$model, x_test_list, ...) #%>% keras::k_argmax(axis = -1)
-  #model$model$get_layer("normalization_4")$mean ----> x_numeric_features mean
+  y_pred <- stats::predict(object$model, x_test_list, ...)
 
 
+# Postprocessing ----------------------------------------------------------
+  # OUTCOME, NEXT_ACTIVITY & REMAINING_TRACE
+  if (object$task %in% c("outcome", "next_activity", "remaining_trace")) {
 
-# y_pred postprocessing ---------------------------------------------------
-  if (append) {
-    # NEXT_TIME & REMAINING_TIME
-    if (object$task %in% c("next_time", "remaining_time")) {
-      mean <- object$y_normalize_layer$mean %>% as.double()
-      variance <- object$y_normalize_layer$variance %>% as.double()
-      y_pred <- y_pred * sqrt(variance) + mean
+    if (output == "raw") return(y_pred)
 
+    # IF output == y_pred || output == append
+    # CONVERT NUMERIC Y_PRED TO ACTIVITY LABELS
+    y_pred <- y_pred %>% keras::k_argmax(axis = -1) %>% as.numeric()
+    vocabulary <- object$vocabulary
+    vocabulary <- vocabulary$keys_y %>% unlist() %>% as_tibble() %>%
+      mutate(key_y = row_number()) %>% rename(pred_label = "value")
+
+    if (output == "y_pred") {
+      y_pred <- tibble(y_pred = as.numeric(y_pred) + 1) %>%
+        left_join(vocabulary, by = c("y_pred" = "key_y")) %>%
+        pull(pred_label)
+      return(y_pred)
+    }
+
+    else if (output == "append") {
+      # append to test_data
+      if (any((test_data %>% class) == "ppred_examples_df")) {
+        test_data %>%
+          mutate(y_pred = y_pred + 1) %>%
+          left_join(vocabulary, by = c("y_pred" = "key_y")) -> y_pred
+      }
+
+      # create a tibble from tokenize() output
+      else {
+        tibble(y_pred = as.numeric(y_pred) + 1,
+               y_actual = as.numeric(tokens_test$token_y) + 1) %>%
+          left_join(vocabulary, by = c("y_pred" = "key_y")) %>%
+          left_join(vocabulary, by = c("y_actual" = "key_y")) %>%
+          setNames(c("y_pred", "y_actual", "pred_label", "actual_label")) -> y_pred
+      }
+    }
+  }
+
+  # NEXT_TIME & REMAINING_TIME
+  else if (object$task %in% c("next_time", "remaining_time")) {
+    mean <- object$y_normalize_layer$mean %>% as.double()
+    variance <- object$y_normalize_layer$variance %>% as.double()
+    y_pred <- y_pred * sqrt(variance) + mean
+
+    if (output == "append") {
       if (any((test_data %>% class) == "ppred_examples_df")) {
         test_data %>% mutate(y_pred = as.numeric(y_pred)) %>%
           mutate(predicted_starttime_next_activity = complete + y_pred,
@@ -57,32 +95,52 @@ predict.ppred_model <- function(object, test_data, append = FALSE, ...) {
                y_actual = as.numeric(tokens_test$token_y)) -> y_pred
       }
     }
-
-    # OUTCOME, NEXT_ACTIVITY & REMAINING_TRACE
-    else if (object$task %in% c("outcome", "next_activity", "remaining_trace")) {
-      y_pred <- y_pred %>% keras::k_argmax(axis = -1) %>% as.numeric()
-
-      # vocabulary <- test_data %>% attr("vocabulary")
-      vocabulary <- object$vocabulary
-      vocabulary <- vocabulary$keys_y %>% unlist() %>% as_tibble() %>%
-        mutate(key_y = row_number()) %>% rename(pred_label = "value")
-
-      if (any((test_data %>% class) == "ppred_examples_df")) {
-        test_data %>%
-          mutate(y_pred = y_pred + 1) %>%
-          left_join(vocabulary, by = c("y_pred" = "key_y")) -> y_pred
-      }
-      else {
-        tibble(y_pred = as.numeric(y_pred) + 1,
-               y_actual = as.numeric(tokens_test$token_y) + 1) %>%
-          left_join(vocabulary, by = c("y_pred" = "key_y")) %>%
-          left_join(vocabulary, by = c("y_actual" = "key_y")) %>%
-          setNames(c("y_pred", "y_actual", "pred_label", "actual_label")) -> y_pred
-      }
-    }
   }
   return(y_pred)
 }
+
+    # # NEXT_TIME & REMAINING_TIME
+    # if (object$task %in% c("next_time", "remaining_time")) {
+    #   mean <- object$y_normalize_layer$mean %>% as.double()
+    #   variance <- object$y_normalize_layer$variance %>% as.double()
+    #   y_pred <- y_pred * sqrt(variance) + mean
+    #
+    #   if (any((test_data %>% class) == "ppred_examples_df")) {
+    #     test_data %>% mutate(y_pred = as.numeric(y_pred)) %>%
+    #       mutate(predicted_starttime_next_activity = complete + y_pred,
+    #              actual_starttime_next_activity = lead(start)) -> y_pred
+    #     # as_tibble() %>% select(complete, actual_starttime_next_activity, predicted_starttime_next_activity) %>%
+    #     # ggplotly(aes(predicted_starttime_next_activity, start2)) + geom_point()
+    #   }
+    #   else {
+    #     tibble(y_pred = as.numeric(y_pred),
+    #            y_actual = as.numeric(tokens_test$token_y)) -> y_pred
+    #   }
+    # }
+
+    # # OUTCOME, NEXT_ACTIVITY & REMAINING_TRACE
+    # else if (object$task %in% c("outcome", "next_activity", "remaining_trace")) {
+    #   y_pred <- y_pred %>% keras::k_argmax(axis = -1) %>% as.numeric()
+    #
+    #   # vocabulary <- test_data %>% attr("vocabulary")
+    #   vocabulary <- object$vocabulary
+    #   vocabulary <- vocabulary$keys_y %>% unlist() %>% as_tibble() %>%
+    #     mutate(key_y = row_number()) %>% rename(pred_label = "value")
+    #
+    #   if (any((test_data %>% class) == "ppred_examples_df")) {
+    #     test_data %>%
+    #       mutate(y_pred = y_pred + 1) %>%
+    #       left_join(vocabulary, by = c("y_pred" = "key_y")) -> y_pred
+    #   }
+    #   else {
+    #     tibble(y_pred = as.numeric(y_pred) + 1,
+    #            y_actual = as.numeric(tokens_test$token_y) + 1) %>%
+    #       left_join(vocabulary, by = c("y_pred" = "key_y")) %>%
+    #       left_join(vocabulary, by = c("y_actual" = "key_y")) %>%
+    #       setNames(c("y_pred", "y_actual", "pred_label", "actual_label")) -> y_pred
+    #   }
+    # }
+
 
 
 
