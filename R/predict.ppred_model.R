@@ -41,7 +41,10 @@ predict.ppred_model <- function(object, test_data, output = c("append", "y_pred"
   # OUTCOME, NEXT_ACTIVITY & REMAINING_TRACE
   if (object$task %in% c("outcome", "next_activity", "remaining_trace")) {
 
-    if (output == "raw") return(y_pred)
+    if (output == "raw") {
+      colnames(y_pred) <- object$vocabulary$keys_y
+      return(y_pred)
+    }
 
     # IF output == y_pred || output == append
     # CONVERT NUMERIC Y_PRED TO ACTIVITY LABELS
@@ -63,6 +66,7 @@ predict.ppred_model <- function(object, test_data, output = c("append", "y_pred"
         test_data %>%
           mutate(y_pred = y_pred + 1) %>%
           left_join(vocabulary, by = c("y_pred" = "key_y")) -> y_pred
+        class(y_pred) <- c("ppred_predictions", class(y_pred))
       }
 
       # create a tibble from tokenize() output
