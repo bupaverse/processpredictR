@@ -7,7 +7,7 @@ confusion_matrix <- function(x, ...) {
 }
 
 #' @export
-confusion_matrix.ppred_predictions <- function(x, as.tibble = F)  {
+confusion_matrix.ppred_predictions <- function(x, ...)  {
 
   # if test_data is a preprocessed test dataset (before tokenize)
   if (any((class(x)) == "ppred_predictions")) {
