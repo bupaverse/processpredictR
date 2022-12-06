@@ -1,21 +1,22 @@
 #' @title Confusion matrix for
-#' @param x [`ppred_predictions`] An event log with predicted values
+#' @param predictions [`ppred_predictions`] An event log with predicted values
 #'
 #' @export
-confusion_matrix <- function(x, ...) {
+confusion_matrix <- function(predictions, ...) {
   UseMethod("confusion_matrix")
 }
 
 #' @export
-confusion_matrix.ppred_predictions <- function(x, ...)  {
+confusion_matrix.ppred_predictions <- function(predictions, ...)  {
 
-  y_var <- x %>% attr("y_var")
-  if (any((class(x)) == "ppred_predictions")) {
-    output <- table(x[[y_var]], x$pred_label)
+  y_var <- predictions %>% attr("y_var")
+  task <- predictions %>% attr("task")
+  if (task %in% c("outcome", "next_activity")) {
+    output <- table(predictions[[y_var]], predictions[[paste0("pred_", task)]])
   }
 
   else {
-    simpleError("try again")
+    return(simpleError("Only applicable for tasks: outcome, next_activity"))
   }
 
   output
