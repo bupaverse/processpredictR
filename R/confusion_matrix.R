@@ -16,7 +16,7 @@ confusion_matrix.ppred_predictions <- function(predictions, ...)  {
   }
 
   else {
-    return(simpleError("Only applicable for tasks: outcome, next_activity"))
+    cli::cli_abort("Only applicable for tasks: outcome, next_activity")
   }
 
   output

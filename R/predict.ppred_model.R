@@ -94,7 +94,7 @@ predict.ppred_model <- function(object, test_data, output = c("append", "y_pred"
           test_data %>% mutate(y_pred = as.numeric(y_pred)) %>%
             mutate(pred_start_ = complete + y_pred,
                    actual_start_ = lead(start)) %>%
-            rename_with(~ paste0(., attr(tmp$test_df, "task")), c(pred_start_, actual_start_)) -> y_pred
+            rename_with(~ paste0(., object$task), c(pred_start_, actual_start_)) -> y_pred
           # as_tibble() %>% select(complete, actual_starttime_next_activity, predicted_starttime_next_activity) %>%
           # ggplotly(aes(predicted_starttime_next_activity, start2)) + geom_point()
         }
