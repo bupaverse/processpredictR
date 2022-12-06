@@ -1,0 +1,37 @@
+#' @title Confusion matrix for
+#' @param predictions [`ppred_predictions`] An event log with predicted values
+#'
+#' @export
+confusion_matrix <- function(predictions, ...) {
+  UseMethod("confusion_matrix")
+}
+
+#' @export
+confusion_matrix.ppred_predictions <- function(predictions, ...)  {
+
+  y_var <- predictions %>% attr("y_var")
+  task <- predictions %>% attr("task")
+  if (task %in% c("outcome", "next_activity")) {
+    output <- table(predictions[[y_var]], predictions[[paste0("pred_", task)]])
+  }
+
+  else {
+    return(simpleError("Only applicable for tasks: outcome, next_activity"))
+  }
+
+  output
+
+  # # if test_data is a preprocessed test dataset (before tokenize)
+  # if (any((test_data %>% class) == "ppred_examples_df")) {
+  #   tokens_test <- test_data %>% tokenize()
+  #   y_tokens_test <- tokens_test$token_y
+  # }
+  #
+  # # if test_data is already tokenized
+  # else if (any((test_data %>% class) == "ppred_examples_tokens")) {
+  #   tokens_test <- test_data
+  #   y_tokens_test <- tokens_test$token_y
+  # }
+
+  # output <- table(as.numeric(y_pred), y_tokens_test)
+}
