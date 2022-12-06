@@ -1,9 +1,8 @@
 #' @title Confusion matrix for
 #' @param x [`ppred_predictions`] An event log with predicted values
-#' @param as.tibble [`logical`] (default [`FALSE`]): if [`TRUE`] returns a tibble
 #'
 #' @export
-confusion_matrix <- function(x, as.tibble = F) {
+confusion_matrix <- function(x, ...) {
   UseMethod("confusion_matrix")
 }
 
@@ -20,6 +19,7 @@ confusion_matrix.ppred_predictions <- function(x, as.tibble = F)  {
     simpleError("try again")
   }
 
+  output
 
   # # if test_data is a preprocessed test dataset (before tokenize)
   # if (any((test_data %>% class) == "ppred_examples_df")) {
@@ -34,7 +34,4 @@ confusion_matrix.ppred_predictions <- function(x, as.tibble = F)  {
   # }
 
   # output <- table(as.numeric(y_pred), y_tokens_test)
-
-  if (!as.tibble) output
-  else output %>% as_tibble()
 }

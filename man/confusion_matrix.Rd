@@ -4,7 +4,7 @@
 \alias{confusion_matrix}
 \title{Confusion matrix for}
 \usage{
-confusion_matrix(x, as.tibble = F)
+confusion_matrix(x, ...)
 }
 \arguments{
 \item{x}{\code{\link{ppred_predictions}} An event log with predicted values}
