@@ -1,6 +1,7 @@
 #' Generic plot function
 #'
 #' @param predictions: An object of class [`ppred_predictions`].
+#' @import ggplot2
 #'
 #' @export
 plot.ppred_predictions <- function(predictions, ...) {
