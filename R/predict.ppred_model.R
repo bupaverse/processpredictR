@@ -36,7 +36,6 @@ predict.ppred_model <- function(object, test_data, output = c("append", "y_pred"
 
   y_pred <- stats::predict(object$model, x_test_list, ...)
 
-
 # Postprocessing ----------------------------------------------------------
   # OUTCOME, NEXT_ACTIVITY & REMAINING_TRACE
   if (object$task %in% c("outcome", "next_activity", "remaining_trace")) {
@@ -96,8 +95,8 @@ predict.ppred_model <- function(object, test_data, output = c("append", "y_pred"
       if (output == "append") {
         if (any((test_data %>% class) == "ppred_examples_df")) {
           test_data %>% mutate(y_pred = as.numeric(y_pred)) %>%
-            mutate(pred_start_ = complete + y_pred,
-                   actual_start_ = lead(start)) %>%
+            mutate(pred_start_ = end_time + y_pred,
+                   actual_start_ = lead(start_time)) %>%
             rename_with(~ paste0(., object$task), c(pred_start_, actual_start_)) -> y_pred
           # as_tibble() %>% select(complete, actual_starttime_next_activity, predicted_starttime_next_activity) %>%
           # ggplotly(aes(predicted_starttime_next_activity, start2)) + geom_point()

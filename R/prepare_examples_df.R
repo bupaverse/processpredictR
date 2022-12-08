@@ -62,8 +62,7 @@ prepare_examples_dt.activitylog <- function(log, task = c("outcome", "next_activ
 
   log %>%
     as_tibble() %>%
-    select(AIID, any_of(features)) %>%
-    distinct() -> feature_data
+    select(AIID, any_of(features)) -> feature_data
 
   log_dt <- log %>%
     as_tibble() %>%
@@ -119,6 +118,7 @@ prepare_examples_main <- function(log, mapping, task, features, feature_data, ..
                  ),
                .(CID)][,c("time_before_activity") := .(if_else(is.na(time_before_activity), 0, time_before_activity))] %>%
       filter(!is.na(time_till_next_activity)) -> log
+
     standard_features <- c("latest_duration","throughput_time","processing_time","time_before_activity")
 
   } else if(task == "remaining_time") {
@@ -173,8 +173,12 @@ prepare_examples_main <- function(log, mapping, task, features, feature_data, ..
   attr(output, "mapping") <- mapping
   attr(output, "max_case_length") <- max_case_length(output)
   vocabulary <- create_vocabulary(output)
+  if (task %in% c("outcome", "next_activity", "remaining_trace")) num_outputs <- output[[task]] %>% unique() %>% length()
+  else num_outputs <- 1
+  attr(output, "num_outputs") <- num_outputs %>% as.integer()
   attr(output, "vocab_size") <- vocabulary$keys_x %>% length() %>% as.integer()
   attr(output, "vocabulary") <- vocabulary
+
   if (!is.null(attr(output, "features"))) {
     output <- hot_encode_feats(output)
   }
