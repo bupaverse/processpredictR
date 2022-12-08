@@ -83,9 +83,13 @@ predict.ppred_model <- function(object, test_data, output = c("append", "y_pred"
 
   # NEXT_TIME & REMAINING_TIME
   else if (object$task %in% c("next_time", "remaining_time")) {
-    mean <- object$y_normalize_layer$mean %>% as.double()
-    variance <- object$y_normalize_layer$variance %>% as.double()
-    y_pred <- y_pred * sqrt(variance) + mean
+    ###########################    ###########################    ###########################    ###########################
+    # # original
+    # mean <- object$y_normalize_layer$mean %>% as.double()
+    # variance <- object$y_normalize_layer$variance %>% as.double()
+    # y_pred <- y_pred * sqrt(variance) + mean
+    y_pred <- y_pred * object$sd_time
+    ###########################    ###########################    ###########################    ###########################
 
     # NEXT_TIME
     if (object$task == "next_time") {

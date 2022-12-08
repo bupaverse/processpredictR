@@ -22,7 +22,7 @@ stack_layer <- function(object, layer) {
 
   outputs <- object$model$output %>% layer
 
-  object$model <- keras::keras_model(inputs = object$model$input, outputs = outputs)
+  object$model <- keras::keras_model(inputs = object$model$input, outputs = outputs, name = object$model$name)
   return(object)
 
 }

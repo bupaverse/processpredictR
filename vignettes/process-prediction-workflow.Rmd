@@ -28,6 +28,9 @@ The goal of processpredictR is to perform prediction tasks on processes using ev
 library(processpredictR)
 library(eventdataR)
 library(ggplot2)
+library(dplyr)
+library(keras)
+library(purrr)
 ```
 
 # Preprocessing
@@ -51,7 +54,7 @@ split$test_df %>% head(5)
 It's important to note that the split is done randomly^[whether is it representative to mix up the observed sequence of cases in an event log is uncertain at the moment of writing] and by cases (not by rows). The latter normally would imply that the row level split ratio should not necessarily correspond to the case level split ratio. That is because the trace lengths can differ. To control for that the trace_length_bins argument is provided and applied by default.
 ```{r}
 nrow(split$train_df) / nrow(df)
-dplyr::n_distinct(split$train_df$patient) / dplyr::n_distinct(df$patient)
+n_distinct(split$train_df$patient) / n_distinct(df$patient)
 ```
 
 # Transformer model
@@ -122,6 +125,7 @@ model %>% predict(test_data = split$test_df,
 </details>
 </p>
 
+### Visualize predictions
 For the classification tasks outcome and next activity a confusion_matrix function is provided.
 ```{r}
 predictions %>% class
@@ -134,7 +138,7 @@ plot(predictions) %>% coord_flip()
 ```
 
 ## Evaluate model
-Returns the metrics specified in _compile()_.
+Returns loss and metrics specified in _compile()_.
 ```{r}
 model %>% evaluate(split$test_df)
 ```
@@ -142,16 +146,19 @@ model %>% evaluate(split$test_df)
 # Add extra features to your model
 ```{r}
 # preprocessed dataset with categorical hot encoded features
-df <- patients %>% prepare_examples(task = "next_time", features = "employee") %>% split_train_test()
-df %>% head(5)
+df_next_time <- patients %>% prepare_examples(task = "next_time", features = "employee") %>% split_train_test()
+df_next_time$train_df %>% head(5)
 
-# the attributes of model are added or changed accordingly
-df$train_df %>% attr("numeric_features")
-df$train_df %>% attr("features")
-df$train_df %>% attr("hot_encoded_categorical_features")
+# the attributes of df are added or changed accordingly
+df_next_time$train_df %>% attr("numeric_features")
 
-# the right arguments for defining a model are passed
-create_model(df$train_df)
+# create a model
+df_next_time_model <- create_model(df_next_time$train_df)
+df_next_time_model
+
+# access other useful elements from a returned list
+df_next_time$train_df %>% attr("features")
+df_next_time$train_df %>% attr("hot_encoded_categorical_features")
 ```
 
 # Build your own transformer model
@@ -161,13 +168,45 @@ custom_model <- df$train_df %>% create_model(custom = TRUE, name = "my_custom_mo
 custom_model
 ```
 
-Stack layers on top of your custom model.
+Stack layers on top of your custom model:
 ```{r}
-#stack_layer(custom_model, )
-#OR directly with keras::
+custom_model <- custom_model %>%
+  stack_layers(layer_dropout(rate = 0.1)) %>% 
+  stack_layers(layer_dense(units = 64, activation = 'relu'))
+custom_model
+
+# this works too
+custom_model %>%
+  stack_layers(layer_dropout(rate = 0.1), layer_dense(units = 64, activation = 'relu'))
 ```
 
+You can also do it directly with keras-package:
+```{r}
+# here custom_model is a list containing a model and other useful parameters
+new_outputs <- custom_model$model$output %>% # custom_model$model to access a model and $output to access the outputs of that model
+  keras::layer_dropout(rate = 0.1) %>%
+  keras::layer_dense(units = custom_model$num_outputs, activation = 'linear')
 
+custom_model <- keras::keras_model(inputs = custom_model$model$input, outputs = new_outputs, name = "new_custom_model")
+custom_model
+```
+
+We can also opt for setting up and training our model manually, instead of using methods. Note that after defining a model with keras::keras_model() the model no longer is of class ppred_model.
+```{r}
+custom_model %>% class
+compile(object=custom_model, optimizer = "adam", 
+        loss = loss_sparse_categorical_crossentropy(), 
+        metrics = metric_sparse_categorical_crossentropy())
+
+# fit(object=custom_model$model)
+# predict()
+# evaluate()
+```
+
+To further use the provided methods for __fit()__, __predict()__ and __evaluate()__ or have access to the specifications of a event log (ex. num_outputs, max_case_length, etc. ) use __map_attributes()__.
+```{r}
+#map_attributes(custom_model, processed_df = df)
+```
 
 # Some other functions
 <details>
@@ -176,30 +215,37 @@ Stack layers on top of your custom model.
 <p>
 processpredictR also provides a number of other exported functions, that are abstracted from the user, but may come in handy.
 
-* __tokenize()__: 
+* __tokenize()__: returns tokenized sequences of activities, matrices of numeric and categorical features and a target variable. 
 ```{r}
-
+tokens <- tokenize(df_next_time$train_df)
+map(tokens, head)
 ```
 
-* __max_case_length()__: (= maximum length of a trace)
-```{r}
-
+```{r, echo=FALSE}
+df <- prepare_examples(patients, "next_activity")
 ```
 
-* __num_outputs()__: 
-```{r}
 
+* __max_case_length()__: returns a number of activities in a longest trace.
+```{r}
+max_case_length(df)
 ```
 
-* __create_vocabulary()__: 
+* __num_outputs()__: returns a number of outputs based on the task.
 ```{r}
-
+num_outputs(df)
 ```
 
-* __vocab_size()__: 
+* __create_vocabulary()__: returns a vocabulary, i.e a list of nested list representing inputs and outputs, where the index of an element can be seen as a key. 
 ```{r}
-
+create_vocabulary(df)
 ```
+
+* __vocab_size()__: returns a size of a vocabulary inputs.
+```{r}
+vocab_size(df)
+```
+
 
 </p>
 </details>
