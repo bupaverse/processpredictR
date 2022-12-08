@@ -1,26 +1,37 @@
 #' @title Confusion matrix for
-#'
-#' @param y_pred Predicted values
-#' @param test_data Either a dataset or tokens
-#' @param as.tibble [`logical`] (default [`FALSE`]): if [`TRUE`] returns a tibble
+#' @param predictions [`ppred_predictions`] An event log with predicted values
 #'
 #' @export
-confusion_matrix <- function(y_pred, test_data, as.tibble = F)  {
+confusion_matrix <- function(predictions, ...) {
+  UseMethod("confusion_matrix")
+}
 
-  # if test_data is a preprocessed test dataset (before tokenize)
-  if (any((test_data %>% class) == "ppred_examples_df")) {
-    tokens_test <- test_data %>% tokenize()
-    y_tokens_test <- tokens_test$token_y
+#' @export
+confusion_matrix.ppred_predictions <- function(predictions, ...)  {
+
+  y_var <- predictions %>% attr("y_var")
+  task <- predictions %>% attr("task")
+  if (task %in% c("outcome", "next_activity")) {
+    output <- table(predictions[[y_var]], predictions[[paste0("pred_", task)]])
   }
 
-  # if test_data is already tokenized
-  else if (any((test_data %>% class) == "ppred_examples_tokens")) {
-    tokens_test <- test_data
-    y_tokens_test <- tokens_test$token_y
+  else {
+    cli::cli_abort("Only applicable for tasks: outcome, next_activity")
   }
 
-  output <- table(y_pred, y_tokens_test)
+  output
 
-  if (!as.tibble) output
-  else output %>% as_tibble()
+  # # if test_data is a preprocessed test dataset (before tokenize)
+  # if (any((test_data %>% class) == "ppred_examples_df")) {
+  #   tokens_test <- test_data %>% tokenize()
+  #   y_tokens_test <- tokens_test$token_y
+  # }
+  #
+  # # if test_data is already tokenized
+  # else if (any((test_data %>% class) == "ppred_examples_tokens")) {
+  #   tokens_test <- test_data
+  #   y_tokens_test <- tokens_test$token_y
+  # }
+
+  # output <- table(as.numeric(y_pred), y_tokens_test)
 }

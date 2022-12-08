@@ -50,6 +50,8 @@ hot_encode_feats <- function(examples) {
   attr(output, "y_var") <- attr(examples, "y_var")
   attr(output, "max_case_length") <- attr(examples, "max_case_length")
   attr(output, "vocab_size") <- attr(examples, "vocab_size")
+  attr(output, "num_outputs") <- attr(examples, "num_outputs")
+
 
   attr(output, "numeric_features") <- names_num_features
   attr(output, "features") <- names_num_features %>% append(names_hotencoded_features)

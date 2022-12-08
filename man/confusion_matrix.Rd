@@ -4,14 +4,10 @@
 \alias{confusion_matrix}
 \title{Confusion matrix for}
 \usage{
-confusion_matrix(y_pred, test_data, as.tibble = F)
+confusion_matrix(predictions, ...)
 }
 \arguments{
-\item{y_pred}{Predicted values}
-
-\item{test_data}{Either a dataset or tokens}
-
-\item{as.tibble}{\code{\link{logical}} (default \code{\link{FALSE}}): if \code{\link{TRUE}} returns a tibble}
+\item{predictions}{\code{\link{ppred_predictions}} An event log with predicted values}
 }
 \description{
 Confusion matrix for

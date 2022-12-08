@@ -4,10 +4,10 @@
 \alias{create_model}
 \title{Define transformer model}
 \usage{
-create_model(df, custom = FALSE, ...)
+create_model(x_train, custom = FALSE, ...)
 }
 \arguments{
-\item{df}{\code{\link{data.frame}}: A processed \code{\link{data.frame}} from prepare_examples}
+\item{x_train}{\code{\link{data.frame}}: A processed \code{\link{data.frame}} from prepare_examples}
 
 \item{custom}{\code{\link{logical}} (default \code{\link{FALSE}}): If \code{\link{TRUE}}, returns a custom model.}
 
