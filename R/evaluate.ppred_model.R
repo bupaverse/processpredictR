@@ -37,6 +37,7 @@ evaluate.ppred_model <- function(object, test_data, ...) {
   # NEXT_TIME & REMAINING_TIME
   if (object$task %in% c("next_time", "remaining_time")) {
     #######################    #######################    #######################    #######################
+    y_tokens_test <- y_tokens_test / object$sd_time
     # # original
     # mean <- object$y_normalize_layer$mean %>% as.double()
     # variance <- object$y_normalize_layer$variance %>% as.double()
