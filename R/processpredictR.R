@@ -14,8 +14,7 @@
 #' @import tidyr
 #' @import keras
 #' @import tensorflow
-#' @importFrom data.table as.data.table
-
+#' @importFrom data.table as.data.table .N .GRP shift
 
 
 
