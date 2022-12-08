@@ -33,8 +33,7 @@ hot_encode_feats <- function(examples) {
 
     output <- examples %>%
       data.table::as.data.table() %>%
-      mltools::one_hot(cols = names(cat_features), dropCols = F) %>%
-      re_map(mapping = mapping)
+      mltools::one_hot(cols = names(cat_features), dropCols = F)
   }
 
   else {
