@@ -36,10 +36,13 @@ evaluate.ppred_model <- function(object, test_data, ...) {
 
   # NEXT_TIME & REMAINING_TIME
   if (object$task %in% c("next_time", "remaining_time")) {
-    mean <- object$y_normalize_layer$mean %>% as.double()
-    variance <- object$y_normalize_layer$variance %>% as.double()
-    y_tokens_test <- keras::layer_normalization(y_tokens_test, mean = mean, variance = variance)
+    #######################    #######################    #######################    #######################
+    # # original
+    # mean <- object$y_normalize_layer$mean %>% as.double()
+    # variance <- object$y_normalize_layer$variance %>% as.double()
+    # y_tokens_test <- keras::layer_normalization(y_tokens_test, mean = mean, variance = variance)
 
+    #######################    #######################    #######################    #######################
     # normalize_y <- keras::layer_normalization()
     # normalize_y %>% adapt(y_tokens_test)
     # y_tokens_test <- normalize_y(y_tokens_test)
