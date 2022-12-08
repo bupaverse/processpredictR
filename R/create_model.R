@@ -58,7 +58,7 @@ create_model.ppred_examples_df <- function(x_train, custom = FALSE, ...) {
     scale_numeric %>% adapt(numeric_features_train)
     numeric_outputs <- numeric_inputs %>%
       scale_numeric() %>%
-      keras::layer_dense(units = 32, activation = "relu")
+      keras::layer_dense(units = 32, activation = if_else(task %in% c("next_time", "remaining_time"), "linear", "softmax"))
 
     outputs <- keras::layer_concatenate(list(outputs, numeric_outputs))
   }
@@ -87,12 +87,12 @@ create_model.ppred_examples_df <- function(x_train, custom = FALSE, ...) {
       keras::layer_dropout(rate = 0.1) %>%
       keras::layer_dense(units = 64, activation = 'relu') %>%
       keras::layer_dropout(rate = 0.1) %>%
-      keras::layer_dense(units = num_outputs, activation = 'linear')
+      keras::layer_dense(units = num_outputs, activation = 'relu')
   }
 
   #if (num_features > 0) {
     list_inputs <- list(inputs) %>% append(numeric_inputs) %>% append(categorical_inputs)
-    model <- keras::keras_model(inputs = list_inputs, outputs = outputs)
+    model <- keras::keras_model(inputs = list_inputs, outputs = outputs, ...)
   #}
   #else {
     #model <- keras::keras_model(inputs = inputs, outputs = outputs)

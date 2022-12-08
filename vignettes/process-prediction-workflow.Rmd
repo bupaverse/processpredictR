@@ -1,0 +1,214 @@
+---
+title: "Introduction to processpredictR: workflow"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{process-prediction-workflow}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+# Prologue
+The goal of processpredictR is to perform prediction tasks on processes using event logs and Transformer models.
+5 process monitoring tasks are defined as follows:
+
+* outcome: 
+* next activity: 
+* remaining trace: 
+* next time: 
+* remaining time: 
+
+```{r setup}
+library(processpredictR)
+library(eventdataR)
+library(ggplot2)
+```
+
+# Preprocessing
+As a first step in the process prediction workflow we must obtain a dataset of the following format, where: 
+
+* each row/observation is a unique instance id
+* _(an event log is implicitly transformed to activity log)_
+* the prefix column is a cumulative sum/concatenation of activities in a trace (of a case)
+```{r}
+df <- prepare_examples(patients, task = "outcome")
+df
+```
+
+We split the transformed dataset into train- and test sets for a later use in fit() and predict(), respectively. 
+```{r}
+set.seed(123)
+split <- df %>% split_train_test(trace_length_bins = 5)
+split$train_df %>% head(5)
+split$test_df %>% head(5)
+```
+It's important to note that the split is done randomly^[whether is it representative to mix up the observed sequence of cases in an event log is uncertain at the moment of writing] and by cases (not by rows). The latter normally would imply that the row level split ratio should not necessarily correspond to the case level split ratio. That is because the trace lengths can differ. To control for that the trace_length_bins argument is provided and applied by default.
+```{r}
+nrow(split$train_df) / nrow(df)
+dplyr::n_distinct(split$train_df$patient) / dplyr::n_distinct(df$patient)
+```
+
+# Transformer model
+Next step in the workflow is to build/define a model. processpredictR provides a default set of functions that are wrappers of generics provided by keras-package. For the easy of use, the preprocessing steps such as tokenizing of sequences, normalizing numerical features, etc. are automated. 
+
+## Define model
+Based on the train set we define the default transformer model.
+```{r}
+model <- split$train_df %>% create_model(custom = FALSE, 
+                                         name = "my_model") # pass arguments as ... that are applicable to keras::keras_model()
+
+model # is a list 
+
+model %>% attributes() # objects from a returned list
+```
+
+Additionally, we can use functions from the keras-package as follows:
+```{r}
+model$model$name # get the name of a model
+model$model$non_trainable_variables # list of non-trainable parameters of a model
+```
+
+The model is assigned it's own class for which the processpredictR provides methods of _compile()_, _fit()_, _predict()_ and _evaluate()_. 
+```{r, message=FALSE}
+model %>% class
+methods(compile)
+```
+
+## Compilation
+We compile the model. By default, the loss function is the log-cosh and the categorical cross entropy for regression tasks (next time and remaining time) and classification tasks, respectively. It is of course possible to override the default arguments.
+```{r}
+model %>% compile() # model compilation
+```
+
+## Training
+Optionally assign it to an object to access the training metrics specified in _compile()_. 
+```{r, cache=TRUE}
+hist <- fit(object = model, train_data = split$train_df, epochs = 5)
+hist$params
+hist$metrics
+```
+
+## Make predictions
+The defined method for _predict()_ can return 3 types of output: 
+Test dataset with appended predicted values (output = "append")
+```{r}
+predictions <- model %>% predict(test_data = split$test_df, 
+                                 output = "append") # default
+predictions %>% head(5)
+```
+
+<details>
+<summary>raw predicted values (output = "raw")</summary>
+<p>
+```{r, echo=FALSE}
+model %>% predict(test_data = split$test_df,
+                  output = "raw")
+```
+</details>
+</p>
+
+<details>
+<summary>predicted values with postprocessing (output = "y_pred")</summary>
+```{r, echo=FALSE}
+model %>% predict(test_data = split$test_df,
+                  output = "y_pred")
+```
+</details>
+</p>
+
+For the classification tasks outcome and next activity a confusion_matrix function is provided.
+```{r}
+predictions %>% class
+confusion_matrix(predictions)
+```
+
+Plot method for the confusion matrix (classification) or a scatter plot (regression).
+```{r}
+plot(predictions) %>% coord_flip()
+```
+
+## Evaluate model
+Returns the metrics specified in _compile()_.
+```{r}
+model %>% evaluate(split$test_df)
+```
+
+# Add extra features to your model
+```{r}
+# preprocessed dataset with categorical hot encoded features
+df <- patients %>% prepare_examples(task = "next_time", features = "employee") %>% split_train_test()
+df %>% head(5)
+
+# the attributes of model are added or changed accordingly
+df$train_df %>% attr("numeric_features")
+df$train_df %>% attr("features")
+df$train_df %>% attr("hot_encoded_categorical_features")
+
+# the right arguments for defining a model are passed
+create_model(df$train_df)
+```
+
+# Build your own transformer model
+```{r}
+df <- prepare_examples(patients, task = "next_activity") %>% split_train_test()
+custom_model <- df$train_df %>% create_model(custom = TRUE, name = "my_custom_model")
+custom_model
+```
+
+Stack layers on top of your custom model.
+```{r}
+#stack_layer(custom_model, )
+#OR directly with keras::
+```
+
+
+
+# Some other functions
+<details>
+<summary>
+</summary>
+<p>
+processpredictR also provides a number of other exported functions, that are abstracted from the user, but may come in handy.
+
+* __tokenize()__: 
+```{r}
+
+```
+
+* __max_case_length()__: (= maximum length of a trace)
+```{r}
+
+```
+
+* __num_outputs()__: 
+```{r}
+
+```
+
+* __create_vocabulary()__: 
+```{r}
+
+```
+
+* __vocab_size()__: 
+```{r}
+
+```
+
+</p>
+</details>
+
+
+# Attribution
+This repository is based on the ProcessTransformer (Python) library by Buksh et al. In particular, the developed application of the three process monitoring tasks _next_activity_, _next time_ and _remaining time_ was extended with the tasks _outcome_ and _remaining trace_. 
+Citation: Zaharah A. Bukhsh, Aaqib Saeed, & Remco M. Dijkman. (2021). “ProcessTransformer: Predictive Business Process Monitoring with Transformer Network”. arXiv preprint arXiv:2104.00721
+
+
+
+
