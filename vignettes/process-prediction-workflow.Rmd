@@ -202,11 +202,11 @@ compile(object=custom_model, optimizer = "adam",
         metrics = metric_sparse_categorical_crossentropy())
 ```
 
-Before we can train the model we first must prepare the data.
+Before training the model we first must prepare the data.
 ```{r}
 # the trace of activities must be tokenized
 tokens_train <- df$train_df %>% tokenize()
-map(tokens, head) # the output of tokens is a list
+map(tokens_train, head) # the output of tokens is a list
 
 # make sequences of equal length
 x <- tokens_train$token_x %>% pad_sequences(maxlen = max_case_length(df$train_df), value = 0)
@@ -214,7 +214,7 @@ y <- tokens_train$token_y
 ```
 
 We are now ready to train our custom model
-```{r, echo=F}
+```{r, eval=F}
 # train
 fit(object = custom_model, x, y, epochs = 10, batch_size = 10) # see also ?keras::fit.keras.engine.training.Model
 
@@ -226,7 +226,8 @@ predict(custom_model, x)
 # evaluate
 tokens_test <- df$test_df %>% tokenize()
 x <- tokens_test$token_x
-y <- tokens_test$token_y / sd(tokens_train$token_y) # normalize by dividing y_test over the standard deviation of y_train
+# normalize by dividing y_test over the standard deviation of y_train
+y <- tokens_test$token_y / sd(tokens_train$token_y)
 evaluate(custom_model, x, y)
 ```
 
@@ -252,7 +253,6 @@ map(tokens, head)
 ```{r, echo=FALSE}
 df <- prepare_examples(patients, "next_activity")
 ```
-
 
 * __max_case_length()__: returns a number of activities in a longest trace.
 ```{r}
