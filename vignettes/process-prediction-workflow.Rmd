@@ -40,14 +40,14 @@ As a first step in the process prediction workflow we must obtain a dataset of t
 * _(an event log is implicitly transformed to activity log)_
 * the prefix column is a cumulative sum/concatenation of activities in a trace (of a case)
 ```{r}
-df <- prepare_examples(patients, task = "outcome")
+df <- prepare_examples_dt(patients, task = "outcome")
 df
 ```
 
 We split the transformed dataset into train- and test sets for a later use in fit() and predict(), respectively. 
 ```{r}
 set.seed(123)
-split <- df %>% split_train_test(trace_length_bins = 5)
+split <- df %>% split_train_test()
 split$train_df %>% head(5)
 split$test_df %>% head(5)
 ```
@@ -145,25 +145,25 @@ model %>% evaluate(split$test_df)
 
 # Add extra features to your model
 ```{r}
-# preprocessed dataset with categorical hot encoded features
-df_next_time <- patients %>% prepare_examples(task = "next_time", features = "employee") %>% split_train_test()
-df_next_time$train_df %>% head(5)
-
-# the attributes of df are added or changed accordingly
-df_next_time$train_df %>% attr("numeric_features")
-
-# create a model
-df_next_time_model <- create_model(df_next_time$train_df)
-df_next_time_model
-
-# access other useful elements from a returned list
-df_next_time$train_df %>% attr("features")
-df_next_time$train_df %>% attr("hot_encoded_categorical_features")
+# # preprocessed dataset with categorical hot encoded features
+# df_next_time <- patients %>% prepare_examples_dt(task = "next_time", features = "employee") %>% split_train_test()
+# df_next_time$train_df %>% head(5)
+# 
+# # the attributes of df are added or changed accordingly
+# df_next_time$train_df %>% attr("numeric_features")
+# 
+# # create a model
+# df_next_time_model <- create_model(df_next_time$train_df)
+# df_next_time_model
+# 
+# # access other useful elements from a returned list
+# df_next_time$train_df %>% attr("features")
+# df_next_time$train_df %>% attr("hot_encoded_categorical_features")
 ```
 
 # Build your own transformer model
 ```{r}
-df <- prepare_examples(patients, task = "next_activity") %>% split_train_test()
+df <- prepare_examples_dt(patients, task = "next_activity") %>% split_train_test()
 custom_model <- df$train_df %>% create_model(custom = TRUE, name = "my_custom_model")
 custom_model
 ```
@@ -193,17 +193,30 @@ custom_model
 
 We can also opt for setting up and training our model manually, instead of using methods. Note that after defining a model with keras::keras_model() the model no longer is of class ppred_model.
 ```{r}
+# class of the model
 custom_model %>% class
+
+# compile
 compile(object=custom_model, optimizer = "adam", 
         loss = loss_sparse_categorical_crossentropy(), 
         metrics = metric_sparse_categorical_crossentropy())
 
-# fit(object=custom_model$model)
+# Before we can train the model we first must prepare the data
+# the trace of activities must be tokenized
+tokens <- df$train_df %>% tokenize()
+map(tokens, head) # the output of tokens is a list
+
+tokens$token_x %>% pad_sequences(maxlen = max_case_length(df$train_df), value = 0) # make sequences of equal length
+
+#fit(object = custom_model, ) # see also ?keras::fit.keras.engine.training.Model
+
 # predict()
+
+
 # evaluate()
 ```
 
-To further use the provided methods for __fit()__, __predict()__ and __evaluate()__ or have access to the specifications of a event log (ex. num_outputs, max_case_length, etc. ) use __map_attributes()__.
+In case if you want to use the provided methods for __fit()__, __predict()__ and __evaluate()__ or have access to the specifications of a event log (ex. num_outputs, max_case_length, etc. ) through the model use __map_attributes()__.
 ```{r}
 #map_attributes(custom_model, processed_df = df)
 ```
@@ -217,8 +230,8 @@ processpredictR also provides a number of other exported functions, that are abs
 
 * __tokenize()__: returns tokenized sequences of activities, matrices of numeric and categorical features and a target variable. 
 ```{r}
-tokens <- tokenize(df_next_time$train_df)
-map(tokens, head)
+# tokens <- tokenize(df_next_time$train_df)
+# map(tokens, head)
 ```
 
 ```{r, echo=FALSE}
