@@ -35,7 +35,7 @@ Outcome prediction
 ### preprocess dataset
 
 ``` r
-df <- prepare_examples(patients, task = "outcome")
+df <- prepare_examples_dt(patients, task = "outcome")
 df
 ```
 
@@ -43,185 +43,10 @@ df
 
 ``` r
 set.seed(123)
-split <- split_train_test(df, split = 0.7, trace_length_bins = 5)
+split <- split_train_test(df, split = 0.7)
 split
-split$train_df -> df_train
-split$test_df -> df_test
-```
-
-### define transformer model
-
-``` r
-model <- create_model(df, custom_model_py = "default")
-model
-```
-
-### compile transformer model
-
-``` r
-compile_model(transformer_model = model, learning_rate = 0.001)
-```
-
-### fit transformer model
-
-``` r
-fit_model(model, train_data = df_train, num_epochs = 5, batch_size = 10, file = "outcome")
-```
-
-### fit transformer model v2
-
-``` r
-
-tokens_train <- df_train %>% tokenize()
-train_token_x <- tokens_train$token_x %>% keras::pad_sequences(maxlen = maxlen, value = 0)
-train_token_x <- train_token_x %>% reticulate::np_array(dtype = "float32")
-train_token_y <- tokens_train$token_y  %>% reticulate::np_array(dtype = "float32")
-
-model %>% 
-  keras::fit(train_token_x, train_token_y, batch_size = 10, verbose = 1, epochs = 5)
-  
-```
-
-### predict on test data
-
-``` r
-result <- predict_model(transformer_model = model, test_data = df_test)
-result
-```
-
-### visualize with tensorboard
-
-``` r
-tensorboard(log_dir = "tensorboard/")
-```
-
-</p>
-</details>
-<details>
-<summary>
-Next activity prediction
-</summary>
-<p>
-
-### preprocess dataset
-
-``` r
-df <- prepare_examples(traffic_fines, task = "next_activity")
-df
-```
-
-### split dataset into train- and test dataset
-
-``` r
-set.seed(123)
-split <- split_train_test(df, split = 0.7, trace_length_bins = 5)
-split
-split$train_df -> df_train
-split$test_df -> df_test
-```
-
-### define transformer model
-
-``` r
-model <- create_model(df, custom_model_py = "default")
-model
-```
-
-### compile transformer model
-
-``` r
-compile_model(transformer_model = model, learning_rate = 0.001)
-```
-
-### fit transformer model
-
-``` r
-fit_model(model, train_data = df_train, num_epochs = 50, batch_size = 10, file = "next_activity")
-```
-
-### predict on test data
-
-``` r
-result <- predict_model(transformer_model = model, test_data = df_test)
-result
-```
-
-</p>
-</details>
-<details>
-<summary>
-Next time prediction
-</summary>
-<p>
-
-### preprocess dataset
-
-``` r
-df <- prepare_examples(patients, task = "next_time")
-df
-```
-
-### split dataset into train- and test dataset
-
-``` r
-set.seed(123)
-split <- split_train_test(df, split = 0.7, trace_length_bins = 5)
-split
-split$train_df -> df_train
-split$test_df -> df_test
-```
-
-### define transformer model
-
-``` r
-model <- create_model(df, custom_model_py = "default")
-model
-```
-
-### compile transformer model
-
-``` r
-compile_model(transformer_model = model, learning_rate = 0.001)
-```
-
-### fit transformer model
-
-``` r
-fit_model(model, train_data = df_train, num_epochs = 5, batch_size = 10, file = "next_time")
-```
-
-### predict on test data
-
-``` r
-result <- predict_model(transformer_model = model, test_data = df_test)
-result
-```
-
-### calculate metrics (todo: create function)
-
-</p>
-</details>
-<details>
-<summary>
-Remaining time prediction
-</summary>
-<p>
-
-### preprocess dataset
-
-``` r
-df <- prepare_examples(patients, task = "remaining_time")
-df
-```
-
-### split dataset into train- and test dataset
-
-``` r
-set.seed(123)
-split <- split_train_test(df, split = 0.7, trace_length_bins = 5)
-split
-split$train_df -> df_train
-split$test_df -> df_test
+split$train_df -> train
+split$test_df -> test
 ```
 
 ### define transformer model
@@ -234,95 +59,37 @@ model
 ### compile transformer model
 
 ``` r
-compile_model(transformer_model = model, learning_rate = 0.001)
+compile(model)
 ```
 
 ### fit transformer model
 
 ``` r
-fit_model(model, train_data = df_train, num_epochs = 5, batch_size = 10, file = "remaining_time")
+fit(model, train, num_epochs = 5, batch_size = 10)
 ```
 
 ### predict on test data
 
 ``` r
-result <- predict_model(transformer_model = model, test_data = df_test)
+result <- predict(model, test)
 result
 ```
 
-### calculate metrics (todo: create function)
-
-</p>
-</details>
-<details>
-<summary>
-Remaining_trace prediction
-</summary>
-<p>
-
-### preprocess dataset
+### evaluate
 
 ``` r
-df <- prepare_examples(patients, task = "remaining_trace")
-df
-```
-
-### split dataset into train- and test dataset
-
-``` r
-set.seed(123)
-split <- split_train_test(df, split = 0.7, trace_length_bins = 5)
-split
-split$train_df -> df_train
-split$test_df -> df_test
-```
-
-### define transformer model
-
-``` r
-model <- create_model(df, custom_model_py = "default")
-model
-```
-
-### compile transformer model
-
-``` r
-compile_model(transformer_model = model, learning_rate = 0.001)
-```
-
-### fit transformer model
-
-``` r
-fit_model(model, train_data = df_train, num_epochs = 5, batch_size = 10, file = "remaining_trace")
-```
-
-### predict on test data
-
-``` r
-result <- predict_model(transformer_model = model, test_data = df_test)
+result <- evaluate(model, test)
 result
 ```
 
-</p>
-</details>
-
-## Customize transformer model
+### visualize with tensorboard
 
 ``` r
-model <- prepare_examples(patients) %>% create_model(custom_model_py = "custom")
-model
-
-model <- map_attributes(model, prepare_examples(patients))
-
-model$output %>% 
-  keras::layer_dropout(rate = 0.1) %>%
-  keras::layer_dense(units = 64, activation = 'relu') %>% 
-  keras::layer_dropout(rate = 0.1) %>%
-  keras::layer_dense(units = num_outputs(prepare_examples(patients)), activation = 'linear') -> new_output
-
-custom_model <- keras::keras_model(inputs = model$input, outputs = new_output, name = "outcome")
-custom_model
+tensorboard(log_dir = "tensorboard/")
 ```
+
+</details>
+</p>
 
 ## Attribution
 

@@ -33,7 +33,8 @@ hot_encode_feats <- function(examples) {
 
     output <- examples %>%
       data.table::as.data.table() %>%
-      mltools::one_hot(cols = names(cat_features), dropCols = F)
+      mltools::one_hot(cols = names(cat_features), dropCols = F) %>%
+      as_tibble()
   }
 
   else {

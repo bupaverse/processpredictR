@@ -185,7 +185,7 @@ You can also do it directly with keras-package:
 # here custom_model is a list containing a model and other useful parameters
 new_outputs <- custom_model$model$output %>% # custom_model$model to access a model and $output to access the outputs of that model
   keras::layer_dropout(rate = 0.1) %>%
-  keras::layer_dense(units = custom_model$num_outputs, activation = 'linear')
+  keras::layer_dense(units = custom_model$num_outputs, activation = 'softmax')
 
 custom_model <- keras::keras_model(inputs = custom_model$model$input, outputs = new_outputs, name = "new_custom_model")
 custom_model
@@ -200,21 +200,37 @@ custom_model %>% class
 compile(object=custom_model, optimizer = "adam", 
         loss = loss_sparse_categorical_crossentropy(), 
         metrics = metric_sparse_categorical_crossentropy())
-
-# Before we can train the model we first must prepare the data
-# the trace of activities must be tokenized
-tokens <- df$train_df %>% tokenize()
-map(tokens, head) # the output of tokens is a list
-
-tokens$token_x %>% pad_sequences(maxlen = max_case_length(df$train_df), value = 0) # make sequences of equal length
-
-#fit(object = custom_model, ) # see also ?keras::fit.keras.engine.training.Model
-
-# predict()
-
-
-# evaluate()
 ```
+
+Before training the model we first must prepare the data.
+```{r}
+# the trace of activities must be tokenized
+tokens_train <- df$train_df %>% tokenize()
+map(tokens_train, head) # the output of tokens is a list
+
+# make sequences of equal length
+x <- tokens_train$token_x %>% pad_sequences(maxlen = max_case_length(df$train_df), value = 0)
+y <- tokens_train$token_y
+```
+
+We are now ready to train our custom model
+```{r, eval=F}
+# train
+fit(object = custom_model, x, y, epochs = 10, batch_size = 10) # see also ?keras::fit.keras.engine.training.Model
+
+# predict
+tokens_test <- df$test_df %>% tokenize()
+x <- tokens_test$token_x %>% pad_sequences(maxlen = max_case_length(df$train_df), value = 0)
+predict(custom_model, x)
+
+# evaluate
+tokens_test <- df$test_df %>% tokenize()
+x <- tokens_test$token_x
+# normalize by dividing y_test over the standard deviation of y_train
+y <- tokens_test$token_y / sd(tokens_train$token_y)
+evaluate(custom_model, x, y)
+```
+
 
 In case if you want to use the provided methods for __fit()__, __predict()__ and __evaluate()__ or have access to the specifications of a event log (ex. num_outputs, max_case_length, etc. ) through the model use __map_attributes()__.
 ```{r}
@@ -230,14 +246,13 @@ processpredictR also provides a number of other exported functions, that are abs
 
 * __tokenize()__: returns tokenized sequences of activities, matrices of numeric and categorical features and a target variable. 
 ```{r}
-# tokens <- tokenize(df_next_time$train_df)
-# map(tokens, head)
+tokens <- tokenize(df_next_time$train_df)
+map(tokens, head)
 ```
 
 ```{r, echo=FALSE}
 df <- prepare_examples(patients, "next_activity")
 ```
-
 
 * __max_case_length()__: returns a number of activities in a longest trace.
 ```{r}

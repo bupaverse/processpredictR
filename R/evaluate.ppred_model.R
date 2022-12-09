@@ -36,33 +36,53 @@ evaluate.ppred_model <- function(object, test_data, ...) {
 
   # NEXT_TIME & REMAINING_TIME
   if (object$task %in% c("next_time", "remaining_time")) {
-    #######################    #######################    #######################    #######################
-    y_tokens_test <- y_tokens_test / object$sd_time
-    # # original
-    # mean <- object$y_normalize_layer$mean %>% as.double()
-    # variance <- object$y_normalize_layer$variance %>% as.double()
-    # y_tokens_test <- keras::layer_normalization(y_tokens_test, mean = mean, variance = variance)
 
-    #######################    #######################    #######################    #######################
-    # normalize_y <- keras::layer_normalization()
-    # normalize_y %>% adapt(y_tokens_test)
-    # y_tokens_test <- normalize_y(y_tokens_test)
+    metrics <- list(...)
+    if(length(metrics) == 0) {
+
+      #######################    #######################    #######################    #######################
+      y_tokens_test <- y_tokens_test / object$sd_time
+
+      # should be based solely on the metrics from compile()
+      results <- keras::evaluate(object$model, x_test_list, y_tokens_test, ...) #%>% keras::k_argmax(axis = -1)
+      return(results)
+
+      # # original
+      # mean <- object$y_normalize_layer$mean %>% as.double()
+      # variance <- object$y_normalize_layer$variance %>% as.double()
+      # y_tokens_test <- keras::layer_normalization(y_tokens_test, mean = mean, variance = variance)
+
+      #######################    #######################    #######################    #######################
+      # normalize_y <- keras::layer_normalization()
+      # normalize_y %>% adapt(y_tokens_test)
+      # y_tokens_test <- normalize_y(y_tokens_test)
+    }
+
+    else {
+      results <- predict(object, test_data, output = "append")
+
+      # for(i in 1:length(metrics)) {
+      #   metrics[[i]](y_tokens_test, results)
+      # }
+
+      y_var <- if_else(object$task == "next_time", "time_till_next_activity", "remaining_time")
+       results %>% summarize(
+        across(y_var,
+               .fns = list(...),
+               y_pred,
+               .names = "metric_{.fn}"))
+
+      # tmppred %>% summarize(across(time_till_next_activity,
+      #                              .fns = list(mae = Metrics::mae, rmse = Metrics::rmse),
+      #                              y_pred,
+      #                              .names = "metric_{.fn}") )
+
+    }
   }
-
-  # REMAINING_TRACE (TODO)
-  # else if (object$task == "remaining_trace") {
-  #
-  #   results <- keras::evaluate(object$model, x_test_list, y_tokens_test, ...)
-  #
-  # }
-
-
-  # should be based solely on the metrics from compile()
-  results <- keras::evaluate(object$model, x_test_list, y_tokens_test, ...) #%>% keras::k_argmax(axis = -1)
-  return(results)
 }
 
 
-
+#### PREDICT ######
+# Metrics::rmse()
 
 
