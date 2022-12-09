@@ -156,14 +156,19 @@ prepare_examples_main <- function(log, mapping, task, features, feature_data, ..
                   remaining_time = "remaining_time",
                   remaining_trace = "remaining_trace")
 
+
+
   log %>%
     merge(feature_data, by = "AIID") %>%
     as_tibble() %>%
     mutate(prefix = map_chr(prefix_list, paste, collapse = " - ")) %>%
-    select(ith_case, !!sym(mapping$case_id) := CID, prefix, prefix_list, any_of(c(y_var, standard_features, features)), k,
+    select(ith_case, !!sym(mapping$case_id) := CID, prefix, prefix_list, any_of(c(y_var, standard_features, setdiff(features, unlist(mapping)))), k,
            !!sym(mapping$activity_id) := AID, !!sym(mapping$resource_id) := RID,
-           start_time, end_time, remaining_trace_list) -> output
+           start_time, end_time, remaining_trace_list) %>%
+    as_tibble() -> output
 
+  output %>%
+    arrange(ith_case, k) -> output
 
   class(output) <- c("ppred_examples_df", class(output))
 

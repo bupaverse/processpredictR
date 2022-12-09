@@ -145,20 +145,20 @@ model %>% evaluate(split$test_df)
 
 # Add extra features to your model
 ```{r}
-# # preprocessed dataset with categorical hot encoded features
-# df_next_time <- patients %>% prepare_examples_dt(task = "next_time", features = "employee") %>% split_train_test()
-# df_next_time$train_df %>% head(5)
-# 
-# # the attributes of df are added or changed accordingly
-# df_next_time$train_df %>% attr("numeric_features")
-# 
-# # create a model
-# df_next_time_model <- create_model(df_next_time$train_df)
-# df_next_time_model
-# 
-# # access other useful elements from a returned list
-# df_next_time$train_df %>% attr("features")
-# df_next_time$train_df %>% attr("hot_encoded_categorical_features")
+# preprocessed dataset with categorical hot encoded features
+df_next_time <- patients %>% prepare_examples_dt(task = "next_time", features = "employee") %>% split_train_test()
+df_next_time$train_df %>% head(5)
+
+# the attributes of df are added or changed accordingly
+df_next_time$train_df %>% attr("numeric_features")
+
+# create a model
+df_next_time_model <- create_model(df_next_time$train_df)
+df_next_time_model
+
+# access other useful elements from a returned list
+df_next_time$train_df %>% attr("features")
+df_next_time$train_df %>% attr("hot_encoded_categorical_features")
 ```
 
 # Build your own transformer model
