@@ -88,6 +88,9 @@ result
 tensorboard(log_dir = "tensorboard/")
 ```
 
+</details>
+</p>
+
 ## Attribution
 
 This repository is based on the ProcessTransformer library by Buksh et
