@@ -99,7 +99,7 @@ prepare_examples_main <- function(log, mapping, task, features, feature_data, ..
 
   } else if(task == "next_activity") {
 
-    log[, c("next_activity") := .(shift(AID, n = -1, fill = "endpoint"))] -> log
+    log[, c("next_activity") := .(shift(AID, n = -1, fill = "endpoint")), .(CID)] -> log
 
     standard_features <- character()
   } else if(task == "next_time") {
