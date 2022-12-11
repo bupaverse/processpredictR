@@ -2,13 +2,19 @@
 % Please edit documentation in R/plot.ppred_predictions.R
 \name{plot.ppred_predictions}
 \alias{plot.ppred_predictions}
-\title{Generic plot function}
+\title{Plot Methods}
 \usage{
-\method{plot}{ppred_predictions}(predictions, ...)
+\method{plot}{ppred_predictions}(x, ...)
 }
 \arguments{
-\item{predictions:}{An object of class \code{\link{ppred_predictions}}.}
+\item{x}{Data to plot. An object of type \code{\link{ppred_predictions}}.}
+
+\item{...}{Additional variables}
+}
+\value{
+A ggplot object, which can be customized further, if deemed necessary.
 }
 \description{
-Generic plot function
+Visualize metric
 }
+\concept{visualization}

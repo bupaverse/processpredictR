@@ -1,5 +1,6 @@
 #' @title Confusion matrix for
 #' @param predictions [`ppred_predictions`] An event log with predicted values
+#' @param ... additional arguments
 #'
 #' @export
 confusion_matrix <- function(predictions, ...) {

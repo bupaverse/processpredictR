@@ -20,7 +20,8 @@ A \code{\link{list}} consisting of:
 Creates a vocabulary of activities and outcome labels.
 }
 \examples{
+library(eventdataR)
 tasks <- c("outcome", "next_activity", "next_time", "remaining_time", "remaining_trace")
-purrr::map(tasks, ~prepare_examples(patients, task = .x)) \%>\% purrr::map(create_vocabulary)
+purrr::map(tasks, ~prepare_examples_dt(patients, task = .x)) \%>\% purrr::map(create_vocabulary)
 
 }

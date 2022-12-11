@@ -1,10 +1,14 @@
-#' Generic plot function
+#' @title Plot Methods
 #'
-#' @param predictions: An object of class [`ppred_predictions`].
-#' @import ggplot2
+#' @description  Visualize metric
+#' @param x Data to plot. An object of type [`ppred_predictions`].
+#' @param ... Additional variables
+#' @return A ggplot object, which can be customized further, if deemed necessary.
+#'
+#' @concept visualization
 #'
 #' @export
-plot.ppred_predictions <- function(predictions, ...) {
+plot.ppred_predictions <- function(x, ...) {
   task <- predictions %>% attr("task")
   y_var <- predictions %>% attr("y_var")
 

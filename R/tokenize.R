@@ -3,7 +3,6 @@
 #' @description Tokenize features and target of a processed [`data.frame`] to fit the transformer model.
 #'
 #' @inheritParams split_train_test
-#' @param vocabulary [`list`]: A vocabulary, i.e. a list of activities and outcome labels.
 #'
 #' @return A list of tokens: token_x and token_y
 #'

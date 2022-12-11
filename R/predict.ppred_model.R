@@ -52,6 +52,8 @@ predict.ppred_model <- function(object, test_data, output = c("append", "y_pred"
     vocabulary <- vocabulary$keys_y %>% unlist() %>% as_tibble() %>%
       mutate(key_y = row_number()) %>%
       rename_with(function(.x) {glue::glue("pred_{object$task}")}, "value")
+      #rename_with(~ paste0(., object$task), value)
+
 
     if (output == "y_pred") {
       y_pred <- tibble(y_pred = as.numeric(y_pred) + 1) %>%

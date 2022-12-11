@@ -7,7 +7,7 @@
 get_vocabulary(examples)
 }
 \arguments{
-\item{examples}{}
+\item{examples}{\code{\link{ppred_examples_df}}: a preprocessed dataset returned by prepare_examples_dt().}
 }
 \description{
 Utils

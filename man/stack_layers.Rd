@@ -6,6 +6,11 @@
 \usage{
 stack_layers(object, ...)
 }
+\arguments{
+\item{object}{\code{\link{ppred_model}}: a list containing a model}
+
+\item{...}{functions for adding layers by using functional keras API. For example, keras::layer_dense(units=32, activation="relu")}
+}
 \description{
 User friendly interface to add a keras layer on top of existing model.
 }
