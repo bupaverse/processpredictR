@@ -17,7 +17,7 @@ prepare_examples_dt(
 
 \item{task}{\code{\link{character}}: a process monitoring task for which to prepare an event log.}
 
-\item{features}{\code{\link{character}} (default \code{\link{NULL}}): additional features. Appends attributes (if present) \link{numeric_features} and/or \link{categorical_features}  to a preprocessed event log.}
+\item{features}{\code{\link{character}} (default \code{\link{NULL}}): additional features. Appends attributes (if present) numeric_features and/or categorical_features to a preprocessed event log.}
 
 \item{...}{additional arguments}
 }

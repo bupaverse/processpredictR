@@ -6,7 +6,7 @@
 #' @param log \code{\link{log}}: Object of class \code{\link{log}} or derivatives (\code{\link{grouped_log}}, \code{\link{eventlog}},
 #' \code{\link{activitylog}}, etc.).
 #' @param task [`character`]: a process monitoring task for which to prepare an event log.
-#' @param features [`character`] (default [`NULL`]): additional features. Appends attributes (if present) [numeric_features] and/or [categorical_features]  to a preprocessed event log.
+#' @param features [`character`] (default [`NULL`]): additional features. Appends attributes (if present) numeric_features and/or categorical_features to a preprocessed event log.
 #' @param ... additional arguments
 #'
 #' @return a preprocessed dataset

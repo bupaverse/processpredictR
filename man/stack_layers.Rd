@@ -7,7 +7,7 @@
 stack_layers(object, ...)
 }
 \arguments{
-\item{object}{\code{\link{ppred_model}}: a list containing a model}
+\item{object}{a list containing a model returned by create_model().}
 
 \item{...}{functions for adding layers by using functional keras API. For example, keras::layer_dense(units=32, activation="relu")}
 }

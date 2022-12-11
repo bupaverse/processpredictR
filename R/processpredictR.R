@@ -18,6 +18,7 @@
 #' @importFrom cli cli_abort
 #' @importFrom glue glue
 #' @importFrom plotly ggplotly
+#' @import ggplot2
 
 
 

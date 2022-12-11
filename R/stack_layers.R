@@ -2,7 +2,7 @@
 #'
 #' User friendly interface to add a keras layer on top of existing model.
 #'
-#' @param object [`ppred_model`]: a list containing a model
+#' @param object a list containing a model returned by create_model().
 #' @param ... functions for adding layers by using functional keras API. For example, keras::layer_dense(units=32, activation="relu")
 #'
 #' @export

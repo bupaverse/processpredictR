@@ -6,11 +6,6 @@
 #'
 #' @return A list of tokens: token_x and token_y
 #'
-#' @examples
-#' library(eventdataR)
-#' ex_remaining_trace <- prepare_examples(patients, task = "remaining_trace")
-#' tokenize(ex_remaining_trace, vocabulary = create_vocabulary(ex_remaining_trace))
-#'
 #' @export
 tokenize <- function(processed_df) {
   UseMethod("tokenize")

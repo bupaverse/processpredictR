@@ -15,9 +15,3 @@ A list of tokens: token_x and token_y
 \description{
 Tokenize features and target of a processed \code{\link{data.frame}} to fit the transformer model.
 }
-\examples{
-library(eventdataR)
-ex_remaining_trace <- prepare_examples(patients, task = "remaining_trace")
-tokenize(ex_remaining_trace, vocabulary = create_vocabulary(ex_remaining_trace))
-
-}

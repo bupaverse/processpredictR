@@ -3,15 +3,13 @@
 
 #' Utils
 #'
-#' @param examples [`ppred_examples_df`]: a preprocessed dataset returned by prepare_examples_dt().
+#' @param examples a preprocessed dataset returned by prepare_examples_dt().
 #'
-#' @export
 #'
 get_vocabulary <- function(examples) {
   attr(examples, "vocabulary")
 }
 
-#' @export
 get_task <- function(examples) {
   attr(examples, "task")
 }
