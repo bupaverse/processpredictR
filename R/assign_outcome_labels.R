@@ -7,6 +7,7 @@
 #'
 #' @export
 assign_outcome_labels <- function(prefix_df, ...) {
+  outcome <- NULL
 
   prefix_df %>%
     mutate(outcome = forcats::fct_collapse(outcome, ...))

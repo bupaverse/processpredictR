@@ -19,6 +19,7 @@
 #' @importFrom glue glue
 #' @importFrom plotly ggplotly
 #' @import ggplot2
+#' @importFrom stats sd setNames
 
 
 

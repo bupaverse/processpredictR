@@ -62,6 +62,8 @@ hot_encode_feats <- function(examples) {
 }
 
 TransformerBlock <- function() {
+  super <- NULL
+  self <- NULL
   keras::new_layer_class(
     classname = "TransformerBlock",
     initialize = function(self, embed_dim, num_heads, ff_dim, rate = 0.1) {
@@ -91,6 +93,8 @@ TransformerBlock <- function() {
 
 # create layer TokenAndPositionEmbedding
 TokenAndPositionEmbedding  <- function() {
+  super <- NULL
+  self <- NULL
   keras::new_layer_class(
     classname = "TokenAndPositionEmbedding",
     initialize = function(self, maxlen, vocab_size, embed_dim, ...) {

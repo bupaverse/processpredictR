@@ -6,5 +6,14 @@
 \alias{processpredictR-package}
 \title{processpredictR}
 \description{
-More about what it does (maybe more than one line). Use four spaces when indenting paragraphs within the Description.
+This repository is based on the ProcessTransformer (Python) library by Buksh et al. In particular, the developed application of the three process monitoring tasks _next_activity_, _next time_ and _remaining time_ was extended with the tasks _outcome_ and _remaining trace_. Citation: Zaharah A. Bukhsh, Aaqib Saeed, & Remco M. Dijkman. (2021). “ProcessTransformer: Predictive Business Process Monitoring with Transformer Network”. arXiv preprint arXiv:2104.00721.
+}
+\author{
+\strong{Maintainer}: Gert Janssenswillen \email{gert.janssenswillen@uhasselt.be}
+
+Authors:
+\itemize{
+  \item Ivan Esin \email{ivan.esin@student.uhasselt}
+}
+
 }
