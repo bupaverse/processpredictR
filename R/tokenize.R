@@ -3,14 +3,8 @@
 #' @description Tokenize features and target of a processed [`data.frame`] to fit the transformer model.
 #'
 #' @inheritParams split_train_test
-#' @param vocabulary [`list`]: A vocabulary, i.e. a list of activities and outcome labels.
 #'
 #' @return A list of tokens: token_x and token_y
-#'
-#' @examples
-#' library(eventdataR)
-#' ex_remaining_trace <- prepare_examples(patients, task = "remaining_trace")
-#' tokenize(ex_remaining_trace, vocabulary = create_vocabulary(ex_remaining_trace))
 #'
 #' @export
 tokenize <- function(processed_df) {

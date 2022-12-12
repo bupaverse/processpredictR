@@ -3,21 +3,17 @@
 
 #' Utils
 #'
-#' @param examples
+#' @param examples a preprocessed dataset returned by prepare_examples_dt().
 #'
-#' @export
 #'
 get_vocabulary <- function(examples) {
   attr(examples, "vocabulary")
 }
 
-#' @export
-
 get_task <- function(examples) {
   attr(examples, "task")
 }
 
-#' @export
 hot_encode_feats <- function(examples) {
   mapping <- attr(examples, "mapping")
   features <- attr(examples, "features")

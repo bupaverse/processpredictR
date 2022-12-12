@@ -52,7 +52,7 @@ In the remained of this tutorial, each of the steps and possible avenues for cus
 As a first step in the process prediction workflow we use `prepare_examples` to obtain a dataset  where: 
 
 * each row/observation is a unique activity instance id
-* the prefix(_list) column stores the sequence of activities already executed in the case.
+* the prefix(_list) column stores the sequence of activities already executed in the case
 * necessary feature and target variables are calculated
 
 The returning object is of class `ppred_examples_df`, which inherits from `tbl_df`. 

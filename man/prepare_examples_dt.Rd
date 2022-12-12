@@ -2,7 +2,7 @@
 % Please edit documentation in R/prepare_examples_df.R
 \name{prepare_examples_dt}
 \alias{prepare_examples_dt}
-\title{Title}
+\title{Convert a dataset of type \code{\link{log}} into a preprocessed format.}
 \usage{
 prepare_examples_dt(
   log,
@@ -12,8 +12,19 @@ prepare_examples_dt(
 )
 }
 \arguments{
-\item{...}{}
+\item{log}{\code{\link{log}}: Object of class \code{\link{log}} or derivatives (\code{\link{grouped_log}}, \code{\link{eventlog}},
+\code{\link{activitylog}}, etc.).}
+
+\item{task}{\code{\link{character}}: a process monitoring task for which to prepare an event log.}
+
+\item{features}{\code{\link{character}} (default \code{\link{NULL}}): additional features. Appends attributes (if present) numeric_features and/or categorical_features to a preprocessed event log.}
+
+\item{...}{additional arguments}
+}
+\value{
+a preprocessed dataset
 }
 \description{
-Title
+an event log is converted into a tibble where each row contains a cumulative sequence of activities per case.
+This sequence will eventually be feeded to the transformer model's token embedding layer.
 }

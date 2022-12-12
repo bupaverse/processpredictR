@@ -6,6 +6,11 @@
 \usage{
 stack_layers(object, ...)
 }
+\arguments{
+\item{object}{a list containing a model returned by create_model().}
+
+\item{...}{functions for adding layers by using functional keras API. For example, keras::layer_dense(units=32, activation="relu")}
+}
 \description{
 User friendly interface to add a keras layer on top of existing model.
 }
