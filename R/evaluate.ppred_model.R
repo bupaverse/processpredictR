@@ -65,6 +65,7 @@ evaluate.ppred_model <- function(object, test_data, ...) {
       #   metrics[[i]](y_tokens_test, results)
       # }
 
+      y_pred <- NULL
       y_var <- if_else(object$task == "next_time", "time_till_next_activity", "remaining_time")
        results %>% summarize(
         across(y_var,

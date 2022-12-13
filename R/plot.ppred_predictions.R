@@ -19,6 +19,9 @@ plot.ppred_predictions <- function(x, ...) {
     predictions <- as.data.frame(table(predictions[[y_var]],
                                        predictions[[paste0("pred_", task)]]))
 
+    Var1 <- NULL
+    Var2 <- NULL
+    Freq <- NULL
     ggplot(predictions, aes(as.factor(Var1), as.factor(Var2), fill = Freq)) +
       geom_tile() +
       geom_text(aes(label = Freq)) +

@@ -20,7 +20,9 @@
 #' @importFrom plotly ggplotly
 #' @import ggplot2
 #' @importFrom stats sd setNames
-
+#' @importFrom tidyselect where
+#' @importFrom purrr map_chr
+#' @importFrom data.table :=
 
 
 '_PACKAGE'

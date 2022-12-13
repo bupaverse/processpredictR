@@ -12,14 +12,37 @@
 #' @return a preprocessed dataset
 #' @export
 #'
-prepare_examples_dt <- function(log, task = c("outcome", "next_activity",
+prepare_examples <- function(log, task = c("outcome", "next_activity",
                                               "next_time", "remaining_time",
                                               "remaining_trace"), features = NULL, ...) {
-  UseMethod("prepare_examples_dt")
+  UseMethod("prepare_examples")
+
+  AIID <- NULL
+  start <- NULL
+  .order <- NULL
+  AID <- NULL
+  . <- NULL
+  TS <- NULL
+  CID <- NULL
+  RID <- NULL
+  start_time <- NULL
+  end_time <- NULL
+  min_order <- NULL
+  outcome <- NULL
+  time_before_activity <- NULL
+  time_till_next_activity <- NULL
+  previous_duration <- NULL
+  remaining_trace_list <- NULL
+  remaining_trace <- NULL
+  prefix_list <- NULL
+  ith_case <- NULL
+  prefix <- NULL
+  k <- NULL
+  RID <- NULL
 }
 
 #' @export
-prepare_examples_dt.eventlog <- function(log, task = c("outcome", "next_activity",
+prepare_examples.eventlog <- function(log, task = c("outcome", "next_activity",
                                                        "next_time", "remaining_time",
                                                        "remaining_trace"), features = NULL, ...) {
 
@@ -52,7 +75,7 @@ prepare_examples_dt.eventlog <- function(log, task = c("outcome", "next_activity
 }
 
 #' @export
-prepare_examples_dt.activitylog <- function(log, task = c("outcome", "next_activity",
+prepare_examples.activitylog <- function(log, task = c("outcome", "next_activity",
                                                           "next_time", "remaining_time",
                                                           "remaining_trace"), features = NULL, ...) {
 

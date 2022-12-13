@@ -17,6 +17,7 @@ Imports:
     magrittr,
     reticulate,
     tidyr, 
+    tidyselect,
     purrr, 
     stringr, 
     keras,

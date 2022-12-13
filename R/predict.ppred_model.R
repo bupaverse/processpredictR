@@ -11,6 +11,14 @@ stats::predict
 #' @export
 predict.ppred_model <- function(object, test_data, output = c("append", "y_pred", "raw"), ...) {
 
+  end_time <- NULL
+  start_time <- NULL
+  pred_start_ <- NULL
+  actual_start_ <- NULL
+  remaining_time <- NULL
+  pred_ <- NULL
+  actual_ <- NULL
+
   output <- rlang::arg_match(output)
 
   # if test_data is a preprocessed test dataset (before tokenize)
@@ -92,6 +100,8 @@ predict.ppred_model <- function(object, test_data, output = c("append", "y_pred"
     y_pred <- y_pred * object$sd_time
     ###########################    ###########################    ###########################    ###########################
 
+
+
     # NEXT_TIME
     if (object$task == "next_time") {
       if (output == "append") {
@@ -110,6 +120,7 @@ predict.ppred_model <- function(object, test_data, output = c("append", "y_pred"
         class(y_pred) <- c("ppred_predictions", class(y_pred))
       }
     }
+
 
     # REMAINING_TIME
     else if (object$task == "remaining_time") {

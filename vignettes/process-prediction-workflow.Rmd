@@ -60,7 +60,7 @@ The returning object is of class `ppred_examples_df`, which inherits from `tbl_d
 In this tutorial, we will use the `traffic_fines` event log from `eventdataR`. Note that both `eventlog` and `activitylog` objects, as defined by `bupaR` are supported.
 
 ```{r}
-df <- prepare_examples_dt(traffic_fines, task = "outcome")
+df <- prepare_examples(traffic_fines, task = "outcome")
 df
 ```
 
@@ -189,7 +189,7 @@ df_next_time <- traffic_fines %>%
   group_by_case() %>%
   mutate(month = lubridate::month(min(timestamp), label = TRUE)) %>%
   ungroup_eventlog() %>%
-  prepare_examples_dt(task = "next_time", features = "month") %>% split_train_test()
+  prepare_examples(task = "next_time", features = "month") %>% split_train_test()
 
 # the attributes of df are added or changed accordingly
 df_next_time$train_df %>% attr("features")
@@ -207,7 +207,7 @@ Additional features can be either numerical variables, or factors. Numerical var
 Instead of using the standard `off the shelf` transformer model that comes with `processpredictR`, you can customize the model. One way to do this, is by using the `custom` argument of the `create_model` function. The resulting model will then only contain the input layers of the model, as shown below. 
 
 ```{r}
-df <- prepare_examples_dt(traffic_fines, task = "next_activity") %>% split_train_test()
+df <- prepare_examples(traffic_fines, task = "next_activity") %>% split_train_test()
 custom_model <- df$train_df %>% create_model(custom = TRUE, name = "my_custom_model")
 custom_model
 ```
