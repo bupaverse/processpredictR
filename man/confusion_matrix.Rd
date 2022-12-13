@@ -8,6 +8,8 @@ confusion_matrix(predictions, ...)
 }
 \arguments{
 \item{predictions}{\code{\link{ppred_predictions}} An event log with predicted values}
+
+\item{...}{additional arguments}
 }
 \description{
 Confusion matrix for

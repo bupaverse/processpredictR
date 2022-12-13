@@ -2,13 +2,11 @@ Package: processpredictR
 Type: Package
 Title: Process Outcome Prediction in R
 Version: 0.1.0
-Author: Ivan
-Maintainer: The package maintainer <yourself@somewhere.net>
-Description: More about what it does (maybe more than one line)
-    Use four spaces when indenting paragraphs within the Description.
+Authors@R: c(person("Ivan","Esin",email = "ivan.esin@student.uhasselt", role ="aut"),
+      person("Gert","Janssenswillen", email = "gert.janssenswillen@uhasselt.be", role = "cre"))
+Description: This repository is based on the ProcessTransformer (Python) library by Buksh et al. In particular, the developed application of the three process monitoring tasks _next_activity_, _next time_ and _remaining time_ was extended with the tasks _outcome_ and _remaining trace_. Citation: Zaharah A. Bukhsh, Aaqib Saeed, & Remco M. Dijkman. (2021). “ProcessTransformer: Predictive Business Process Monitoring with Transformer Network”. arXiv preprint arXiv:2104.00721.
 License: MIT + file LICENSE
 Encoding: UTF-8
-LazyData: true
 RoxygenNote: 7.2.1
 Imports: 
     bupaR,
@@ -19,21 +17,24 @@ Imports:
     magrittr,
     reticulate,
     tidyr, 
+    tidyselect,
     purrr, 
     stringr, 
     keras,
     tensorflow,
-    lubridate, 
     rlang, 
-    caret,
     data.table,
     mltools, 
-    ggplot2
+    ggplot2, 
+    cli, 
+    glue, 
+    plotly
 Roxygen: list(markdown = TRUE)
 Config/testthat/edition: 3
 Depends: 
     R (>= 2.10)
 Suggests: 
     knitr,
-    rmarkdown
+    rmarkdown,
+    lubridate
 VignetteBuilder: knitr

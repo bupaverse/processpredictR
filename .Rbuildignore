@@ -1,2 +1,5 @@
 ^.*\.Rproj$
 ^\.Rproj\.user$
+^\__pycache__$
+^process-prediction-workflow\.Rmd$
+^README\.Rmd$

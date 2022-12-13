@@ -7,7 +7,7 @@
 get_vocabulary(examples)
 }
 \arguments{
-\item{examples}{}
+\item{examples}{a preprocessed dataset returned by prepare_examples_dt().}
 }
 \description{
 Utils

@@ -3,21 +3,17 @@
 
 #' Utils
 #'
-#' @param examples
+#' @param examples a preprocessed dataset returned by prepare_examples_dt().
 #'
-#' @export
 #'
 get_vocabulary <- function(examples) {
   attr(examples, "vocabulary")
 }
 
-#' @export
-
 get_task <- function(examples) {
   attr(examples, "task")
 }
 
-#' @export
 hot_encode_feats <- function(examples) {
   mapping <- attr(examples, "mapping")
   features <- attr(examples, "features")
@@ -33,7 +29,8 @@ hot_encode_feats <- function(examples) {
 
     output <- examples %>%
       data.table::as.data.table() %>%
-      mltools::one_hot(cols = names(cat_features), dropCols = F)
+      mltools::one_hot(cols = names(cat_features), dropCols = F) %>%
+      as_tibble()
   }
 
   else {
@@ -65,6 +62,8 @@ hot_encode_feats <- function(examples) {
 }
 
 TransformerBlock <- function() {
+  super <- NULL
+  self <- NULL
   keras::new_layer_class(
     classname = "TransformerBlock",
     initialize = function(self, embed_dim, num_heads, ff_dim, rate = 0.1) {
@@ -94,6 +93,8 @@ TransformerBlock <- function() {
 
 # create layer TokenAndPositionEmbedding
 TokenAndPositionEmbedding  <- function() {
+  super <- NULL
+  self <- NULL
   keras::new_layer_class(
     classname = "TokenAndPositionEmbedding",
     initialize = function(self, maxlen, vocab_size, embed_dim, ...) {

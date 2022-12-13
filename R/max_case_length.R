@@ -7,7 +7,7 @@
 #'
 #'@export
 max_case_length <- function(processed_df) {
-  processed_df$prefix %>%
+  processed_df$prefix_list %>%
     purrr::map_int(length) %>%
     max()
 }

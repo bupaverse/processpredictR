@@ -1,10 +1,14 @@
-#' Generic plot function
+#' @title Plot Methods
 #'
-#' @param predictions: An object of class [`ppred_predictions`].
-#' @import ggplot2
+#' @description  Visualize metric
+#' @param x Data to plot. An object of type [`ppred_predictions`].
+#' @param ... Additional variables
+#' @return A ggplot object, which can be customized further, if deemed necessary.
+#'
+#' @concept visualization
 #'
 #' @export
-plot.ppred_predictions <- function(predictions, ...) {
+plot.ppred_predictions <- function(x, ...) {
   task <- predictions %>% attr("task")
   y_var <- predictions %>% attr("y_var")
 
@@ -15,6 +19,9 @@ plot.ppred_predictions <- function(predictions, ...) {
     predictions <- as.data.frame(table(predictions[[y_var]],
                                        predictions[[paste0("pred_", task)]]))
 
+    Var1 <- NULL
+    Var2 <- NULL
+    Freq <- NULL
     ggplot(predictions, aes(as.factor(Var1), as.factor(Var2), fill = Freq)) +
       geom_tile() +
       geom_text(aes(label = Freq)) +

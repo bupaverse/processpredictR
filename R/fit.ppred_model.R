@@ -47,7 +47,10 @@ fit.ppred_model <- function(object,
   y_token_train <- tokens_train$token_y #%>% reticulate::np_array(dtype = "float32")
 
   if (object$task %in% c("next_time", "remaining_time")) {
-    y_token_train <- object$y_normalize_layer(y_token_train)
+    #######################    #######################    #######################    #######################
+    # y_token_train <- object$y_normalize_layer(y_token_train)
+    y_token_train <- y_token_train / object$sd_time
+    #######################    #######################    #######################    #######################
 
     # normalize_y <- keras::layer_normalization(mean = as.double(object$y_normalize_layer$mean),
     #                                           variance = as.double(object$y_normalize_layer$variance))

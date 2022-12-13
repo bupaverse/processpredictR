@@ -2,15 +2,15 @@
 % Please edit documentation in R/assign_outcome_labels.R
 \name{assign_outcome_labels}
 \alias{assign_outcome_labels}
-\title{Assign column outcome with outcome labels based on last activity from the prefixed dataframe}
+\title{Assign outcome labels}
 \usage{
-assign_outcome_labels(prefix_df, ...)
+assign_outcome_labels(processed_df, ...)
 }
 \arguments{
-\item{prefix_df}{A dataframe with prefixes and last activity column from create_prefix_df function}
+\item{processed_df}{\code{\link{ppred_examples_df}}: A processed dataset returned by \code{prepare_examples()}.}
 
-\item{...}{A named character vector to assign outcome labels to the end activities}
+\item{...}{A named character vector to assign outcome labels to the end activities of outcome}
 }
 \description{
-(WIP)
+A shortcut for creating outcome labels based on its column values.
 }

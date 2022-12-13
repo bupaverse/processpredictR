@@ -8,18 +8,10 @@ tokenize(processed_df)
 }
 \arguments{
 \item{processed_df}{A preprocessed object of type \code{\link{log}} or \code{\link{data.frame}} from prepare_examples function.}
-
-\item{vocabulary}{\code{\link{list}}: A vocabulary, i.e. a list of activities and outcome labels.}
 }
 \value{
 A list of tokens: token_x and token_y
 }
 \description{
 Tokenize features and target of a processed \code{\link{data.frame}} to fit the transformer model.
-}
-\examples{
-library(eventdataR)
-ex_remaining_trace <- prepare_examples(patients, task = "remaining_trace")
-tokenize(ex_remaining_trace, vocabulary = create_vocabulary(ex_remaining_trace))
-
 }

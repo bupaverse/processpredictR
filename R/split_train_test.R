@@ -4,60 +4,62 @@
 #'
 #' @param processed_df A preprocessed object of type [`log`] or [`data.frame`] from prepare_examples function.
 #' @param split [`numeric`] (default 0.7): A train-test split ratio.
-#' @param trace_length_bins [`numeric`] (default [`NULL`]): A number of trace length bins to use for stratification.
-#' If [`NULL`], does not stratify for similar trace length in both train- and test dataframes.
 #'
 #'
 #' @export
-split_train_test <- function(processed_df, split = 0.7, trace_length_bins = 5) {
+split_train_test <- function(processed_df, split = 0.7) { #, trace_length_bins = 5) {
   UseMethod("split_train_test")
 }
 
 #' @export
-split_train_test.ppred_examples_df <- function(processed_df, split = 0.7, trace_length_bins = 5) { # OR n_distinct(log[case_id(log)])
+split_train_test.ppred_examples_df <- function(processed_df, split = 0.7) { #, trace_length_bins = 5) { # OR n_distinct(log[case_id(log)])
 
-  if (is.null(trace_length_bins)) {
-    unique_cases <- unique(processed_df$ith_case)
-    sample_size <- n_distinct(unique_cases) * split # choose a specified sample_size
-    train_ind <- sample(unique(processed_df$ith_case), size = sample_size)
+  # if (is.null(trace_length_bins)) {
+
+  # Arrange and pull unique cases
+  unique_cases_ordered <- processed_df %>% arrange(ith_case, start_time) %>% pull(ith_case) %>% unique()
+  sample_size <- n_distinct(unique_cases_ordered) * split
+  train_ind <- unique_cases_ordered[1:sample_size] # id for the first n = sample_size cases for the train set
 
     # id's train
-    unique_cases_train <- unique_cases[train_ind] # train dataset
-    train_df <-  processed_df %>% filter(ith_case %in% unique_cases_train)
+    #unique_cases_train <- unique_cases_ordered[train_ind] # train dataset
+    train_df <-  processed_df %>% filter(ith_case %in% train_ind) #unique_cases_train)
     class(train_df) <- c("ppred_examples_df", class(train_df))
 
     # id's test
-    test_df <- processed_df %>% filter(!(ith_case %in% unique_cases_train))
+    test_df <- processed_df %>% filter(!(ith_case %in% train_ind))
     class(test_df) <- c("ppred_examples_df", class(test_df))
 
     list(train_df = train_df, test_df = test_df)
 
-  }
+  # }
 
-  # x %>% mutate(trace_length = lengths(traces)) %>% mutate(trace_bucket = ntile(trace_length, max(trace_length)))
-  else {
+  # # x %>% mutate(trace_length = lengths(traces)) %>% mutate(trace_bucket = ntile(trace_length, max(trace_length)))
+  # else {
+  # #trace_length_bins [`numeric`] (default [`NULL`]): A number of trace length bins to use for stratification.
+  # #If [`NULL`], does not stratify for similar trace length in both train- and test dataframes.
 
-    processed_df %>%
-      #make list of case id + trace length
-      group_by(ith_case) %>%
-      summarize(trace_length = max(k) + 1) %>%
-      # make bins based on trace length
-      mutate(bin = ntile(trace_length, trace_length_bins)) %>%
-      # for each bin, sample the fraction of the event log according to split
-      group_by(bin) %>%
-      sample_frac(split) %>%
-      # pull the case ids from these fractions
-      pull(ith_case) -> unique_cases_train
-
-    train_df <-  processed_df %>% filter(ith_case %in% unique_cases_train)
-    class(train_df) <- c("ppred_examples_df", class(train_df))
-
-    test_df <- processed_df %>% filter(!(ith_case %in% unique_cases_train))
-    class(test_df) <- c("ppred_examples_df", class(test_df))
-
-    list(train_df = train_df, test_df = test_df)
-
-  }
+  #   processed_df %>%
+  #     #make list of case id + trace length
+  #     group_by(ith_case) %>%
+  #     summarize(trace_length = max(k) + 1) %>%
+  #     # make bins based on trace length
+  #     mutate(bin = ntile(trace_length, trace_length_bins)) %>%
+  #     # for each bin, sample the fraction of the event log according to split
+  #     group_by(bin) %>%
+  #     sample_frac(split) %>%
+  #     # pull the case ids from these fractions
+  #     pull(ith_case) -> unique_cases_train
+  #
+  #   train_df <-  processed_df %>% filter(ith_case %in% unique_cases_train)
+  #   class(train_df) <- c("ppred_examples_df", class(train_df))
+  #
+  #   test_df <- processed_df %>% filter(!(ith_case %in% unique_cases_train))
+  #   class(test_df) <- c("ppred_examples_df", class(test_df))
+  #
+  #   list(train_df = train_df, test_df = test_df)
+  #
+  # }
 
 
 #

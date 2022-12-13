@@ -1,2 +1,4 @@
 *.html
 *.R
+**__pycache__/
+*.py

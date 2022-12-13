@@ -14,80 +14,111 @@ knitr::opts_chunk$set(
 )
 ```
 
-# Prologue
+```{r setup, message = F}
+library(processpredictR)
+library(bupaR)
+library(ggplot2)
+library(dplyr)
+library(keras)
+library(purrr)
+```
+
+# Introduction
 The goal of processpredictR is to perform prediction tasks on processes using event logs and Transformer models.
 5 process monitoring tasks are defined as follows:
 
-* outcome: 
-* next activity: 
-* remaining trace: 
-* next time: 
-* remaining time: 
+* outcome: predict the case outcome, which can be the last activity, or a manually defined variable
+* next activity: predict the next activity instance 
+* remaining trace: predict the sequence of all next activity instances
+* next time: predict the start time of the next activity instance
+* remaining time: predict the remaining time till the end of the case
 
-```{r setup}
-library(processpredictR)
-library(eventdataR)
-library(ggplot2)
+The overall approach using `processpredictR` is shown in the Figure below. `prepare_examples()` transforms logs into a dataset that can be used for training and prediction, which is thereafter split into train and test set. Subsequently a model is made, compiled and fit. Finally, the model can be used to predict and can be evaluatied
+
+```{r echo = F}
+knitr::include_graphics("framework.PNG")
 ```
 
-# Preprocessing
-As a first step in the process prediction workflow we must obtain a dataset of the following format, where: 
+Different levels of customization are offered. Using `create_model`, a standard off-the-shelf model can be created for each of the supported tasks, including standard features. 
 
-* each row/observation is a unique instance id
-* _(an event log is implicitly transformed to activity log)_
-* the prefix column is a cumulative sum/concatenation of activities in a trace (of a case)
+A first customization is to include, additional features, such as case or event attributes. These can be configured in the `prepare_examples` step, and they will be processed automatically (normalized for numerical features, or hot-encoded for categorical features). 
+
+A further way to customize your model, is to only generate the input layer of the model with `create_model`, and define the remainder of the model yourself by adding `keras` layers using the provided `stack_layers` function. 
+
+Going beyond that, you can also create the model entirely yourself using `keras`, including the preprocessing of the data. Auxilliary functions are provided to help you with, e.g., tokenezing the activity sequences. 
+
+In the remained of this tutorial, each of the steps and possible avenues for customization will be described in more detail. 
+# Preprocessing
+As a first step in the process prediction workflow we use `prepare_examples` to obtain a dataset  where: 
+
+* each row/observation is a unique activity instance id
+* the prefix(_list) column stores the sequence of activities already executed in the case
+* necessary feature and target variables are calculated
+
+The returning object is of class `ppred_examples_df`, which inherits from `tbl_df`. 
+
+In this tutorial, we will use the `traffic_fines` event log from `eventdataR`. Note that both `eventlog` and `activitylog` objects, as defined by `bupaR` are supported.
+
 ```{r}
-df <- prepare_examples(patients, task = "outcome")
+df <- prepare_examples(traffic_fines, task = "outcome")
 df
 ```
 
-We split the transformed dataset into train- and test sets for a later use in fit() and predict(), respectively. 
+We split the transformed dataset into train- and test sets for later use in `fit()` and `predict()`, respectively. The proportion of the train set is configured with the split argument. 
+
 ```{r}
 set.seed(123)
-split <- df %>% split_train_test(trace_length_bins = 5)
+split <- df %>% split_train_test(split = 0.8)
 split$train_df %>% head(5)
 split$test_df %>% head(5)
 ```
-It's important to note that the split is done randomly^[whether is it representative to mix up the observed sequence of cases in an event log is uncertain at the moment of writing] and by cases (not by rows). The latter normally would imply that the row level split ratio should not necessarily correspond to the case level split ratio. That is because the trace lengths can differ. To control for that the trace_length_bins argument is provided and applied by default.
+
+It's important to note that the split is done at case level (a case is fully part of either the train data or either the test data). Furthermore, the split is done chronologically, meaning that the train set contains the split\% first cases, and the test set contains the (1-split)\% last cases. 
+
+Note that because the split is done at case level, the percentage of all examples in the train set can be slightly different, as cases differ with respect their length. 
+
 ```{r}
 nrow(split$train_df) / nrow(df)
-dplyr::n_distinct(split$train_df$patient) / dplyr::n_distinct(df$patient)
+n_distinct(split$train_df$case_id) / n_distinct(df$case_id)
 ```
 
 # Transformer model
-Next step in the workflow is to build/define a model. processpredictR provides a default set of functions that are wrappers of generics provided by keras-package. For the easy of use, the preprocessing steps such as tokenizing of sequences, normalizing numerical features, etc. are automated. 
+
+The next step in the workflow is to build a model. processpredictR provides a default set of functions that are wrappers of generics provided by keras-package. For ease of use, the preprocessing steps such as tokenizing of sequences, normalizing numerical features, etc. are automated. 
 
 ## Define model
-Based on the train set we define the default transformer model.
+
+Based on the train set we define the default transformer model, using  `create_model`
+
 ```{r}
-model <- split$train_df %>% create_model(custom = FALSE, 
-                                         name = "my_model") # pass arguments as ... that are applicable to keras::keras_model()
+model <- split$train_df %>% create_model(name = "my_model") # pass arguments as ... that are applicable to keras::keras_model()
 
 model # is a list 
 
 model %>% attributes() # objects from a returned list
 ```
 
-Additionally, we can use functions from the keras-package as follows:
+Note that `create_model` returns a list, of which the actual keras model is stored under the name `model`. Thus, we can use functions from the keras-package as follows:
+
 ```{r}
 model$model$name # get the name of a model
 model$model$non_trainable_variables # list of non-trainable parameters of a model
 ```
 
-The model is assigned it's own class for which the processpredictR provides methods of _compile()_, _fit()_, _predict()_ and _evaluate()_. 
-```{r, message=FALSE}
-model %>% class
-methods(compile)
-```
+The result of `create_model` is assigned it's own class (`ppred_model`) for which the processpredictR provides the methods _compile()_, _fit()_, _predict()_ and _evaluate()_. 
 
 ## Compilation
-We compile the model. By default, the loss function is the log-cosh and the categorical cross entropy for regression tasks (next time and remaining time) and classification tasks, respectively. It is of course possible to override the default arguments.
+
+The following step is to compile the model. By default, the loss function is the log-cosh or the categorical cross entropy, for regression tasks (next time and remaining time) and classification tasks, respectively. It is of course possible to override the defaults.
+
 ```{r}
 model %>% compile() # model compilation
 ```
 
 ## Training
-Optionally assign it to an object to access the training metrics specified in _compile()_. 
+
+Training of the model is done with the `fit` function. During training, a visualization window will open in the Viewer-pane to show the progress in terms of loss. Optionally, the result of `fit` can be assign to an object to access the training metrics specified in _compile()_. 
+
 ```{r, cache=TRUE}
 hist <- fit(object = model, train_data = split$train_df, epochs = 5)
 hist$params
@@ -95,8 +126,11 @@ hist$metrics
 ```
 
 ## Make predictions
-The defined method for _predict()_ can return 3 types of output: 
+
+The method  _predict()_ can return 3 types of output, by setting the argument `output` to "append", "y_pred" or "raw. 
+
 Test dataset with appended predicted values (output = "append")
+
 ```{r}
 predictions <- model %>% predict(test_data = split$test_df, 
                                  output = "append") # default
@@ -122,92 +156,129 @@ model %>% predict(test_data = split$test_df,
 </details>
 </p>
 
-For the classification tasks outcome and next activity a confusion_matrix function is provided.
+### Visualize predictions
+For the classification tasks outcome and next activity a `confusion_matrix` function is provided. 
+
 ```{r}
 predictions %>% class
 confusion_matrix(predictions)
 ```
 
 Plot method for the confusion matrix (classification) or a scatter plot (regression).
-```{r}
-plot(predictions) %>% coord_flip()
+
+```{r, out.width="100%", fig.width = 7}
+plot(predictions) +
+  theme(axis.text.x = element_text(angle = 90))
 ```
 
 ## Evaluate model
-Returns the metrics specified in _compile()_.
+
+Returns loss and metrics specified in _compile()_.
+
 ```{r}
 model %>% evaluate(split$test_df)
 ```
 
-# Add extra features to your model
+# Add extra features 
+
+Next to the activity prefixes in the data, and standard features defined for each task, additional features can be defined when using `prepare_examples`. The example below shows how the month in which a case is started can be added as a feature. 
+
 ```{r}
 # preprocessed dataset with categorical hot encoded features
-df <- patients %>% prepare_examples(task = "next_time", features = "employee") %>% split_train_test()
-df %>% head(5)
+df_next_time <- traffic_fines %>% 
+  group_by_case() %>%
+  mutate(month = lubridate::month(min(timestamp), label = TRUE)) %>%
+  ungroup_eventlog() %>%
+  prepare_examples(task = "next_time", features = "month") %>% split_train_test()
 
-# the attributes of model are added or changed accordingly
-df$train_df %>% attr("numeric_features")
-df$train_df %>% attr("features")
-df$train_df %>% attr("hot_encoded_categorical_features")
-
-# the right arguments for defining a model are passed
-create_model(df$train_df)
+# the attributes of df are added or changed accordingly
+df_next_time$train_df %>% attr("features")
+df_next_time$train_df %>% attr("hot_encoded_categorical_features")
 ```
 
-# Build your own transformer model
+Additional features can be either numerical variables, or factors. Numerical variables will be automatically normalized. Factors will automatically be converted to hot-encoded variables. A few important notes: 
+
+- Character values are not accepted, and should be transformed to factors. 
+- We assume that no features have missing values. If there are any, these should be imputed or removed before using `prepare_examples`. 
+- Finally, in case the data is an event log, features should have a single values for each activity instance. Start and complete event should thus have a single unique value of a variable for it to be used as feature. 
+
+# Customize your transformer model
+
+Instead of using the standard `off the shelf` transformer model that comes with `processpredictR`, you can customize the model. One way to do this, is by using the `custom` argument of the `create_model` function. The resulting model will then only contain the input layers of the model, as shown below. 
+
 ```{r}
-df <- prepare_examples(patients, task = "next_activity") %>% split_train_test()
+df <- prepare_examples(traffic_fines, task = "next_activity") %>% split_train_test()
 custom_model <- df$train_df %>% create_model(custom = TRUE, name = "my_custom_model")
 custom_model
 ```
 
-Stack layers on top of your custom model.
+You can than stack layers on top of your custom model as you prefer, using the `stack_layers` function. 
 ```{r}
-#stack_layer(custom_model, )
-#OR directly with keras::
+custom_model <- custom_model %>%
+  stack_layers(layer_dropout(rate = 0.1)) %>% 
+  stack_layers(layer_dense(units = 64, activation = 'relu'))
+custom_model
+
+# this works too
+custom_model %>%
+  stack_layers(layer_dropout(rate = 0.1), layer_dense(units = 64, activation = 'relu'))
+```
+
+Once you have finalized your model, with an appropriate output-layer (which should have the correct amount of outputs, as recorded in `customer_model$num_outputs` and an appropriate activiation function), you can use the `compile`, `fit`, `predict` and `evaluate` functions as before. 
+
+# Custom training and prediction
+
+We can also opt for setting up and training our model manually, instead of using the provided methods. Note that after defining a model with keras::keras_model() the model no longer is of class ppred_model.
+
+```{r}
+new_outputs <- custom_model$model$output %>% # custom_model$model to access a model and $output to access the outputs of that model
+  keras::layer_dropout(rate = 0.1) %>%
+  keras::layer_dense(units = custom_model$num_outputs, activation = 'softmax')
+
+custom_model <- keras::keras_model(inputs = custom_model$model$input, outputs = new_outputs, name = "new_custom_model")
+custom_model
+
+# class of the model
+custom_model %>% class
+
+# compile
+compile(object=custom_model, optimizer = "adam", 
+        loss = loss_sparse_categorical_crossentropy(), 
+        metrics = metric_sparse_categorical_crossentropy())
+```
+
+Before training the model we first must prepare the data, using the `tokenize` function. 
+
+```{r}
+# the trace of activities must be tokenized
+tokens_train <- df$train_df %>% tokenize()
+map(tokens_train, head) # the output of tokens is a list
+
+# make sequences of equal length
+x <- tokens_train$token_x %>% pad_sequences(maxlen = max_case_length(df$train_df), value = 0)
+y <- tokens_train$token_y
+```
+
+We are now ready to train our custom model.
+
+```{r, eval=F}
+# train
+fit(object = custom_model, x, y, epochs = 10, batch_size = 10) # see also ?keras::fit.keras.engine.training.Model
+
+# predict
+tokens_test <- df$test_df %>% tokenize()
+x <- tokens_test$token_x %>% pad_sequences(maxlen = max_case_length(df$train_df), value = 0)
+predict(custom_model, x)
+
+# evaluate
+tokens_test <- df$test_df %>% tokenize()
+x <- tokens_test$token_x
+# normalize by dividing y_test over the standard deviation of y_train
+y <- tokens_test$token_y / sd(tokens_train$token_y)
+evaluate(custom_model, x, y)
 ```
 
 
-
-# Some other functions
-<details>
-<summary>
-</summary>
-<p>
-processpredictR also provides a number of other exported functions, that are abstracted from the user, but may come in handy.
-
-* __tokenize()__: 
-```{r}
-
-```
-
-* __max_case_length()__: (= maximum length of a trace)
-```{r}
-
-```
-
-* __num_outputs()__: 
-```{r}
-
-```
-
-* __create_vocabulary()__: 
-```{r}
-
-```
-
-* __vocab_size()__: 
-```{r}
-
-```
-
-</p>
-</details>
-
-
-# Attribution
-This repository is based on the ProcessTransformer (Python) library by Buksh et al. In particular, the developed application of the three process monitoring tasks _next_activity_, _next time_ and _remaining time_ was extended with the tasks _outcome_ and _remaining trace_. 
-Citation: Zaharah A. Bukhsh, Aaqib Saeed, & Remco M. Dijkman. (2021). “ProcessTransformer: Predictive Business Process Monitoring with Transformer Network”. arXiv preprint arXiv:2104.00721
 
 
 

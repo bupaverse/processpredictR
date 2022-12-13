@@ -1,22 +1,48 @@
-#' Title
+#' @title Convert a dataset of type [`log`] into a preprocessed format.
 #'
-#' @param log
-#' @param task
-#' @param features
-#' @param ...
+#' @description an event log is converted into a tibble where each row contains a cumulative sequence of activities per case.
+#' This sequence will eventually be feeded to the transformer model's token embedding layer.
 #'
-#' @return
+#' @param log \code{\link{log}}: Object of class \code{\link{log}} or derivatives (\code{\link{grouped_log}}, \code{\link{eventlog}},
+#' \code{\link{activitylog}}, etc.).
+#' @param task [`character`]: a process monitoring task for which to prepare an event log.
+#' @param features [`character`] (default [`NULL`]): additional features. Appends attributes (if present) numeric_features and/or categorical_features to a preprocessed event log.
+#' @param ... additional arguments
+#'
+#' @return a preprocessed dataset
 #' @export
 #'
-#' @examples
-prepare_examples_dt <- function(log, task = c("outcome", "next_activity",
+prepare_examples <- function(log, task = c("outcome", "next_activity",
                                               "next_time", "remaining_time",
                                               "remaining_trace"), features = NULL, ...) {
-  UseMethod("prepare_examples_dt")
+  UseMethod("prepare_examples")
+
+  AIID <- NULL
+  start <- NULL
+  .order <- NULL
+  AID <- NULL
+  . <- NULL
+  TS <- NULL
+  CID <- NULL
+  RID <- NULL
+  start_time <- NULL
+  end_time <- NULL
+  min_order <- NULL
+  outcome <- NULL
+  time_before_activity <- NULL
+  time_till_next_activity <- NULL
+  previous_duration <- NULL
+  remaining_trace_list <- NULL
+  remaining_trace <- NULL
+  prefix_list <- NULL
+  ith_case <- NULL
+  prefix <- NULL
+  k <- NULL
+  RID <- NULL
 }
 
 #' @export
-prepare_examples_dt.eventlog <- function(log, task = c("outcome", "next_activity",
+prepare_examples.eventlog <- function(log, task = c("outcome", "next_activity",
                                                        "next_time", "remaining_time",
                                                        "remaining_trace"), features = NULL, ...) {
 
@@ -49,7 +75,7 @@ prepare_examples_dt.eventlog <- function(log, task = c("outcome", "next_activity
 }
 
 #' @export
-prepare_examples_dt.activitylog <- function(log, task = c("outcome", "next_activity",
+prepare_examples.activitylog <- function(log, task = c("outcome", "next_activity",
                                                           "next_time", "remaining_time",
                                                           "remaining_trace"), features = NULL, ...) {
 
@@ -62,8 +88,7 @@ prepare_examples_dt.activitylog <- function(log, task = c("outcome", "next_activ
 
   log %>%
     as_tibble() %>%
-    select(AIID, any_of(features)) %>%
-    distinct() -> feature_data
+    select(AIID, any_of(features)) -> feature_data
 
   log_dt <- log %>%
     as_tibble() %>%
@@ -100,7 +125,7 @@ prepare_examples_main <- function(log, mapping, task, features, feature_data, ..
 
   } else if(task == "next_activity") {
 
-    log[, c("next_activity") := .(shift(AID, n = -1, fill = "endpoint"))] -> log
+    log[, c("next_activity") := .(shift(AID, n = -1, fill = "endpoint")), .(CID)] -> log
 
     standard_features <- character()
   } else if(task == "next_time") {
@@ -119,6 +144,7 @@ prepare_examples_main <- function(log, mapping, task, features, feature_data, ..
                  ),
                .(CID)][,c("time_before_activity") := .(if_else(is.na(time_before_activity), 0, time_before_activity))] %>%
       filter(!is.na(time_till_next_activity)) -> log
+
     standard_features <- c("latest_duration","throughput_time","processing_time","time_before_activity")
 
   } else if(task == "remaining_time") {
@@ -156,14 +182,19 @@ prepare_examples_main <- function(log, mapping, task, features, feature_data, ..
                   remaining_time = "remaining_time",
                   remaining_trace = "remaining_trace")
 
+
+
   log %>%
     merge(feature_data, by = "AIID") %>%
     as_tibble() %>%
     mutate(prefix = map_chr(prefix_list, paste, collapse = " - ")) %>%
-    select(ith_case, !!sym(mapping$case_id) := CID, prefix, prefix_list, any_of(c(y_var, standard_features, features)), k,
+    select(ith_case, !!sym(mapping$case_id) := CID, prefix, prefix_list, any_of(c(y_var, standard_features, setdiff(features, unlist(mapping)))), k,
            !!sym(mapping$activity_id) := AID, !!sym(mapping$resource_id) := RID,
-           start_time, end_time, remaining_trace_list) -> output
+           start_time, end_time, remaining_trace_list) %>%
+    as_tibble() -> output
 
+  output %>%
+    arrange(ith_case, k) -> output
 
   class(output) <- c("ppred_examples_df", class(output))
 
@@ -173,8 +204,12 @@ prepare_examples_main <- function(log, mapping, task, features, feature_data, ..
   attr(output, "mapping") <- mapping
   attr(output, "max_case_length") <- max_case_length(output)
   vocabulary <- create_vocabulary(output)
+  if (task %in% c("outcome", "next_activity", "remaining_trace")) num_outputs <- output[[task]] %>% unique() %>% length()
+  else num_outputs <- 1
+  attr(output, "num_outputs") <- num_outputs %>% as.integer()
   attr(output, "vocab_size") <- vocabulary$keys_x %>% length() %>% as.integer()
   attr(output, "vocabulary") <- vocabulary
+
   if (!is.null(attr(output, "features"))) {
     output <- hot_encode_feats(output)
   }

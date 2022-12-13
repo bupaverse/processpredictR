@@ -11,6 +11,14 @@ stats::predict
 #' @export
 predict.ppred_model <- function(object, test_data, output = c("append", "y_pred", "raw"), ...) {
 
+  end_time <- NULL
+  start_time <- NULL
+  pred_start_ <- NULL
+  actual_start_ <- NULL
+  remaining_time <- NULL
+  pred_ <- NULL
+  actual_ <- NULL
+
   output <- rlang::arg_match(output)
 
   # if test_data is a preprocessed test dataset (before tokenize)
@@ -36,7 +44,6 @@ predict.ppred_model <- function(object, test_data, output = c("append", "y_pred"
 
   y_pred <- stats::predict(object$model, x_test_list, ...)
 
-
 # Postprocessing ----------------------------------------------------------
   # OUTCOME, NEXT_ACTIVITY & REMAINING_TRACE
   if (object$task %in% c("outcome", "next_activity", "remaining_trace")) {
@@ -53,6 +60,8 @@ predict.ppred_model <- function(object, test_data, output = c("append", "y_pred"
     vocabulary <- vocabulary$keys_y %>% unlist() %>% as_tibble() %>%
       mutate(key_y = row_number()) %>%
       rename_with(function(.x) {glue::glue("pred_{object$task}")}, "value")
+      #rename_with(~ paste0(., object$task), value)
+
 
     if (output == "y_pred") {
       y_pred <- tibble(y_pred = as.numeric(y_pred) + 1) %>%
@@ -83,17 +92,23 @@ predict.ppred_model <- function(object, test_data, output = c("append", "y_pred"
 
   # NEXT_TIME & REMAINING_TIME
   else if (object$task %in% c("next_time", "remaining_time")) {
-    mean <- object$y_normalize_layer$mean %>% as.double()
-    variance <- object$y_normalize_layer$variance %>% as.double()
-    y_pred <- y_pred * sqrt(variance) + mean
+    ###########################    ###########################    ###########################    ###########################
+    # # original
+    # mean <- object$y_normalize_layer$mean %>% as.double()
+    # variance <- object$y_normalize_layer$variance %>% as.double()
+    # y_pred <- y_pred * sqrt(variance) + mean
+    y_pred <- y_pred * object$sd_time
+    ###########################    ###########################    ###########################    ###########################
+
+
 
     # NEXT_TIME
     if (object$task == "next_time") {
       if (output == "append") {
         if (any((test_data %>% class) == "ppred_examples_df")) {
           test_data %>% mutate(y_pred = as.numeric(y_pred)) %>%
-            mutate(pred_start_ = complete + y_pred,
-                   actual_start_ = lead(start)) %>%
+            mutate(pred_start_ = end_time + y_pred,
+                   actual_start_ = lead(start_time)) %>%
             rename_with(~ paste0(., object$task), c(pred_start_, actual_start_)) -> y_pred
           # as_tibble() %>% select(complete, actual_starttime_next_activity, predicted_starttime_next_activity) %>%
           # ggplotly(aes(predicted_starttime_next_activity, start2)) + geom_point()
@@ -105,6 +120,7 @@ predict.ppred_model <- function(object, test_data, output = c("append", "y_pred"
         class(y_pred) <- c("ppred_predictions", class(y_pred))
       }
     }
+
 
     # REMAINING_TIME
     else if (object$task == "remaining_time") {

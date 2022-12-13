@@ -1,13 +1,14 @@
-#' Assign column outcome with outcome labels based on last activity from the prefixed dataframe
+#' @title Assign outcome labels
 #'
-#'(WIP)
+#' @description A shortcut for creating outcome labels based on its column values.
 #'
-#'@param prefix_df A dataframe with prefixes and last activity column from create_prefix_df function
-#'@param ... A named character vector to assign outcome labels to the end activities
+#'@param processed_df [`ppred_examples_df`]: A processed dataset returned by `prepare_examples()`.
+#'@param ... A named character vector to assign outcome labels to the end activities of outcome
 #'
 #' @export
-assign_outcome_labels <- function(prefix_df, ...) {
+assign_outcome_labels <- function(processed_df, ...) {
+  outcome <- NULL
 
-  prefix_df %>%
+  processed_df %>%
     mutate(outcome = forcats::fct_collapse(outcome, ...))
 }

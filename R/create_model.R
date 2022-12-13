@@ -58,7 +58,7 @@ create_model.ppred_examples_df <- function(x_train, custom = FALSE, ...) {
     scale_numeric %>% adapt(numeric_features_train)
     numeric_outputs <- numeric_inputs %>%
       scale_numeric() %>%
-      keras::layer_dense(units = 32, activation = if_else(task %in% c("next_time", "remaining_time"), "linear", "softmax"))
+      keras::layer_dense(units = 32, activation = "relu")
 
     outputs <- keras::layer_concatenate(list(outputs, numeric_outputs))
   }
@@ -87,7 +87,7 @@ create_model.ppred_examples_df <- function(x_train, custom = FALSE, ...) {
       keras::layer_dropout(rate = 0.1) %>%
       keras::layer_dense(units = 64, activation = 'relu') %>%
       keras::layer_dropout(rate = 0.1) %>%
-      keras::layer_dense(units = num_outputs, activation = 'relu')
+      keras::layer_dense(units = num_outputs, activation = if_else(task %in% c("next_time", "remaining_time"), "relu", "softmax"))
   }
 
   #if (num_features > 0) {
@@ -117,13 +117,24 @@ create_model.ppred_examples_df <- function(x_train, custom = FALSE, ...) {
 
    y_token_train <- x_train %>%
      as_tibble() %>%
-     select(attr(x_train, "y_var")) %>% data.matrix()
+     pull(attr(x_train, "y_var")) #%>% data.matrix()
 
-   normalize_y <- keras::layer_normalization()
-   normalize_y %>% adapt(y_token_train)
-   output$y_normalize_layer <- normalize_y
+   #######################   #######################   #######################   #######################
+
+   sd_time <- sd(y_token_train)
+   output$sd_time <- sd_time
+
+   # y_token_train <- x_train %>%
+   #   as_tibble() %>%
+   #   select(attr(x_train, "y_var")) %>% data.matrix() FOR OUTCOME WAS VERY INTERESTING
+
+   # # original
+   # normalize_y <- keras::layer_normalization()
+   # normalize_y %>% adapt(y_token_train)
+   # output$y_normalize_layer <- normalize_y
  }
 
+ #######################   #######################   #######################   #######################
 
  # Attributes for temporary backwards compatitibility
   attr(output, "max_case_length") <- max_case_length

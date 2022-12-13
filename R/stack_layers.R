@@ -1,7 +1,10 @@
 #' Stacks a keras layer on top of existing model
 #'
 #' User friendly interface to add a keras layer on top of existing model.
-
+#'
+#' @param object a list containing a model returned by create_model().
+#' @param ... functions for adding layers by using functional keras API. For example, keras::layer_dense(units=32, activation="relu")
+#'
 #' @export
 stack_layers <- function(object, ...) {
   UseMethod("stack_layers")
@@ -22,7 +25,7 @@ stack_layer <- function(object, layer) {
 
   outputs <- object$model$output %>% layer
 
-  object$model <- keras::keras_model(inputs = object$model$input, outputs = outputs)
+  object$model <- keras::keras_model(inputs = object$model$input, outputs = outputs, name = object$model$name)
   return(object)
 
 }
