@@ -17,6 +17,13 @@ prepare_examples <- function(log, task = c("outcome", "next_activity",
                                               "remaining_trace"), features = NULL, ...) {
   UseMethod("prepare_examples")
 
+}
+
+#' @export
+prepare_examples.eventlog <- function(log, task = c("outcome", "next_activity",
+                                                       "next_time", "remaining_time",
+                                                       "remaining_trace"), features = NULL, ...) {
+
   AIID <- NULL
   start <- NULL
   .order <- NULL
@@ -39,13 +46,6 @@ prepare_examples <- function(log, task = c("outcome", "next_activity",
   prefix <- NULL
   k <- NULL
   RID <- NULL
-}
-
-#' @export
-prepare_examples.eventlog <- function(log, task = c("outcome", "next_activity",
-                                                       "next_time", "remaining_time",
-                                                       "remaining_trace"), features = NULL, ...) {
-
 
   task <- rlang::arg_match(task)
 
@@ -79,6 +79,29 @@ prepare_examples.activitylog <- function(log, task = c("outcome", "next_activity
                                                           "next_time", "remaining_time",
                                                           "remaining_trace"), features = NULL, ...) {
 
+  AIID <- NULL
+  start <- NULL
+  .order <- NULL
+  AID <- NULL
+  . <- NULL
+  TS <- NULL
+  CID <- NULL
+  RID <- NULL
+  start_time <- NULL
+  end_time <- NULL
+  min_order <- NULL
+  outcome <- NULL
+  time_before_activity <- NULL
+  time_till_next_activity <- NULL
+  previous_duration <- NULL
+  remaining_trace_list <- NULL
+  remaining_trace <- NULL
+  prefix_list <- NULL
+  ith_case <- NULL
+  prefix <- NULL
+  k <- NULL
+  RID <- NULL
+
   task <- rlang::arg_match(task)
 
   log %>%
@@ -106,6 +129,29 @@ prepare_examples.activitylog <- function(log, task = c("outcome", "next_activity
 
 
 prepare_examples_main <- function(log, mapping, task, features, feature_data, ...) {
+
+  AIID <- NULL
+  start <- NULL
+  .order <- NULL
+  AID <- NULL
+  . <- NULL
+  TS <- NULL
+  CID <- NULL
+  RID <- NULL
+  start_time <- NULL
+  end_time <- NULL
+  min_order <- NULL
+  outcome <- NULL
+  time_before_activity <- NULL
+  time_till_next_activity <- NULL
+  previous_duration <- NULL
+  remaining_trace_list <- NULL
+  remaining_trace <- NULL
+  prefix_list <- NULL
+  ith_case <- NULL
+  prefix <- NULL
+  k <- NULL
+  RID <- NULL
 
   log[order(start_time, end_time, min_order),
    c("ith_case", "k","prefix_list", "remaining_trace_list") := .(

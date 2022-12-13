@@ -14,6 +14,9 @@ split_train_test <- function(processed_df, split = 0.7) { #, trace_length_bins =
 #' @export
 split_train_test.ppred_examples_df <- function(processed_df, split = 0.7) { #, trace_length_bins = 5) { # OR n_distinct(log[case_id(log)])
 
+  ith_case <- NULL
+  start_time <- NULL
+
   # if (is.null(trace_length_bins)) {
 
   # Arrange and pull unique cases
