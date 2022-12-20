@@ -4,7 +4,15 @@
 # layers <- NULL
 # activations <- NULL
 
+# python 'scipy' module I want to use in my package
+keras <- NULL
+
 .onLoad <- function(libname, pkgname) {
+  # delay load foo module (will only be loaded when accessed via $)
+
+  keras <<- keras::implementation()}
+
+#.onLoad <- function(libname, pkgname) {
 
   # create layer TransformerBlock
   # TransformerBlock <- keras::new_layer_class(
@@ -62,7 +70,7 @@
   # tf <<- reticulate::import("tensorflow", delay_load = TRUE)
   # layers <<- reticulate::import("keras", delay_load = TRUE)$layers
   # activations <<- reticulate::import("keras", delay_load = TRUE)$activations
-}
+#}
 
 
 
