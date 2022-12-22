@@ -1,5 +1,5 @@
 ^.*\.Rproj$
 ^\.Rproj\.user$
-^vignettes$
 ^.*\.pyc$
 ^.*__pycache__$
+readme.RMD

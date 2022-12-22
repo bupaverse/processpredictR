@@ -29,7 +29,7 @@ tokenize.ppred_examples_df <- function(processed_df) {
     for (j in (1:length(processed_df$prefix_list[[i]]))) {
       #if (processed_df$trace[[i]][j] == x_word_dict$values_x) {}
       tok <- which(processed_df$prefix_list[[i]][j] == vocabulary$keys_x)
-      case_trace <- case_trace %>% append(tok-1)
+      case_trace <- case_trace %>% append(tok-1)s
     }
 
     case_trace <- case_trace %>% list()
