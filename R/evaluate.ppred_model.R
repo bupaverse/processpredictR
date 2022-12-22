@@ -80,6 +80,11 @@ evaluate.ppred_model <- function(object, test_data, ...) {
 
     }
   }
+
+  else {
+    results <- keras::evaluate(object$model, x_test_list, y_tokens_test, ...) #%>% keras::k_argmax(axis = -1)
+    return(results)
+  }
 }
 
 
