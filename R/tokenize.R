@@ -22,14 +22,14 @@ tokenize.ppred_examples_df <- function(processed_df) {
   # algorithm to produce token_x (same for all tasks)
   token_x <- list()
 
-  for (i in (1:length(processed_df$prefix))) {
+  for (i in (1:nrow(processed_df))) {
     #case_trace <- list()
     case_trace <- c()
 
     for (j in (1:length(processed_df$prefix_list[[i]]))) {
       #if (processed_df$trace[[i]][j] == x_word_dict$values_x) {}
       tok <- which(processed_df$prefix_list[[i]][j] == vocabulary$keys_x)
-      case_trace <- case_trace %>% append(tok-1)s
+      case_trace <- case_trace %>% append(tok-1)
     }
 
     case_trace <- case_trace %>% list()
@@ -73,7 +73,7 @@ tokenize.ppred_examples_df <- function(processed_df) {
     # token_y for OUTCOME
     token_y = c()
 
-    for (i in (1:length(processed_df$prefix_list))) {
+    for (i in (1:nrow(processed_df))) {
       tok <- which(processed_df$outcome[i] == vocabulary$keys_y) #match outcome instead of trace
       token_y <- token_y  %>% append(tok-1)
     }
@@ -90,7 +90,7 @@ tokenize.ppred_examples_df <- function(processed_df) {
   else if (task == "next_activity") {
     token_y = c()
 
-    for (i in (1:length(processed_df$prefix))) {
+    for (i in (1:nrow(processed_df))) {
       tok <- which(processed_df$next_activity[i] == vocabulary$keys_y) #match outcome instead of trace
       token_y <- token_y  %>% append(tok-1)
     }
@@ -107,7 +107,7 @@ tokenize.ppred_examples_df <- function(processed_df) {
   else if (task == "remaining_trace") {
     token_y = c()
 
-    for (i in (1:length(processed_df$prefix))) {
+    for (i in (1:nrow(processed_df))) {
       tok <- which(processed_df$remaining_trace[i] == vocabulary$keys_y)
       token_y <- token_y  %>% append(tok-1)
     }
