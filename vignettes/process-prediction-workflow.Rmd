@@ -27,13 +27,13 @@ library(purrr)
 
 # Introduction
 The goal of processpredictR is to perform prediction tasks on processes using event logs and Transformer models.
-5 process monitoring tasks are defined as follows:
+The 5 process monitoring tasks are defined as follows:
 
-* outcome: predict the case outcome, which can be the last activity, or a manually defined variable
-* next activity: predict the next activity instance 
-* remaining trace: predict the sequence of all next activity instances
-* next time: predict the start time of the next activity instance
-* remaining time: predict the remaining time till the end of the case
+* _outcome_: predict the case outcome, which can be the last activity, or a manually defined variable
+* _next activity_: predict the next activity instance 
+* _remaining trace_: predict the sequence of all next activity instances
+* _next time_: predict the start time of the next activity instance
+* _remaining time_: predict the remaining time till the end of the case
 
 The overall approach using `processpredictR` is shown in the Figure below. `prepare_examples()` transforms logs into a dataset that can be used for training and prediction, which is thereafter split into train and test set. Subsequently a model is made, compiled and fit. Finally, the model can be used to predict and can be evaluated
 
@@ -41,18 +41,18 @@ The overall approach using `processpredictR` is shown in the Figure below. `prep
 knitr::include_graphics("framework.PNG")
 ```
 
-Different levels of customization are offered. Using `create_model`, a standard off-the-shelf model can be created for each of the supported tasks, including standard features. 
+Different levels of customization are offered. Using `create_model()`, a standard off-the-shelf model can be created for each of the supported tasks, including standard features. 
 
-A first customization is to include additional features, such as case or event attributes. These can be configured in the `prepare_examples` step, and they will be processed automatically (normalized for numerical features, or hot-encoded for categorical features). 
+A first customization is to include additional features, such as case or event attributes. These can be configured in the `prepare_examples()` step, and they will be processed automatically (normalized for numerical features, or hot-encoded for categorical features). 
 
-A further way to customize your model, is to only generate the input layer of the model with `create_model`, and define the remainder of the model yourself by adding `keras` layers using the provided `stack_layers` function. 
+A further way to customize your model, is to only generate the input layer of the model with `create_model()`, and define the remainder of the model yourself by adding `keras` layers using the provided `stack_layers()` function. 
 
 Going beyond that, you can also create the model entirely yourself using `keras`, including the preprocessing of the data. Auxiliary functions are provided to help you with, e.g., tokenizing activity sequences. 
 
 In the remainder of this tutorial, each of the steps and possible avenues for customization will be described in more detail. 
 
 # Preprocessing
-As a first step in the process prediction workflow we use `prepare_example()s` to obtain a dataset, where: 
+As a first step in the process prediction workflow we use `prepare_examples()` to obtain a dataset, where: 
 
 * each row/observation is a unique activity instance id
 * the prefix(_list) column stores the sequence of activities already executed in the case
