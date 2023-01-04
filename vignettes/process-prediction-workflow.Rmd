@@ -35,7 +35,7 @@ The goal of processpredictR is to perform prediction tasks on processes using ev
 * next time: predict the start time of the next activity instance
 * remaining time: predict the remaining time till the end of the case
 
-The overall approach using `processpredictR` is shown in the Figure below. `prepare_examples()` transforms logs into a dataset that can be used for training and prediction, which is thereafter split into train and test set. Subsequently a model is made, compiled and fit. Finally, the model can be used to predict and can be evaluatied
+The overall approach using `processpredictR` is shown in the Figure below. `prepare_examples()` transforms logs into a dataset that can be used for training and prediction, which is thereafter split into train and test set. Subsequently a model is made, compiled and fit. Finally, the model can be used to predict and can be evaluated
 
 ```{r echo = F, eval = T, out.width = "60%", fig.align = "center"}
 knitr::include_graphics("framework.PNG")
@@ -43,30 +43,31 @@ knitr::include_graphics("framework.PNG")
 
 Different levels of customization are offered. Using `create_model`, a standard off-the-shelf model can be created for each of the supported tasks, including standard features. 
 
-A first customization is to include, additional features, such as case or event attributes. These can be configured in the `prepare_examples` step, and they will be processed automatically (normalized for numerical features, or hot-encoded for categorical features). 
+A first customization is to include additional features, such as case or event attributes. These can be configured in the `prepare_examples` step, and they will be processed automatically (normalized for numerical features, or hot-encoded for categorical features). 
 
 A further way to customize your model, is to only generate the input layer of the model with `create_model`, and define the remainder of the model yourself by adding `keras` layers using the provided `stack_layers` function. 
 
-Going beyond that, you can also create the model entirely yourself using `keras`, including the preprocessing of the data. Auxilliary functions are provided to help you with, e.g., tokenezing the activity sequences. 
+Going beyond that, you can also create the model entirely yourself using `keras`, including the preprocessing of the data. Auxiliary functions are provided to help you with, e.g., tokenizing activity sequences. 
 
-In the remained of this tutorial, each of the steps and possible avenues for customization will be described in more detail. 
+In the remainder of this tutorial, each of the steps and possible avenues for customization will be described in more detail. 
+
 # Preprocessing
-As a first step in the process prediction workflow we use `prepare_examples` to obtain a dataset  where: 
+As a first step in the process prediction workflow we use `prepare_example()s` to obtain a dataset, where: 
 
 * each row/observation is a unique activity instance id
 * the prefix(_list) column stores the sequence of activities already executed in the case
-* necessary feature and target variables are calculated
+* necessary features and target variables are calculated and/or added
 
-The returning object is of class `ppred_examples_df`, which inherits from `tbl_df`. 
+The returned object is of class `ppred_examples_df`, which inherits from `tbl_df`. 
 
-In this tutorial, we will use the `traffic_fines` event log from `eventdataR`. Note that both `eventlog` and `activitylog` objects, as defined by `bupaR` are supported.
+In this tutorial we will use the `traffic_fines` event log from `eventdataR`. Note that both `eventlog` and `activitylog` objects, as defined by `bupaR` are supported.
 
 ```{r, eval = T}
 df <- prepare_examples(traffic_fines, task = "outcome")
 df
 ```
 
-We split the transformed dataset into train- and test sets for later use in `fit()` and `predict()`, respectively. The proportion of the train set is configured with the split argument. 
+We split the transformed dataset `df` into train- and test sets for later use in `fit()` and `predict()`, respectively. The proportion of the train set is configured with the `split` argument. 
 
 ```{r, eval = T}
 set.seed(123)
@@ -86,11 +87,11 @@ n_distinct(split$train_df$case_id) / n_distinct(df$case_id)
 
 # Transformer model
 
-The next step in the workflow is to build a model. processpredictR provides a default set of functions that are wrappers of generics provided by keras-package. For ease of use, the preprocessing steps such as tokenizing of sequences, normalizing numerical features, etc. are automated. 
+The next step in the workflow is to build a model. `processpredictR` provides a default set of functions that are wrappers of generics provided by `keras`. For ease of use, the preprocessing steps, such as tokenizing of sequences, normalizing numerical features, etc. happen within the `create_model()` function and are abstracted from the user. 
 
 ## Define model
 
-Based on the train set we define the default transformer model, using  `create_model`
+Based on the train set we define the default transformer model, using `create_model()`.
 
 ```{r}
 model <- split$train_df %>% create_model(name = "my_model") 
@@ -122,28 +123,18 @@ model # is a list
 #> ________________________________________________________________________________
 ```
 
+Some useful information and metrics are stored for a tracebility and an easy extraction if needed.
 ```{r}
-model %>% attributes() # objects from a returned list
+model %>% names() # objects from a returned list
 ```
 ```
 #> $names
 #> [1] "model"           "max_case_length" "number_features" "task"           
 #> [5] "num_outputs"     "vocabulary"     
-#> 
-#> $class
-#> [1] "ppred_model" "list"       
-#> 
-#> $max_case_length
-#> [1] 9
-#> 
-#> $number_features
-#> [1] 0
-#> 
-#> $task
-#> [1] "outcome"
+
 ```
 
-Note that `create_model` returns a list, of which the actual keras model is stored under the name `model`. Thus, we can use functions from the keras-package as follows:
+Note that `create_model()` returns a list, in which the actual keras model is stored under the element name `model`. Thus, we can use functions from the keras-package as follows:
 
 ```{r}
 model$model$name # get the name of a model
@@ -159,7 +150,7 @@ model$model$non_trainable_variables # list of non-trainable parameters of a mode
 #> list()
 ```
 
-The result of `create_model` is assigned it's own class (`ppred_model`) for which the processpredictR provides the methods _compile()_, _fit()_, _predict()_ and _evaluate()_. 
+The result of `create_model()` is assigned it's own class (`ppred_model`) for which the `processpredictR` provides the methods _compile()_, _fit()_, _predict()_ and _evaluate()_. 
 
 ## Compilation
 
@@ -175,7 +166,7 @@ model %>% compile() # model compilation
 
 ## Training
 
-Training of the model is done with the `fit` function. During training, a visualization window will open in the Viewer-pane to show the progress in terms of loss. Optionally, the result of `fit` can be assign to an object to access the training metrics specified in _compile()_. 
+Training of the model is done with the `fit()` function. During training, a visualization window will open in the Viewer-pane to show the progress in terms of loss. Optionally, the result of `fit()` can be assigned to an object to access the training metrics specified in _compile()_. 
 
 ```{r}
 hist <- fit(object = model, train_data = split$train_df, epochs = 5)
@@ -214,7 +205,7 @@ hist$metrics
 
 ## Make predictions
 
-The method  _predict()_ can return 3 types of output, by setting the argument `output` to "append", "y_pred" or "raw. 
+The method  _predict()_ can return 3 types of output, by setting the argument `output` to "append", "y_pred" or "raw". 
 
 Test dataset with appended predicted values (output = "append")
 
@@ -275,7 +266,7 @@ predictions %>% head(5)
 </p>
 
 ### Visualize predictions
-For the classification tasks outcome and next activity a `confusion_matrix` function is provided. 
+For the classification tasks outcome and next activity a `confusion_matrix()` function is provided. 
 
 ```{r}
 predictions %>% class
@@ -333,7 +324,7 @@ model %>% evaluate(split$test_df)
 
 # Add extra features 
 
-Next to the activity prefixes in the data, and standard features defined for each task, additional features can be defined when using `prepare_examples`. The example below shows how the month in which a case is started can be added as a feature. 
+Next to the activity prefixes in the data, and standard features defined for each task, additional features can be defined when using `prepare_examples()`. The example below shows how the month in which a case is started can be added as a feature. 
 
 ```{r}
 # preprocessed dataset with categorical hot encoded features
@@ -374,12 +365,12 @@ df_next_time$train_df %>% attr("hot_encoded_categorical_features")
 Additional features can be either numerical variables, or factors. Numerical variables will be automatically normalized. Factors will automatically be converted to hot-encoded variables. A few important notes: 
 
 - Character values are not accepted, and should be transformed to factors. 
-- We assume that no features have missing values. If there are any, these should be imputed or removed before using `prepare_examples`. 
-- Finally, in case the data is an event log, features should have a single values for each activity instance. Start and complete event should thus have a single unique value of a variable for it to be used as feature. 
+- We assume that no features have missing values. If there are any, these should be imputed or removed before using `prepare_examples()`. 
+- Finally, in case the data is an event log, features should have single values for each activity instance. Start and complete event should thus have a single unique value of a variable for it to be used as feature. 
 
 # Customize your transformer model
 
-Instead of using the standard `off the shelf` transformer model that comes with `processpredictR`, you can customize the model. One way to do this, is by using the `custom` argument of the `create_model` function. The resulting model will then only contain the input layers of the model, as shown below. 
+Instead of using the standard `off the shelf` transformer model that comes with `processpredictR`, you can customize the model. One way to do this, is by using the `custom` argument of the `create_model()` function. The resulting model will then only contain the input layers of the model, as shown below. 
 
 ```{r}
 df <- prepare_examples(traffic_fines, task = "next_activity") %>% split_train_test()
@@ -407,7 +398,7 @@ custom_model
 #> ________________________________________________________________________________
 ```
 
-You can than stack layers on top of your custom model as you prefer, using the `stack_layers` function. 
+You can than stack layers on top of your custom model as you prefer, using the `stack_layers()` function. This function provides an abstraction from a little bit more code work if `keras` is used (see later).
 ```{r}
 custom_model <- custom_model %>%
   stack_layers(layer_dropout(rate = 0.1)) %>% 
@@ -443,11 +434,11 @@ custom_model %>%
   stack_layers(layer_dropout(rate = 0.1), layer_dense(units = 64, activation = 'relu'))
 ```
 
-Once you have finalized your model, with an appropriate output-layer (which should have the correct amount of outputs, as recorded in `customer_model$num_outputs` and an appropriate activiation function), you can use the `compile`, `fit`, `predict` and `evaluate` functions as before. 
+Once you have finalized your model, with an appropriate output-layer (which should have the correct amount of outputs, as recorded in `customer_model$num_outputs` and an appropriate activation function), you can use the `compile()`, `fit()`, `predict()` and `evaluate()` functions as before. 
 
 # Custom training and prediction
 
-We can also opt for setting up and training our model manually, instead of using the provided methods. Note that after defining a model with keras::keras_model() the model no longer is of class ppred_model.
+We can also opt for setting up and training our model manually, instead of using the provided methods. Note that after defining a model with `keras::keras_model()` the model no longer is of class `ppred_model`.
 
 ```{r}
 new_outputs <- custom_model$model$output %>% # custom_model$model to access a model and $output to access the outputs of that model
@@ -505,7 +496,7 @@ compile(object=custom_model, optimizer = "adam",
 ```
 
 
-Before training the model we first must prepare the data, using the `tokenize` function. 
+Before training the model we first must prepare the data, using the `tokenize()` function. 
 
 ```{r}
 # the trace of activities must be tokenized
@@ -551,8 +542,8 @@ map(tokens_train, head) # the output of tokens is a list
 x <- tokens_train$token_x %>% pad_sequences(maxlen = max_case_length(df$train_df), value = 0)
 y <- tokens_train$token_y
 ```
-We are now ready to train our custom model.
 
+We are now ready to train our custom model (the code below is not being evaluated).
 ```{r, eval=F}
 # train
 fit(object = custom_model, x, y, epochs = 10, batch_size = 10) # see also ?keras::fit.keras.engine.training.Model
