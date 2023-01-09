@@ -1,10 +1,12 @@
 #' Calculate the vocabulary size, i.e. the sum of number of activities, outcome labels and padding keys
 #'
-#'(WIP)
-#'
-#'@param processed_df A processed dataframe from create_prefix_df() or preprocess_log()
-#'
-#'@return an Integer number of vocabulary size to define the transformer model
+#' @param processed_df A processed dataset of class [`ppred_examples_df`] from `prepare_examples()`.
+#' @return an `integer` number of vocabulary size to define the Transformer model.
+#' @examples
+#' library(processpredictR)
+#' library(eventdataR)
+#' df <- prepare_examples(patients)
+#' vocab_size(df)
 #'
 #'@export
 vocab_size <- function(processed_df) {

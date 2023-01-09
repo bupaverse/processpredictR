@@ -1,10 +1,10 @@
-#' Tokenize features and target of a preprocessed [`data.frame`]
+#' Tokenize features and target of a processed dataset of class [`ppred_examples_df`]
 #'
-#' @description Tokenize features and target of a processed [`data.frame`] to fit the transformer model.
+#' @description Tokenize features and target of a processed [`ppred_examples_df`] object to fit the Transformer model.
 #'
 #' @inheritParams split_train_test
 #'
-#' @return A list of tokens: token_x and token_y
+#' @return A [`list`] of (sequence) tokens and additional `numeric` or `categorical` features.
 #'
 #' @export
 tokenize <- function(processed_df) {

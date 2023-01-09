@@ -7,7 +7,7 @@
 create_vocabulary(processed_df)
 }
 \arguments{
-\item{processed_df}{A preprocessed object of type \code{\link{log}} or \code{\link{data.frame}} from prepare_examples function.}
+\item{processed_df}{A preprocessed object of type \code{\link{ppred_examples_df}} returned by \code{prepare_examples()}.}
 }
 \value{
 A \code{\link{list}} consisting of:

@@ -7,11 +7,18 @@
 num_outputs(processed_df)
 }
 \arguments{
-\item{processed_df}{A processed dataframe}
+\item{processed_df}{A processed dataset of class \code{\link{ppred_examples_df}}.}
 }
 \value{
-an integer number of outputs
+an \code{integer} number of outputs for supplying as an argument to a Transformer model, i.e. number of unique labels for a specific process monitoring task.
 }
 \description{
-(WIP)
+Calculate number of outputs (target variables)
+}
+\examples{
+library(processpredictR)
+library(eventdataR)
+df <- prepare_examples(patients)
+num_outputs(df)
+
 }

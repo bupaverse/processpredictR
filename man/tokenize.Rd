@@ -2,16 +2,16 @@
 % Please edit documentation in R/tokenize.R
 \name{tokenize}
 \alias{tokenize}
-\title{Tokenize features and target of a preprocessed \code{\link{data.frame}}}
+\title{Tokenize features and target of a processed dataset of class \code{\link{ppred_examples_df}}}
 \usage{
 tokenize(processed_df)
 }
 \arguments{
-\item{processed_df}{A preprocessed object of type \code{\link{log}} or \code{\link{data.frame}} from prepare_examples function.}
+\item{processed_df}{A preprocessed object of type \code{\link{ppred_examples_df}} returned by \code{prepare_examples()}.}
 }
 \value{
-A list of tokens: token_x and token_y
+A \code{\link{list}} of (sequence) tokens and additional \code{numeric} or \code{categorical} features.
 }
 \description{
-Tokenize features and target of a processed \code{\link{data.frame}} to fit the transformer model.
+Tokenize features and target of a processed \code{\link{ppred_examples_df}} object to fit the Transformer model.
 }

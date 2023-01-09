@@ -7,10 +7,21 @@
 split_train_test(processed_df, split = 0.7)
 }
 \arguments{
-\item{processed_df}{A preprocessed object of type \code{\link{log}} or \code{\link{data.frame}} from prepare_examples function.}
+\item{processed_df}{A preprocessed object of type \code{\link{ppred_examples_df}} returned by \code{prepare_examples()}.}
 
 \item{split}{\code{\link{numeric}} (default 0.7): A train-test split ratio.}
 }
+\value{
+A \code{\link{list}} containing the train- and the test set objects.
+}
 \description{
 Returns train- and test dataframes as a list.
+}
+\examples{
+library(processpredictR)
+library(eventdataR)
+
+df <- prepare_examples(patients, "next_activity")
+split_train_test(df, split = 0.8)
+
 }

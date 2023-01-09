@@ -7,9 +7,12 @@
 stack_layers(object, ...)
 }
 \arguments{
-\item{object}{a list containing a model returned by create_model().}
+\item{object}{a \code{\link{list}} containing a model returned by \code{create_model()}.}
 
-\item{...}{functions for adding layers by using functional keras API. For example, keras::layer_dense(units=32, activation="relu")}
+\item{...}{functions for adding layers by using functional keras API. For example, \code{keras::layer_dense(units=32, activation="relu")}.}
+}
+\value{
+a \code{\link{list}} containing an adapted Transformer model.
 }
 \description{
 User friendly interface to add a keras layer on top of existing model.

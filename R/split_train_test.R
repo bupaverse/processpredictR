@@ -2,9 +2,15 @@
 #'
 #' @description Returns train- and test dataframes as a list.
 #'
-#' @param processed_df A preprocessed object of type [`log`] or [`data.frame`] from prepare_examples function.
+#' @param processed_df A preprocessed object of type [`ppred_examples_df`] returned by `prepare_examples()`.
 #' @param split [`numeric`] (default 0.7): A train-test split ratio.
+#' @return A [`list`] containing the train- and the test set objects.
+#' @examples
+#' library(processpredictR)
+#' library(eventdataR)
 #'
+#' df <- prepare_examples(patients, "next_activity")
+#' split_train_test(df, split = 0.8)
 #'
 #' @export
 split_train_test <- function(processed_df, split = 0.7) { #, trace_length_bins = 5) {

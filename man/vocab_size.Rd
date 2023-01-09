@@ -7,11 +7,18 @@
 vocab_size(processed_df)
 }
 \arguments{
-\item{processed_df}{A processed dataframe from create_prefix_df() or preprocess_log()}
+\item{processed_df}{A processed dataset of class \code{\link{ppred_examples_df}} from \code{prepare_examples()}.}
 }
 \value{
-an Integer number of vocabulary size to define the transformer model
+an \code{integer} number of vocabulary size to define the Transformer model.
 }
 \description{
-(WIP)
+Calculate the vocabulary size, i.e. the sum of number of activities, outcome labels and padding keys
+}
+\examples{
+library(processpredictR)
+library(eventdataR)
+df <- prepare_examples(patients)
+vocab_size(df)
+
 }

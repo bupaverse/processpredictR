@@ -19,12 +19,20 @@ prepare_examples(
 
 \item{features}{\code{\link{character}} (default \code{\link{NULL}}): additional features. Appends attributes (if present) numeric_features and/or categorical_features to a preprocessed event log.}
 
-\item{...}{additional arguments}
+\item{...}{additional arguments.}
 }
 \value{
-a preprocessed dataset
+a preprocessed dataset of class \code{\link{ppred_examples_df}}.
 }
 \description{
 an event log is converted into a tibble where each row contains a cumulative sequence of activities per case.
-This sequence will eventually be feeded to the transformer model's token embedding layer.
+This sequence will eventually be feeded to the Transformer model's token embedding layer.
+}
+\examples{
+library(processpredictR)
+library(eventdataR)
+
+prepare_examples(patients, "next_activity")
+
+
 }

@@ -2,15 +2,18 @@
 % Please edit documentation in R/confusion_matrix.R
 \name{confusion_matrix}
 \alias{confusion_matrix}
-\title{Confusion matrix for}
+\title{Confusion matrix for predictions}
 \usage{
 confusion_matrix(predictions, ...)
 }
 \arguments{
-\item{predictions}{\code{\link{ppred_predictions}} An event log with predicted values}
+\item{predictions}{\code{\link{ppred_predictions}}: A \code{\link{data.frame}} with predicted values returned by \code{predict.ppred_model()}.}
 
-\item{...}{additional arguments}
+\item{...}{additional arguments.}
+}
+\value{
+A \code{\link{table}} object that can be used for plotting a confusion matrix using \code{plot()}.
 }
 \description{
-Confusion matrix for
+Confusion matrix for predictions
 }

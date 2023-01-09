@@ -7,9 +7,12 @@
 \method{print}{ppred_model}(x, ...)
 }
 \arguments{
-\item{x}{Object of class token.}
+\item{x}{\code{\link{ppred_model}}: An object of class \code{ppred_model}.}
 
-\item{...}{Additional Arguments}
+\item{...}{Additional Arguments.}
+}
+\value{
+prints a Transformer model from a list returned by \code{create_model()}.
 }
 \description{
 Print methods

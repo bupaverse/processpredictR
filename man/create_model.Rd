@@ -7,11 +7,14 @@
 create_model(x_train, custom = FALSE, ...)
 }
 \arguments{
-\item{x_train}{\code{\link{data.frame}}: A processed \code{\link{data.frame}} from prepare_examples}
+\item{x_train}{\code{\link{data.frame}}: A processed \code{\link{data.frame}} from \code{prepare_examples()}.}
 
 \item{custom}{\code{\link{logical}} (default \code{\link{FALSE}}): If \code{\link{TRUE}}, returns a custom model.}
 
-\item{...}{you can pass additional arguments to keras::keras_model (ex.: name)}
+\item{...}{you can pass additional arguments to \code{keras::keras_model()} (ex.: \code{name} argument).}
+}
+\value{
+A \code{\link{list}} containing a Transformer model (returned by \code{keras::keras_model()}) and some additional useful metrics.
 }
 \description{
 Defines the model using the keras functional API.

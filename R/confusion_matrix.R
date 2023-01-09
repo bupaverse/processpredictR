@@ -1,6 +1,8 @@
-#' @title Confusion matrix for
-#' @param predictions [`ppred_predictions`] An event log with predicted values
-#' @param ... additional arguments
+#' @title Confusion matrix for predictions
+#' @param predictions [`ppred_predictions`]: A [`data.frame`] with predicted values returned by `predict.ppred_model()`.
+#' @param ... additional arguments.
+#' @return A [`table`] object that can be used for plotting a confusion matrix using `plot()`.
+#'
 #'
 #' @export
 confusion_matrix <- function(predictions, ...) {

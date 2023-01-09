@@ -2,9 +2,10 @@
 #'
 #' Defines the model using the keras functional API.
 #'
-#' @param x_train [`data.frame`]: A processed [`data.frame`] from prepare_examples
+#' @param x_train [`data.frame`]: A processed [`data.frame`] from `prepare_examples()`.
 #' @param custom [`logical`] (default [`FALSE`]): If [`TRUE`], returns a custom model.
-#' @param ... you can pass additional arguments to keras::keras_model (ex.: name)
+#' @param ... you can pass additional arguments to `keras::keras_model()` (ex.: `name` argument).
+#' @return A [`list`] containing a Transformer model (returned by `keras::keras_model()`) and some additional useful metrics.
 #'
 #' @export
 create_model <- function(x_train, custom = FALSE, ...) {

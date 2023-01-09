@@ -1,9 +1,13 @@
-#' Calculate the maximum length of a case / number of activities in the longest trace in an event log.
+#' Calculate the maximum length of a case / number of activities in the longest trace in an event log
 #'
-#'(WIP)
+#' @param processed_df A processed dataset of class [`ppred_examples_df`] returned by `prepare_examples()`.
+#' @return An `integer` number of the maximum case length (longest trace) in an event log.
+#' @examples
+#' library(processpredictR)
+#' library(eventdataR)
 #'
-#'@param processed_df A preprocessed dataframe from create_prefix_df().
-#'@return An integer number of the maximum case length (longest trace) in an event log.
+#' df <- prepare_examples(patients)
+#' max_case_length(df)
 #'
 #'@export
 max_case_length <- function(processed_df) {

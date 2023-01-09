@@ -1,15 +1,22 @@
 #' @title Convert a dataset of type [`log`] into a preprocessed format.
 #'
 #' @description an event log is converted into a tibble where each row contains a cumulative sequence of activities per case.
-#' This sequence will eventually be feeded to the transformer model's token embedding layer.
+#' This sequence will eventually be feeded to the Transformer model's token embedding layer.
 #'
 #' @param log \code{\link{log}}: Object of class \code{\link{log}} or derivatives (\code{\link{grouped_log}}, \code{\link{eventlog}},
 #' \code{\link{activitylog}}, etc.).
 #' @param task [`character`]: a process monitoring task for which to prepare an event log.
 #' @param features [`character`] (default [`NULL`]): additional features. Appends attributes (if present) numeric_features and/or categorical_features to a preprocessed event log.
-#' @param ... additional arguments
+#' @param ... additional arguments.
 #'
-#' @return a preprocessed dataset
+#' @return a preprocessed dataset of class [`ppred_examples_df`].
+#' @examples
+#' library(processpredictR)
+#' library(eventdataR)
+#'
+#' prepare_examples(patients, "next_activity")
+#'
+#'
 #' @export
 #'
 prepare_examples <- function(log, task = c("outcome", "next_activity",
