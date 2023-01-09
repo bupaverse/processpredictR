@@ -2,7 +2,7 @@
 title: "Introduction to processpredictR: workflow"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{process-prediction-workflow}
+  %\VignetteIndexEntry{Introduction to processpredictR: workflow}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
