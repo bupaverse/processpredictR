@@ -628,19 +628,55 @@ Transformer <- keras::new_model_class(
 )
 ```
 
+
+
+################# ################# ################# ################# ################# ################# 
+
+# Tokenize
 ```{r}
+prepare_examples(eventdataR::traffic_fines, "remaining_trace") -> df
+
+prep_toks_remaining_trace <- function(df, trace_prefix) {
+vocabulary <- df %>% attr("vocabulary")
+vocabulary$keys_x <- vocabulary$keys_x %>% append(list("endpoint"))
+df$prefix_list <- df %>% pull(trace_prefix)
+
+  token_x <- list()
+  for (i in (1:nrow(df))) {
+    #case_trace <- list()
+    case_trace <- c()
+
+    for (j in (1:length(df$prefix_list[[i]]))) {
+      #if (processed_df$trace[[i]][j] == x_word_dict$values_x) {}
+      tok <- which(df$prefix_list[[i]][j] == vocabulary$keys_x)
+      case_trace <- case_trace %>% append(tok-1)
+    }
+
+    case_trace <- case_trace %>% list()
+    token_x <- token_x %>% append(case_trace)
+  }
+  return(token_x)
+}
+
+remaining_toks <- prep_toks_remaining_trace(df, "remaining_trace_list")
+remaining_toks_shifted <- remaining_toks %>% map_depth(.depth = 1, lead, n=1, default = 0)
+current_toks <- prep_toks_remaining_trace(df, "prefix_list")
+
+remaining_toks <- remaining_toks %>% keras::pad_sequences()
+remaining_toks_shifted <- remaining_toks_shifted %>% keras::pad_sequences()
+current_toks <- current_toks %>% keras::pad_sequences()
 ```
 
-
 ## define, compile, fit
+### define
 ```{r}
 d_model <- 128
 dff <- 512
 num_heads <- 8
 dropout_rate <- 0.1
-vocab_size <- 20
-input_maxlen <- 12
-target_maxlen <- 12
+vocab_size <- df %>% attr("vocab_size") + 1 # 9 + 1 ("endpoint")
+input_maxlen <- current_toks %>% ncol() # 6 tokens
+target_maxlen <- remaining_toks %>% ncol() # 6 tokens
 
 # NB: context is current trace sequence, x must be remaining trace sequence
 input_context <- keras::layer_input(shape = c(input_maxlen))
@@ -678,41 +714,12 @@ compile(model, optimizer = keras::optimizer_adam(0.001),
         metrics = keras::metric_sparse_categorical_crossentropy(from_logits = T))
 ```
 
+### fit 
 ```{r}
-prepare_examples(eventdataR::patients, "remaining_trace") -> df
-
-prep_toks_remaining_trace <- function(df, trace_prefix) {
-vocabulary <- df %>% attr("vocabulary")
-vocabulary$keys_x <- vocabulary$keys_x %>% append(list("endpoint"))
-df$prefix_list <- df %>% pull(trace_prefix)
-
-  token_x <- list()
-  for (i in (1:nrow(df))) {
-    #case_trace <- list()
-    case_trace <- c()
-
-    for (j in (1:length(df$prefix_list[[i]]))) {
-      #if (processed_df$trace[[i]][j] == x_word_dict$values_x) {}
-      tok <- which(df$prefix_list[[i]][j] == vocabulary$keys_x)
-      case_trace <- case_trace %>% append(tok-1)
-    }
-
-    case_trace <- case_trace %>% list()
-    token_x <- token_x %>% append(case_trace)
-  }
-  return(token_x)
-}
-
-remaining_toks <- prep_toks_remaining_trace(df, "remaining_trace_list")
-remaining_toks_shifted <- remaining_toks %>% map_depth(.depth = 1, lead, n=1, default = 0)
-current_toks <- prep_toks_remaining_trace(df, "prefix_list")
-
-remaining_toks <- remaining_toks %>% keras::pad_sequences()
-remaining_toks_shifted <- remaining_toks_shifted %>% keras::pad_sequences()
-current_toks <- current_toks %>% keras::pad_sequences()
-
 fit(model, list(current_toks, remaining_toks), remaining_toks_shifted)
 ```
+
+################# ################# ################# ################# ################# ################# 
 
 
 ```{r, eval=F, echo=F}
@@ -741,6 +748,22 @@ fit(model, list(input1, input2), input2_shifted)
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 ## Trace generator
 ```{r}
 model(list(input1, input2), training=FALSE)
@@ -765,7 +788,6 @@ for (i in 1:6) { #max_case_length)
     #     break
 ```
 
-
 ### tokenizing
 ```{r, eval=F, echo=F}
 prepare_examples(eventdataR::patients, "remaining_trace") -> df
@@ -781,11 +803,6 @@ tmp$get_config()
 # layer$get_config()
 # layer(df$prefix)
 ```
-
-
-
-
-
 
 ## FIXING
 ```{r, eval=F}
@@ -913,100 +930,5 @@ Transformer <- keras::new_model_class(
     }
   )
 ```
-
-
-
-## Encoder block (as object)
-```{r, eval=F}
-d_model <- 128
-dff <- 512
-num_heads <- 8
-dropout_rate <- 0.1
-vocab_size <- 9
-maxlen <- 7 # $max_case_length
-
-x <- inputs <- keras::layer_input(shape = c(7))
-
-context <- inputs %>% 
-  TokenAndPositionEmbedding()(maxlen = maxlen, vocab_size = vocab_size, d_model = d_model) %>%
-  keras::layer_dropout(dropout_rate) %>% 
-  EncoderLayer(d_model = d_model, num_heads = num_heads, dff = dff, dropout_rate = dropout_rate)
-
-x <- inputs %>%
-  TokenAndPositionEmbedding()(maxlen = maxlen, vocab_size = vocab_size, d_model = d_model) %>%
-  keras::layer_dropout(dropout_rate) %>% 
-  CausalSelfAttention(
-        num_heads=num_heads,
-        key_dim=d_model,
-        dropout=dropout_rate)
-  
-  DecoderLayer(context=context, d_model = d_model, num_heads = num_heads, dff = dff, dropout_rate = dropout_rate) #%>% 
-  keras::layer_dense(vocab_size, activation = "linear") # or maxlen?
-
-keras::keras_model(inputs, context)
-```
-
-
-
-
-
-
-
-
-```{r}
-# halfEncoder <- function() {
-#   keras::new_layer_class(
-#     classname = "halfEncoder",
-#     initialize = function(self, d_model, num_heads, #num_layers,
-#                           dff, vocab_size, maxlen, dropout_rate = 0.1, ...) { # dff = ff_dim, d_model = embed_dim, dropout_rate = rate
-#       super$initialize()
-#       
-#       self$d_model <- d_model
-#       self$num_heads <- num_heads
-#       self$vocab_size <- vocab_size
-#       self$dff <- dff
-#       self$maxlen <- maxlen ############# AANPASSEN AAN MAX_CASE_LENGTH
-#       #self$num_layers <- num_layers
-# 
-#       #self$pos_embedding <- PositionalEmbedding(vocab_size = vocab_size, d_model = d_model)
-#       self$pos_embedding <- TokenAndPositionEmbedding()(maxlen = maxlen, vocab_size = vocab_size, d_model = d_model)
-#       
-#       # Only one layer stack
-#       self$self_attention <- GlobalSelfAttention(num_heads = num_heads,
-#                                                  key_dim = d_model, 
-#                                                  dropout = dropout_rate
-#       )
-#       
-#       self$dropout <- keras::layer_dropout(rate = dropout_rate)
-#     },
-#     
-#     call = function(self, x) {
-#       # `x` is token-IDs shape: (batch, seq_len)
-#       x <- self$pos_embedding(x) # Shape `(batch_size, seq_len, d_model)`.
-#       # Add dropout
-#       x <- self$dropout(x)
-#       x <- self$self_attention(x)
-#       
-#       return(x)
-#     }
-#   )
-# }
-# 
-# 
-# inputs %>% 
-#   halfEncoder()(d_model, num_heads, #num_layers,
-#                           dff, vocab_size, maxlen, dropout_rate = 0.1) -> a
-# 
-# keras::keras_model(inputs, a)
-
-```
-
-
-
-
-
-
-
-
 
 
