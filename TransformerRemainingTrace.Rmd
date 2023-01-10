@@ -678,6 +678,43 @@ compile(model, optimizer = keras::optimizer_adam(0.001),
         metrics = keras::metric_sparse_categorical_crossentropy(from_logits = T))
 ```
 
+```{r}
+prepare_examples(eventdataR::patients, "remaining_trace") -> df
+
+prep_toks_remaining_trace <- function(df, trace_prefix) {
+vocabulary <- df %>% attr("vocabulary")
+vocabulary$keys_x <- vocabulary$keys_x %>% append(list("endpoint"))
+df$prefix_list <- df %>% pull(trace_prefix)
+
+  token_x <- list()
+  for (i in (1:nrow(df))) {
+    #case_trace <- list()
+    case_trace <- c()
+
+    for (j in (1:length(df$prefix_list[[i]]))) {
+      #if (processed_df$trace[[i]][j] == x_word_dict$values_x) {}
+      tok <- which(df$prefix_list[[i]][j] == vocabulary$keys_x)
+      case_trace <- case_trace %>% append(tok-1)
+    }
+
+    case_trace <- case_trace %>% list()
+    token_x <- token_x %>% append(case_trace)
+  }
+  return(token_x)
+}
+
+remaining_toks <- prep_toks_remaining_trace(df, "remaining_trace_list")
+remaining_toks_shifted <- remaining_toks %>% map_depth(.depth = 1, lead, n=1, default = 0)
+current_toks <- prep_toks_remaining_trace(df, "prefix_list")
+
+remaining_toks <- remaining_toks %>% keras::pad_sequences()
+remaining_toks_shifted <- remaining_toks_shifted %>% keras::pad_sequences()
+current_toks <- current_toks %>% keras::pad_sequences()
+
+fit(model, list(current_toks, remaining_toks), remaining_toks_shifted)
+```
+
+
 ```{r, eval=F, echo=F}
 prepare_examples(eventdataR::patients, "remaining_trace") -> df
 df$prefix %>% append(df$remaining_trace) -> current_and_remaining_traces
