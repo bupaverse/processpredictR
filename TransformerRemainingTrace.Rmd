@@ -668,6 +668,8 @@ remaining_toks <- prep_toks_remaining_trace(df, "remaining_trace_list")
 remaining_toks_shifted <- remaining_toks %>% map_depth(.depth = 1, lead, n=1, default = 0)
 current_toks <- prep_toks_remaining_trace(df, "prefix_list")
 
+vocab <- attr(current_toks, "vocabulary")
+
 remaining_toks <- remaining_toks %>% keras::pad_sequences(padding = "post")
 remaining_toks_shifted <- remaining_toks_shifted %>% keras::pad_sequences(padding = "post")
 current_toks <- current_toks %>% keras::pad_sequences()
