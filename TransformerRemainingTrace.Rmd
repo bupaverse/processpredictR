@@ -641,10 +641,8 @@ df$remaining_trace_list <- df$remaining_trace_list %>% map(~append("startpoint",
 
 prep_toks_remaining_trace <- function(df, trace_prefix) {
 vocabulary <- df %>% attr("vocabulary")
-vocabulary$keys_x <- list("startpoint") %>% append(vocabulary$keys_x) %>% append(list("endpoint"))
+vocabulary$keys_x <- vocabulary$keys_x %>% append(list("endpoint")) %>% append(list("startpoint"))
 df$prefix_list <- df %>% pull(trace_prefix)
-
-df$prefix_list
 
   token_x <- list()
   for (i in (1:nrow(df))) {
