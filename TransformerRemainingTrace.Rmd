@@ -636,10 +636,15 @@ Transformer <- keras::new_model_class(
 ```{r}
 prepare_examples(eventdataR::traffic_fines, "remaining_trace") -> df
 
+# adding "startpoint" to prefix_list
+df$remaining_trace_list <- df$remaining_trace_list %>% map(~append("startpoint", .))
+
 prep_toks_remaining_trace <- function(df, trace_prefix) {
 vocabulary <- df %>% attr("vocabulary")
-vocabulary$keys_x <- vocabulary$keys_x %>% append(list("endpoint"))
+vocabulary$keys_x <- list("startpoint") %>% append(vocabulary$keys_x) %>% append(list("endpoint"))
 df$prefix_list <- df %>% pull(trace_prefix)
+
+df$prefix_list
 
   token_x <- list()
   for (i in (1:nrow(df))) {
@@ -655,6 +660,7 @@ df$prefix_list <- df %>% pull(trace_prefix)
     case_trace <- case_trace %>% list()
     token_x <- token_x %>% append(case_trace)
   }
+  attr(token_x, "vocabulary") <- vocabulary$keys_x
   return(token_x)
 }
 
@@ -674,7 +680,7 @@ d_model <- 128
 dff <- 512
 num_heads <- 8
 dropout_rate <- 0.1
-vocab_size <- df %>% attr("vocab_size") + 1 # 9 + 1 ("endpoint")
+vocab_size <- df %>% attr("vocab_size") + 2 # 9 + 1 ("endpoint")
 input_maxlen <- current_toks %>% ncol() # 6 tokens
 target_maxlen <- remaining_toks %>% ncol() # 6 tokens
 
