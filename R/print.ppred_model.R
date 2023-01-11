@@ -8,5 +8,9 @@ print.ppred_model <- function(x, ...) {
   print(x$model)
 }
 
+#' @export
+print.remaining_trace2_model <- function(x, ...) {
+  print(x$model)
+}
 
 

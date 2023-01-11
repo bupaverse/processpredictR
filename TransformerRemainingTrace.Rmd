@@ -691,8 +691,8 @@ target_sequence <- keras::layer_input(shape = c(target_maxlen))
 # fixed
 context <- input_context %>% 
   TokenAndPositionEmbedding()(maxlen = input_maxlen, vocab_size = vocab_size, d_model = d_model) %>%
-  keras::layer_dropout(dropout_rate) %>% 
-  EncoderLayer(d_model = d_model, num_heads = num_heads, dff = dff, dropout_rate = dropout_rate)
+  keras::layer_dropout(dropout_rate) #%>% 
+  #EncoderLayer(d_model = d_model, num_heads = num_heads, dff = dff, dropout_rate = dropout_rate)
 #context
 #keras::keras_model(target_sequence, context)
 

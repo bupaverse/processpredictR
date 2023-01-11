@@ -146,6 +146,56 @@ create_model.ppred_examples_df <- function(x_train, custom = FALSE, ...) {
   output
 }
 
+#' @export
+create_model.remaining_trace2 <- function(x_train, custom = F, ...) {
+
+  # Parameters of the model
+  d_model <- 128
+  dff <- 512
+  num_heads <- 8
+  dropout_rate <- 0.1
+  vocab_size <- x_train %>% attr("vocab_size")
+  input_maxlen <- x_train %>% attr("input_maxlen")
+  target_maxlen <- x_train %>% attr("target_maxlen")
+
+  # NB: context is current trace sequence, x must be remaining trace sequence
+  input_context <- keras::layer_input(shape = c(input_maxlen))
+  target_sequence <- keras::layer_input(shape = c(target_maxlen))
+
+  # encoder block
+  context <- input_context %>%
+    TokenAndPositionEmbedding_RemainingTrace()(maxlen = input_maxlen, vocab_size = vocab_size, d_model = d_model) %>%
+    keras::layer_dropout(dropout_rate) %>%
+    EncoderLayer()(d_model = d_model, num_heads = num_heads, dff = dff, dropout_rate = dropout_rate)
+
+  # initiate decoder layer
+  decoder <- DecoderLayer()(d_model = d_model, num_heads = num_heads, dff = dff, dropout_rate = dropout_rate)
+
+  # decoder block
+  x <- target_sequence %>%
+    TokenAndPositionEmbedding_RemainingTrace()(maxlen = target_maxlen, vocab_size = vocab_size, d_model = d_model) %>%
+    keras::layer_dropout(dropout_rate)
+
+  x <- decoder(x = x, context = context) %>%
+    keras::layer_dense(vocab_size, activation = "linear")
+
+  # instantiate model
+  keras::keras_model(list(input_context, target_sequence), x) -> model
+
+  # add model and metrics to the list
+  output <- list()
+  class(output) <- c("remaining_trace2_model", class(output))
+  output$model <- model
+
+  # Same attributes as in `prep_remaining_trace2()`, but now stored as list-object components
+  output$task <- "remaining_trace2"
+  output$vocabulary <- x_train %>% attr("vocabulary")
+  output$vocab_size <- vocab_size
+  output$input_maxlen <- input_maxlen
+  output$target_maxlen <- target_maxlen
+
+  return(output)
+}
 
 
 
