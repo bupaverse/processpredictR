@@ -4,12 +4,25 @@
 \alias{create_model}
 \title{Define transformer model}
 \usage{
-create_model(x_train, custom = FALSE, ...)
+create_model(
+  x_train,
+  custom = FALSE,
+  num_heads = 4,
+  output_dim = 36,
+  dim_ff = 64,
+  ...
+)
 }
 \arguments{
 \item{x_train}{\code{\link{data.frame}}: A processed \code{\link{data.frame}} from \code{\link[=prepare_examples]{prepare_examples()}}.}
 
 \item{custom}{\code{\link{logical}} (default \code{\link{FALSE}}): If \code{\link{TRUE}}, returns a custom model.}
+
+\item{num_heads}{A number of attention heads of the \code{\link[keras:layer_embedding]{keras::layer_embedding()}}.}
+
+\item{output_dim}{Dimension of the dense embedding of the \code{\link[keras:layer_embedding]{keras::layer_embedding()}}.}
+
+\item{dim_ff}{Dimensionality of the output space of the feedforward network part of the model (\code{units} argument of the \code{\link[keras:layer_dense]{keras::layer_dense()}}).}
 
 \item{...}{you can pass additional arguments to \code{keras::keras_model()} (ex.: \code{name} argument).}
 }

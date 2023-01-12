@@ -357,7 +357,7 @@ DecoderLayer <- function() {
 
 
 # function for transforming remaining_trace to remaining_trace_s2s --------
-prep_remaining_trace2.ppred_examples_df <- function(log) {
+prep_remaining_trace2 <- function(log) {
   log$remaining_trace_list <- log$remaining_trace_list %>% purrr::map(~append("startpoint", .))
   vocabulary <- log %>% attr("vocabulary")
   vocabulary$keys_x <- vocabulary$keys_x %>% append(list("endpoint")) %>% append(list("startpoint"))
@@ -418,8 +418,9 @@ prep_remaining_trace2.ppred_examples_df <- function(log) {
   attr(remaining_trace, "task") <- "remaining_trace_s2s"
   attr(remaining_trace, "vocabulary") <- vocabulary$keys_x
   attr(remaining_trace, "vocab_size") <- vocabulary$keys_x %>% length()
-  attr(remaining_trace, "input_maxlen") <- remaining_trace$current_tokens %>% ncol() #max_case_length
-  attr(remaining_trace, "target_maxlen") <- remaining_trace$remaining_tokens %>% ncol() #max_case_length + 2
+  attr(remaining_trace, "max_case_length") <- log %>% attr("max_case_length")
+  attr(remaining_trace, "input_maxlen") <- log %>% attr("max_case_length") #remaining_trace$current_tokens %>% ncol() ## NOTE max_case_length(log) is false because would be based on a new split data
+  attr(remaining_trace, "target_maxlen") <- log %>% attr("max_case_length") + 1 # only "endpoint" can take place in the remaining_trace_list
 
   return(remaining_trace)
 }
@@ -427,7 +428,7 @@ prep_remaining_trace2.ppred_examples_df <- function(log) {
 
 # Create models -----------------------------------------------------------
 # model from ProcessTransformer Python library
-create_model_original.ppred_examples_df <- function(x_train, custom = custom, ...) {
+create_model_original <- function(x_train, custom = custom, num_heads = num_heads, d_model = output_dim, dff = dim_ff, ...) {
 
   # parameters of the model
   task <- attr(x_train, "task")
@@ -440,9 +441,9 @@ create_model_original.ppred_examples_df <- function(x_train, custom = custom, ..
   num_outputs <- attr(x_train, "num_outputs")
   max_case_length <- attr(x_train, "max_case_length") %>% as.integer()
   vocab_size <- attr(x_train, "vocab_size") %>% as.integer()
-  embed_dim <- 36 %>% as.integer()
-  num_heads <- 4 %>% as.integer()
-  ff_dim <- 64 %>% as.integer()
+  # embed_dim <- 36 %>% as.integer()
+  # num_heads <- 4 %>% as.integer()
+  # ff_dim <- 64 %>% as.integer()
 
 
   # Initialize transformer model --------------------------------------------
@@ -561,12 +562,12 @@ create_model_original.ppred_examples_df <- function(x_train, custom = custom, ..
 }
 
 # s2s model with both encoder and decoder
-create_model_s2s.remaining_trace_s2s <- function(x_train, custom = custom, ...) {
+create_model_s2s <- function(x_train, num_heads = num_heads, d_model = output_dim, dff = dim_ff, ...) {
 
-  # Parameters of the model
-  d_model <- 128
-  dff <- 512
-  num_heads <- 8
+  # # Parameters of the model
+  # d_model <- 128
+  # dff <- 512
+  # num_heads <- 8
   dropout_rate <- 0.1
   vocab_size <- x_train %>% attr("vocab_size")
   input_maxlen <- x_train %>% attr("input_maxlen")
@@ -605,9 +606,9 @@ create_model_s2s.remaining_trace_s2s <- function(x_train, custom = custom, ...) 
   output$task <- "remaining_trace_s2s"
   output$vocabulary <- x_train %>% attr("vocabulary")
   output$vocab_size <- vocab_size
+  output$max_case_length <- x_train %>% attr("max_case_length")
   output$input_maxlen <- input_maxlen
   output$target_maxlen <- target_maxlen
-  output$max_case_length <- x_train %>% attr("max_case_length") # + 2 ?
 
   return(output)
 }

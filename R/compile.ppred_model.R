@@ -38,5 +38,5 @@ compile.ppred_model <- function(object,
                    metrics = metrics,
                    ...)
 
-  message("Compilation complete!")
+  cli::cli_alert_success("Compilation complete!")
 }

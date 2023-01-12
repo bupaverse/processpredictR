@@ -27,7 +27,7 @@ fit.ppred_model <- function(object,
 
   if (object$task == "remaining_trace_s2s") {
 
-    train_data_list <- train_data %>% prep_remaining_trace2.ppred_examples_df()
+    train_data_list <- train_data %>% prep_remaining_trace2()
     keras::fit(object$model, list(train_data_list$current_tokens, train_data_list$remaining_tokens),
                train_data_list$remaining_tokens_shifted,
                batch_size = batch_size,
