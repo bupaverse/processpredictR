@@ -21,7 +21,7 @@
 #'
 prepare_examples <- function(log, task = c("outcome", "next_activity",
                                               "next_time", "remaining_time",
-                                              "remaining_trace"), features = NULL, ...) {
+                                              "remaining_trace", "remaining_trace_s2s"), features = NULL, ...) {
   UseMethod("prepare_examples")
 
 }
@@ -29,7 +29,7 @@ prepare_examples <- function(log, task = c("outcome", "next_activity",
 #' @export
 prepare_examples.eventlog <- function(log, task = c("outcome", "next_activity",
                                                        "next_time", "remaining_time",
-                                                       "remaining_trace"), features = NULL, ...) {
+                                                       "remaining_trace", "remaining_trace_s2s"), features = NULL, ...) {
 
   AIID <- NULL
   start <- NULL
@@ -84,7 +84,7 @@ prepare_examples.eventlog <- function(log, task = c("outcome", "next_activity",
 #' @export
 prepare_examples.activitylog <- function(log, task = c("outcome", "next_activity",
                                                           "next_time", "remaining_time",
-                                                          "remaining_trace"), features = NULL, ...) {
+                                                          "remaining_trace", "remaining_trace_s2s"), features = NULL, ...) {
 
   AIID <- NULL
   start <- NULL
@@ -216,7 +216,7 @@ prepare_examples_main <- function(log, mapping, task, features, feature_data, ..
 
     standard_features <- c("previous_duration","throughput_time","processing_time")
 
-  } else if(task == "remaining_trace") {
+  } else if(task %in% c("remaining_trace", "remaining_trace_s2s")) {
 
     # new_log_dt[order(start_time, end_time, min_order),
     #            c("remaining_trace_list") := Reduce(c, AID, accumulate = TRUE, right = TRUE), .(CID)] %>%
@@ -233,7 +233,8 @@ prepare_examples_main <- function(log, mapping, task, features, feature_data, ..
                   next_activity = "next_activity",
                   next_time = "time_till_next_activity",
                   remaining_time = "remaining_time",
-                  remaining_trace = "remaining_trace")
+                  remaining_trace = "remaining_trace",
+                  remaining_trace_s2s = "remaining_trace")
 
 
 

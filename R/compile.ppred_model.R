@@ -12,8 +12,8 @@ keras::compile
 #' @export
 compile.ppred_model <- function(object,
                                 optimizer = optimizer_adam(0.001),
-                                loss = if(object$task %in% c("outcome", "next_activity", "remaining_trace")) loss_sparse_categorical_crossentropy(from_logits = T) else loss_logcosh(),
-                                metrics = if(object$task %in% c("outcome", "next_activity", "remaining_trace")) metric_sparse_categorical_accuracy() else list(keras::metric_mean_absolute_error(),
+                                loss = if(object$task %in% c("outcome", "next_activity", "remaining_trace", "remaining_trace_s2s")) loss_sparse_categorical_crossentropy(from_logits = T) else loss_logcosh(),
+                                metrics = if(object$task %in% c("outcome", "next_activity", "remaining_trace", "remaining_trace_s2s")) metric_sparse_categorical_accuracy() else list(keras::metric_mean_absolute_error(),
                                                                                                                                                                keras::metric_mean_squared_error(),
                                                                                                                                                                keras::metric_root_mean_squared_error(),
                                                                                                                                                                keras::metric_logcosh_error()),

@@ -7,15 +7,24 @@
 create_model(x_train, custom = FALSE, ...)
 }
 \arguments{
-\item{x_train}{\code{\link{data.frame}}: A processed \code{\link{data.frame}} from \code{prepare_examples()}.}
+\item{x_train}{\code{\link{data.frame}}: A processed \code{\link{data.frame}} from \code{\link[=prepare_examples]{prepare_examples()}}.}
 
 \item{custom}{\code{\link{logical}} (default \code{\link{FALSE}}): If \code{\link{TRUE}}, returns a custom model.}
 
 \item{...}{you can pass additional arguments to \code{keras::keras_model()} (ex.: \code{name} argument).}
 }
 \value{
-A \code{\link{list}} containing a Transformer model (returned by \code{keras::keras_model()}) and some additional useful metrics.
+An object of class \code{\link{ppred_model}} and \code{\link{list}} containing a Transformer model (returned by \code{keras::keras_model()}) and some additional useful metrics.
 }
 \description{
 Defines the model using the keras functional API.
+The following 4 process monitoring tasks are defined:
+\itemize{
+\item outcome
+\item next_activity
+\item next_time
+\item remaining_time
+\item remaining_trace
+\item remaining_trace_s2s
+}
 }

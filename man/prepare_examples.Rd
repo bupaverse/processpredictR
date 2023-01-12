@@ -6,7 +6,8 @@
 \usage{
 prepare_examples(
   log,
-  task = c("outcome", "next_activity", "next_time", "remaining_time", "remaining_trace"),
+  task = c("outcome", "next_activity", "next_time", "remaining_time", "remaining_trace",
+    "remaining_trace_s2s"),
   features = NULL,
   ...
 )

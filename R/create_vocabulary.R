@@ -71,7 +71,7 @@ create_vocabulary <- function(processed_df) {
   }
 
   #REMAINING TRACE
-  else if (get_task(processed_df) == "remaining_trace") {
+  else if (get_task(processed_df) %in% c("remaining_trace", "remaining_trace_s2s")) {
 
     activity_names <- processed_df[[attr(processed_df, "mapping")$activity_id]] %>% as.character() %>% unique()
     activity_names <- c("PAD", "UNK") %>%
