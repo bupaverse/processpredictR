@@ -20,13 +20,14 @@ create_model <- function(x_train, custom = FALSE, ...) {
 }
 
 #' @export
-create_model.ppred_examples_df <- function(x_train, custom = FALSE, ...) {
+create_model.ppred_examples_df <- function(x_train, custom = FALSE, ...) { #num_heads, d_model, dff
 
   if (attr(x_train, "task") != "remaining_trace_s2s") {
     create_model_original.ppred_examples_df(x_train, custom = custom, ...)
   }
 
   else {
+
     x_train <- prep_remaining_trace2.ppred_examples_df(x_train)
     create_model_s2s.remaining_trace_s2s(x_train, custom = custom, ...)
   }

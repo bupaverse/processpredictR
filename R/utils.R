@@ -418,8 +418,8 @@ prep_remaining_trace2.ppred_examples_df <- function(log) {
   attr(remaining_trace, "task") <- "remaining_trace_s2s"
   attr(remaining_trace, "vocabulary") <- vocabulary$keys_x
   attr(remaining_trace, "vocab_size") <- vocabulary$keys_x %>% length()
-  attr(remaining_trace, "input_maxlen") <- remaining_trace$current_tokens %>% ncol()
-  attr(remaining_trace, "target_maxlen") <- remaining_trace$remaining_tokens %>% ncol()
+  attr(remaining_trace, "input_maxlen") <- remaining_trace$current_tokens %>% ncol() #max_case_length
+  attr(remaining_trace, "target_maxlen") <- remaining_trace$remaining_tokens %>% ncol() #max_case_length + 2
 
   return(remaining_trace)
 }
