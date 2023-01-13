@@ -438,7 +438,7 @@ ff_dim <- NULL
 
 # Create models -----------------------------------------------------------
 # model from ProcessTransformer Python library
-create_model_original <- function(x_train, custom = custom, num_heads = num_heads, d_model = output_dim, dff = dim_ff, ...) {
+create_model_original <- function(x_train, custom = custom, num_heads, embed_dim, ff_dim, ...) {
 
   # parameters of the model
   task <- attr(x_train, "task")

@@ -8,7 +8,7 @@ create_model(
   x_train,
   custom = FALSE,
   num_heads = 4,
-  output_dim = 36,
+  output_dim_emb = 36,
   dim_ff = 64,
   ...
 )
@@ -20,7 +20,7 @@ create_model(
 
 \item{num_heads}{A number of attention heads of the \code{\link[keras:layer_embedding]{keras::layer_embedding()}}.}
 
-\item{output_dim}{Dimension of the dense embedding of the \code{\link[keras:layer_embedding]{keras::layer_embedding()}}.}
+\item{output_dim_emb}{Dimension of the dense embedding of the \code{\link[keras:layer_embedding]{keras::layer_embedding()}}.}
 
 \item{dim_ff}{Dimensionality of the output space of the feedforward network part of the model (\code{units} argument of the \code{\link[keras:layer_dense]{keras::layer_dense()}}).}
 
