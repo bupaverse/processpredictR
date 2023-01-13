@@ -4,10 +4,13 @@
 #' @param batch_size A batch size
 #' @param num_epochs  A number of epochs
 #' @param verbose A verbose
-#' @param callbacks [`list`]: A list of callbacks
+#' @param callbacks [`list`]: A list of callbacks. `keras` default is `NULL`, but can be adjusted (ex. keras::callback_csv_logger(filename = paste("log_", object$task)), #or NULL
+#' keras::callback_tensorboard())
 #' @param shuffle [`logical`] (default [`TRUE`]): If [`TRUE`] shuffles the data
 #' @param validation_split A ratio to split on
 #' @param ... Additional Arguments
+#'
+#' @seealso See [keras::fit()] for documentation of parameters
 #'
 #' @importFrom keras fit
 #' @export
@@ -19,8 +22,7 @@ fit.ppred_model <- function(object,
                             batch_size = 10,
                             epochs = 10,
                             verbose = 1,
-                            callbacks = list(keras::callback_csv_logger(filename = paste("log_", object$task)), #or NULL
-                                             keras::callback_tensorboard()),
+                            callbacks = NULL,
                             shuffle = TRUE,
                             validation_split = 0.2,
                             ...) {

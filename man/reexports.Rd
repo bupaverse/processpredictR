@@ -24,7 +24,8 @@
 
 \item{verbose}{A verbose}
 
-\item{callbacks}{\code{\link{list}}: A list of callbacks}
+\item{callbacks}{\code{\link{list}}: A list of callbacks. \code{keras} default is \code{NULL}, but can be adjusted (ex. keras::callback_csv_logger(filename = paste("log_", object$task)), #or NULL
+keras::callback_tensorboard())}
 
 \item{shuffle}{\code{\link{logical}} (default \code{\link{TRUE}}): If \code{\link{TRUE}} shuffles the data}
 
@@ -37,6 +38,9 @@
 \item{append}{\code{\link{logical}} (default \code{\link{FALSE}}): if \code{\link{TRUE}}, returns a passed \code{\link{data.frame}} with predicted values.}
 
 \item{...}{Additional arguments}
+}
+\seealso{
+See \code{\link[keras:reexports]{keras::fit()}} for documentation of parameters
 }
 \keyword{internal}
 \description{
