@@ -197,12 +197,11 @@ BaseAttention <- function() {
   )
 }
 
-
 # The global self attention layer
 # This layer is responsible for processing the context sequence, and propagating information along its length.
 # Here, the target sequence `x` is passed as both `query` and `value` in the `mha` (multi-head attention) layer. This is self-attention.
-GlobalSelfAttention <- function() {
-  GlobalSelfAttention(BaseAttention()) %py_class% {
+GlobalSelfAttention <- function(baseattention = BaseAttention()) {
+  GlobalSelfAttention(baseattention) %py_class% {
     call <- function(self, x) {
       attn_output <- self$mha(
         query=x,
@@ -222,8 +221,8 @@ GlobalSelfAttention <- function() {
 # At the literal center of the transformer network is the cross-attention layer. This layer connects the encoder and decoder.
 # As opposed to `GlobalSelfAttention` layer, in the `CrossAttention` layer a target sequence `x` is passed as a `query`,
 # whereas the attended/learned representations `context` by the encoder (described later) is passed as `key` and `value` in the `mha` (multi-head attention) layer.
-CrossAttention <- function() {
-  CrossAttention(BaseAttention()) %py_class% {
+CrossAttention <- function(baseattention = BaseAttention()) {
+  CrossAttention(baseattention) %py_class% {
     call <- function(self, x, context) {
       attn_output <- self$mha(
         query=x,
@@ -244,8 +243,8 @@ CrossAttention <- function() {
 # This needs to be handled differently from the encoder's `GlobalSelfAttention` layer.
 # The causal mask ensures that each location only has access to the locations that come before it.
 # The `attention_mask` argument is set to `True`. Thus, the output for early sequence elements doesn't depend on later elements.
-CausalSelfAttention <- function() {
-  CausalSelfAttention(BaseAttention()) %py_class% {
+CausalSelfAttention <- function(baseattention = BaseAttention()) {
+  CausalSelfAttention(baseattention) %py_class% {
     call <- function(self, x) {
       attn_output <- self$mha(
         query=x,
@@ -266,8 +265,10 @@ CausalSelfAttention <- function() {
 # The transformer also includes this point-wise feed-forward network in both the encoder and decoder.
 # The network consists of two linear layers (tf.keras.layers.Dense) with a ReLU activation in-between, and a dropout layer.
 # As with the attention layers the code here also includes the residual connection and normalization.
-FeedForward <- function() {
-  FeedForward(keras$layers$Layer) %py_class% {
+FeedForward <- function(keraslayersLayer = keras$layers$Layer) {
+  super <- NULL
+  self <- NULL
+  FeedForward(keraslayersLayer) %py_class% {
     initialize <- function(self, d_model, dff, dropout_rate = 0.1) { # dff = ff_dim, d_model = embed_dim, dropout_rate = rate
       super$initialize()
       self$seq <- keras::keras_model_sequential() %>%
@@ -294,6 +295,8 @@ FeedForward <- function() {
 # There are also residual connections around each of the two sublayers followed by a layer normalization.
 # The encoder layer using new_class_layer wrapper (for using with pipe `%>%`):
 EncoderLayer <- function() {
+  super <- NULL
+  self <- NULL
   new_layer_class(
     classname = "EncoderLayer",
     initialize = function(self, d_model, num_heads, dff, dropout_rate = 0.1, ...) { # dff = ff_dim, d_model = embed_dim, dropout_rate = rate
@@ -319,6 +322,8 @@ EncoderLayer <- function() {
 # The decoder's stack is slightly more complex, with each `DecoderLayer` containing a `CausalSelfAttention`, a `CrossAttention`, and a `FeedForward` layer.
 # The decoder layer using new_class_layer wrapper (for using with pipe `%>%`):
 DecoderLayer <- function() {
+  super <- NULL
+  self <- NULL
   keras::new_layer_class(
     classname = "DecoderLayer",
     initialize = function(self, d_model, num_heads, dff, dropout_rate = 0.1, ...) { # dff = ff_dim, d_model = embed_dim, dropout_rate = rate
@@ -425,6 +430,11 @@ prep_remaining_trace2 <- function(log) {
   return(remaining_trace)
 }
 
+# bindings for global variable
+output_dim <- NULL
+dim_ff <- NULL
+embed_dim <- NULL
+ff_dim <- NULL
 
 # Create models -----------------------------------------------------------
 # model from ProcessTransformer Python library
