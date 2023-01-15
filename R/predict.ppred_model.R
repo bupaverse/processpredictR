@@ -21,6 +21,11 @@ predict.ppred_model <- function(object, test_data, output = c("append", "y_pred"
 
   output <- rlang::arg_match(output)
 
+  if(object$task == "remaining_trace_s2s") {
+    predict_s2s(object, test_data, output)
+  } else {
+
+
   # if test_data is a preprocessed test dataset (before tokenize)
   if (any((test_data %>% class) == "ppred_examples_df")) {
     tokens_test <- test_data %>% tokenize()
@@ -142,6 +147,7 @@ predict.ppred_model <- function(object, test_data, output = c("append", "y_pred"
     }
   }
   return(y_pred)
+  }
 }
 
     # # NEXT_TIME & REMAINING_TIME

@@ -365,47 +365,47 @@ DecoderLayer <- function() {
 prep_remaining_trace2 <- function(log) {
   log$remaining_trace_list <- log$remaining_trace_list %>% purrr::map(~append("startpoint", .))
   vocabulary <- log %>% attr("vocabulary")
-  vocabulary$keys_x <- vocabulary$keys_x %>% append(list("endpoint")) %>% append(list("startpoint"))
+  #vocabulary$keys_x <- vocabulary$keys_x %>% append(list("endpoint")) %>% append(list("startpoint"))
 
   # prefix_list to tokens
-  token_x <- list()
+  #token_x <- map(log$prefix_list, ~map_int(.x, ~which(.x == vocabulary$keys_x)) -1)
+  token_x <- purrr::list_along(1:nrow(log))
   for (i in (1:nrow(log))) {
     #case_trace <- list()
-    case_trace <- c()
+    case_trace <- numeric(length(log$prefix_list[[i]]))
 
     for (j in (1:length(log$prefix_list[[i]]))) {
       #if (processed_log$trace[[i]][j] == x_word_dict$values_x) {}
-      tok <- which(log$prefix_list[[i]][j] == vocabulary$keys_x)
-      case_trace <- case_trace %>% append(tok-1)
+      tok <- which(log$prefix_list[[i]][j] == vocabulary$keys_x) - 1
+      case_trace[j] <- tok
     }
 
-    case_trace <- case_trace %>% list()
-    token_x <- token_x %>% append(case_trace)
+    token_x[[i]] <- case_trace
   }
 
   # remaining_trace_list to tokens
-  token_y <- list()
+  #token_y <- map(log$remaining_trace_list, ~map_int(.x, ~which(.x == vocabulary$keys_x)) -1)
+  token_y <- purrr::list_along(1:nrow(log))
   for (i in (1:nrow(log))) {
     #case_trace <- list()
-    case_trace <- c()
+    case_trace <- numeric(length(log$remaining_trace_list[[i]]))
 
     for (j in (1:length(log$remaining_trace_list[[i]]))) {
       #if (processed_log$trace[[i]][j] == x_word_dict$values_x) {}
-      tok <- which(log$remaining_trace_list[[i]][j] == vocabulary$keys_x)
-      case_trace <- case_trace %>% append(tok-1)
+      tok <- which(log$remaining_trace_list[[i]][j] == vocabulary$keys_x) - 1
+      case_trace[j] <- tok
     }
 
-    case_trace <- case_trace %>% list()
-    token_y <- token_y %>% append(case_trace)
+    token_y[[i]] <- case_trace
   }
 
   # shift remaining_tokens for training
   remaining_tokens_shifted <- token_y %>% purrr::map_depth(.depth = 1, lead, n=1, default = 0)
-  remaining_tokens_shifted <- remaining_tokens_shifted %>% keras::pad_sequences(padding = "post")
+  remaining_tokens_shifted <- remaining_tokens_shifted %>% keras::pad_sequences(maxlen = attr(log, "target_maxlen"), padding = "post")
   # remaining_tokens
-  remaining_tokens <- token_y %>% keras::pad_sequences(padding = "post")
+  remaining_tokens <- token_y %>% keras::pad_sequences(maxlen = attr(log, "target_maxlen"), padding = "post")
   # current_tokens
-  current_tokens <- token_x %>% keras::pad_sequences()
+  current_tokens <- token_x %>% keras::pad_sequences(maxlen = attr(log, "input_maxlen"))
 
 
 

@@ -264,6 +264,13 @@ prepare_examples_main <- function(log, mapping, task, features, feature_data, ..
   attr(output, "vocab_size") <- vocabulary$keys_x %>% length() %>% as.integer()
   attr(output, "vocabulary") <- vocabulary
 
+  if(task == "remaining_trace_s2s") {
+    attr(output, "input_maxlen") <- max_case_length(output) #remaining_trace$current_tokens %>% ncol() ## NOTE max_case_length(log) is false because would be based on a new split data
+    attr(output, "target_maxlen") <- max_case_length(output) + 1
+  }
+
+
+
   if (!is.null(attr(output, "features"))) {
     output <- hot_encode_feats(output)
   }

@@ -35,7 +35,7 @@ create_model.ppred_examples_df <- function(x_train, custom = FALSE, num_heads = 
       cli::cli_alert_info("a full model architecture is supplied.")
     }
 
-    x_train <- prep_remaining_trace2(x_train)
+    #x_train <- prep_remaining_trace2(x_train)
     create_model_s2s(x_train, num_heads = num_heads, d_model = output_dim_emb, dff = dim_ff, ...)
   }
 }

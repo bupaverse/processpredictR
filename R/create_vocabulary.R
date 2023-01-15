@@ -71,7 +71,7 @@ create_vocabulary <- function(processed_df) {
   }
 
   #REMAINING TRACE
-  else if (get_task(processed_df) %in% c("remaining_trace", "remaining_trace_s2s")) {
+  else if (get_task(processed_df) %in% c("remaining_trace")) {
 
     activity_names <- processed_df[[attr(processed_df, "mapping")$activity_id]] %>% as.character() %>% unique()
     activity_names <- c("PAD", "UNK") %>%
@@ -86,6 +86,19 @@ create_vocabulary <- function(processed_df) {
     #outs <- data.frame(activity = unlist(keys_y)) %>% mutate(key_id = row_number() - 1)
 
     list(keys_x = keys_x, keys_y = keys_y)
+  } else if (get_task(processed_df) %in% c("remaining_trace_s2s")) {
+    activity_names <- processed_df[[attr(processed_df, "mapping")$activity_id]] %>% as.character() %>% unique()
+    activity_names <- c("PAD", "UNK") %>%
+      append(activity_names)
+    values_x <- unique(activity_names)
+
+    #activities tokens
+    keys_x <- as.list(values_x) %>% append(list("endpoint","startpoint"))
+    #acts <- data.frame(activity_name = keys_x %>% unlist()) %>% mutate(key_id = row_number() - 1)
+
+    #keys_y <- processed_df$remaining_trace %>% unique() %>% as.list()
+    #outs <- data.frame(activity = unlist(keys_y)) %>% mutate(key_id = row_number() - 1)
+    list(keys_x = keys_x)
   }
 
 }

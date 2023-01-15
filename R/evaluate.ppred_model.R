@@ -10,80 +10,86 @@ keras::evaluate
 #' @export
 evaluate.ppred_model <- function(object, test_data, ...) {
 
-  # if test_data is a preprocessed test dataset (before tokenize)
-  if (any((test_data %>% class) == "ppred_examples_df")) {
-    tokens_test <- test_data %>% tokenize()
-  }
 
-  # if test_data is already tokenized
-  else if (any((test_data %>% class) == "ppred_examples_tokens")) {
-    tokens_test <- test_data
-  }
+  if(object$task == "remaining_trace_s2s") {
+    evaluate_s2s(object, test_data, ...)
+  } else {
 
-# x_test ------------------------------------------------------------------
-  # tokenized traces
-  x_tokens_test <- tokens_test$token_x %>% keras::pad_sequences(maxlen = object$max_case_length, value = 0)
+    # if test_data is a preprocessed test dataset (before tokenize)
+    if (any((test_data %>% class) == "ppred_examples_df")) {
+      tokens_test <- test_data %>% tokenize()
+    }
 
-  # extra numeric and categorical features (if present)
-  x_numeric_features <- tokens_test$numeric_features
-  x_categorical_features <- tokens_test$categorical_features
-  x_test_list <- list(x_tokens_test)
-  if (!is.null(x_numeric_features)) x_test_list <- x_test_list %>% append(list(x_numeric_features))
-  if (!is.null(x_categorical_features)) x_test_list <- x_test_list %>% append(list(x_categorical_features))
+    # if test_data is already tokenized
+    else if (any((test_data %>% class) == "ppred_examples_tokens")) {
+      tokens_test <- test_data
+    }
 
-# y_test ------------------------------------------------------------------
-  y_tokens_test <- tokens_test$token_y
+    # x_test ------------------------------------------------------------------
+    # tokenized traces
+    x_tokens_test <- tokens_test$token_x %>% keras::pad_sequences(maxlen = object$max_case_length, value = 0)
 
-  # NEXT_TIME & REMAINING_TIME
-  if (object$task %in% c("next_time", "remaining_time")) {
+    # extra numeric and categorical features (if present)
+    x_numeric_features <- tokens_test$numeric_features
+    x_categorical_features <- tokens_test$categorical_features
+    x_test_list <- list(x_tokens_test)
+    if (!is.null(x_numeric_features)) x_test_list <- x_test_list %>% append(list(x_numeric_features))
+    if (!is.null(x_categorical_features)) x_test_list <- x_test_list %>% append(list(x_categorical_features))
 
-    metrics <- list(...)
-    if(length(metrics) == 0) {
+    # y_test ------------------------------------------------------------------
+    y_tokens_test <- tokens_test$token_y
 
-      #######################    #######################    #######################    #######################
-      y_tokens_test <- y_tokens_test / object$sd_time
+    # NEXT_TIME & REMAINING_TIME
+    if (object$task %in% c("next_time", "remaining_time")) {
 
-      # should be based solely on the metrics from compile()
-      results <- keras::evaluate(object$model, x_test_list, y_tokens_test, ...) #%>% keras::k_argmax(axis = -1)
-      return(results)
+      metrics <- list(...)
+      if(length(metrics) == 0) {
 
-      # # original
-      # mean <- object$y_normalize_layer$mean %>% as.double()
-      # variance <- object$y_normalize_layer$variance %>% as.double()
-      # y_tokens_test <- keras::layer_normalization(y_tokens_test, mean = mean, variance = variance)
+        #######################    #######################    #######################    #######################
+        y_tokens_test <- y_tokens_test / object$sd_time
 
-      #######################    #######################    #######################    #######################
-      # normalize_y <- keras::layer_normalization()
-      # normalize_y %>% adapt(y_tokens_test)
-      # y_tokens_test <- normalize_y(y_tokens_test)
+        # should be based solely on the metrics from compile()
+        results <- keras::evaluate(object$model, x_test_list, y_tokens_test, ...) #%>% keras::k_argmax(axis = -1)
+        return(results)
+
+        # # original
+        # mean <- object$y_normalize_layer$mean %>% as.double()
+        # variance <- object$y_normalize_layer$variance %>% as.double()
+        # y_tokens_test <- keras::layer_normalization(y_tokens_test, mean = mean, variance = variance)
+
+        #######################    #######################    #######################    #######################
+        # normalize_y <- keras::layer_normalization()
+        # normalize_y %>% adapt(y_tokens_test)
+        # y_tokens_test <- normalize_y(y_tokens_test)
+      }
+
+      else {
+        results <- predict(object, test_data, output = "append")
+
+        # for(i in 1:length(metrics)) {
+        #   metrics[[i]](y_tokens_test, results)
+        # }
+
+        y_pred <- NULL
+        y_var <- if_else(object$task == "next_time", "time_till_next_activity", "remaining_time")
+        results %>% summarize(
+          across(y_var,
+                 .fns = list(...),
+                 y_pred,
+                 .names = "metric_{.fn}"))
+
+        # tmppred %>% summarize(across(time_till_next_activity,
+        #                              .fns = list(mae = Metrics::mae, rmse = Metrics::rmse),
+        #                              y_pred,
+        #                              .names = "metric_{.fn}") )
+
+      }
     }
 
     else {
-      results <- predict(object, test_data, output = "append")
-
-      # for(i in 1:length(metrics)) {
-      #   metrics[[i]](y_tokens_test, results)
-      # }
-
-      y_pred <- NULL
-      y_var <- if_else(object$task == "next_time", "time_till_next_activity", "remaining_time")
-       results %>% summarize(
-        across(y_var,
-               .fns = list(...),
-               y_pred,
-               .names = "metric_{.fn}"))
-
-      # tmppred %>% summarize(across(time_till_next_activity,
-      #                              .fns = list(mae = Metrics::mae, rmse = Metrics::rmse),
-      #                              y_pred,
-      #                              .names = "metric_{.fn}") )
-
+      results <- keras::evaluate(object$model, x_test_list, y_tokens_test, ...) #%>% keras::k_argmax(axis = -1)
+      return(results)
     }
-  }
-
-  else {
-    results <- keras::evaluate(object$model, x_test_list, y_tokens_test, ...) #%>% keras::k_argmax(axis = -1)
-    return(results)
   }
 }
 
