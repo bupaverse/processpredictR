@@ -10,6 +10,7 @@ create_model(
   num_heads = 4,
   output_dim_emb = 36,
   dim_ff = 64,
+  num_layers = 1,
   ...
 )
 }
@@ -23,6 +24,8 @@ create_model(
 \item{output_dim_emb}{Dimension of the dense embedding of the \code{\link[keras:layer_embedding]{keras::layer_embedding()}}.}
 
 \item{dim_ff}{Dimensionality of the output space of the feedforward network part of the model (\code{units} argument of the \code{\link[keras:layer_dense]{keras::layer_dense()}}).}
+
+\item{num_layers}{Number of layers of the encoder block}
 
 \item{...}{you can pass additional arguments to \code{keras::keras_model()} (ex.: \code{name} argument).}
 }

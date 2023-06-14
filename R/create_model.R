@@ -15,15 +15,16 @@
 #' @param output_dim_emb Dimension of the dense embedding of the [keras::layer_embedding()].
 #' @param dim_ff Dimensionality of the output space of the feedforward network part of the model (`units` argument of the [keras::layer_dense()]).
 #' @param ... you can pass additional arguments to `keras::keras_model()` (ex.: `name` argument).
+#' @param num_layers Number of layers of the encoder block
 #' @return An object of class [`ppred_model`] and [`list`] containing a Transformer model (returned by `keras::keras_model()`) and some additional useful metrics.
 #'
 #' @export
-create_model <- function(x_train, custom = FALSE, num_heads = 4, output_dim_emb = 36, dim_ff = 64, ...) {
+create_model <- function(x_train, custom = FALSE, num_heads = 4, output_dim_emb = 36, dim_ff = 64, num_layers = 1, ...) {
   UseMethod("create_model")
 }
 
 #' @export
-create_model.ppred_examples_df <- function(x_train, custom = FALSE, num_heads = 4, output_dim_emb = 36, dim_ff = 64, ...) { #num_heads, d_model, dff
+create_model.ppred_examples_df <- function(x_train, custom = FALSE, num_heads = 4, output_dim_emb = 36, dim_ff = 64, num_layers = 1, ...) { #num_heads, d_model, dff
 
   if (attr(x_train, "task") != "remaining_trace_s2s") {
     create_model_original(x_train, custom = custom, num_heads = num_heads, embed_dim = output_dim_emb, ff_dim = dim_ff, ...)
@@ -36,7 +37,7 @@ create_model.ppred_examples_df <- function(x_train, custom = FALSE, num_heads = 
     }
 
     #x_train <- prep_remaining_trace2(x_train)
-    create_model_s2s(x_train, num_heads = num_heads, d_model = output_dim_emb, dff = dim_ff, ...)
+    create_model_s2s(x_train, num_heads = num_heads, d_model = output_dim_emb, dff = dim_ff, num_layers = num_layers, ...)
   }
 }
 

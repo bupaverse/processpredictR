@@ -316,7 +316,37 @@ EncoderLayer <- function() {
     }
   )
 }
-
+# EncoderLayer <- function() {
+#   super <- NULL
+#   self <- NULL
+#   new_layer_class(
+#     classname = "EncoderLayer",
+#     initialize = function(self, d_model, num_heads, dff, dropout_rate = 0.1, num_layers = 1, ...) {
+#       super$initialize()
+#
+#       self$num_layers <- num_layers
+#       self$encoder_layers <- list()
+#
+#       for (i in 1:num_layers) {
+#         self$encoder_layers[[i]] <- self$create_encoder_layer(d_model, num_heads, dff, dropout_rate)
+#       }
+#     },
+#     create_encoder_layer = function(d_model, num_heads, dff, dropout_rate) {
+#       self_attention <- GlobalSelfAttention()(num_heads = num_heads, key_dim = d_model, dropout = dropout_rate)
+#       ffn <- FeedForward()(d_model, dff)
+#
+#       return(list(self_attention = self_attention, ffn = ffn))
+#     },
+#     call = function(self, x) {
+#       for (i in 1:self$num_layers) {
+#         encoder_layer <- self$encoder_layers[[i]]
+#         x <- encoder_layer$self_attention(x)
+#         x <- encoder_layer$ffn(x)
+#       }
+#       return(x)
+#     }
+#   )
+# }
 
 # The decoder layer
 # The decoder's stack is slightly more complex, with each `DecoderLayer` containing a `CausalSelfAttention`, a `CrossAttention`, and a `FeedForward` layer.
@@ -359,6 +389,39 @@ DecoderLayer <- function() {
     }
   )
 }
+# DecoderLayer <- function() {
+#   super <- NULL
+#   self <- NULL
+#   keras::new_layer_class(
+#     classname = "DecoderLayer",
+#     initialize = function(self, d_model, num_heads, dff, dropout_rate = 0.1, num_layers = 1, ...) {
+#       super$initialize()
+#
+#       self$num_layers <- num_layers
+#       self$decoder_layers <- list()
+#
+#       for (i in 1:num_layers) {
+#         self$decoder_layers[[i]] <- self$create_decoder_layer(d_model, num_heads, dff, dropout_rate)
+#       }
+#     },
+#     create_decoder_layer = function(d_model, num_heads, dff, dropout_rate) {
+#       causal_self_attention <- CausalSelfAttention()(num_heads = num_heads, key_dim = d_model, dropout = dropout_rate)
+#       cross_attention <- CrossAttention()(num_heads = num_heads, key_dim = d_model, dropout = dropout_rate)
+#       ffn <- FeedForward()(d_model, dff)
+#
+#       return(list(causal_self_attention = causal_self_attention, cross_attention = cross_attention, ffn = ffn))
+#     },
+#     call = function(self, x, context) {
+#       for (i in 1:self$num_layers) {
+#         decoder_layer <- self$decoder_layers[[i]]
+#         x <- decoder_layer$causal_self_attention(x = x)
+#         x <- decoder_layer$cross_attention(x = x, context = context)
+#         x <- decoder_layer$ffn(x)
+#       }
+#       return(x)
+#     }
+#   )
+# }
 
 
 # function for transforming remaining_trace to remaining_trace_s2s --------
@@ -572,7 +635,7 @@ create_model_original <- function(x_train, custom = custom, num_heads, embed_dim
 }
 
 # s2s model with both encoder and decoder
-create_model_s2s <- function(x_train, num_heads = num_heads, d_model = output_dim, dff = dim_ff, ...) {
+create_model_s2s <- function(x_train, num_heads = num_heads, d_model = output_dim, dff = dim_ff, num_layers = num_layers, ...) {
 
   # # Parameters of the model
   # d_model <- 128
@@ -587,11 +650,31 @@ create_model_s2s <- function(x_train, num_heads = num_heads, d_model = output_di
   input_context <- keras::layer_input(shape = c(input_maxlen))
   target_sequence <- keras::layer_input(shape = c(target_maxlen))
 
-  # encoder block
+  # # encoder block
+  # context <- input_context %>%
+  #   TokenAndPositionEmbedding_RemainingTrace()(maxlen = input_maxlen, vocab_size = vocab_size, d_model = d_model) %>%
+  #   keras::layer_dropout(dropout_rate) %>%
+  #   EncoderLayer()(d_model = d_model, num_heads = num_heads, dff = dff, dropout_rate = dropout_rate, num_layers = num_layers)
+  #
+  # # initiate decoder layer
+  # decoder <- DecoderLayer()(d_model = d_model, num_heads = num_heads, dff = dff, dropout_rate = dropout_rate, num_layers = num_layers)
+  #
+  # # decoder block
+  # x <- target_sequence %>%
+  #   TokenAndPositionEmbedding_RemainingTrace()(maxlen = target_maxlen, vocab_size = vocab_size, d_model = d_model) %>%
+  #   keras::layer_dropout(dropout_rate)
+  #
+  # x <- decoder(x = x, context = context) %>%
+  #   keras::layer_dense(vocab_size, activation = "linear")
+
+  #NEW: adding `num_layers` for stacked encoder and decoder layers
   context <- input_context %>%
     TokenAndPositionEmbedding_RemainingTrace()(maxlen = input_maxlen, vocab_size = vocab_size, d_model = d_model) %>%
-    keras::layer_dropout(dropout_rate) %>%
-    EncoderLayer()(d_model = d_model, num_heads = num_heads, dff = dff, dropout_rate = dropout_rate)
+    keras::layer_dropout(dropout_rate)
+
+  for (i in 1:num_layers) {
+    context <- EncoderLayer()(d_model = d_model, num_heads = num_heads, dff = dff, dropout_rate = dropout_rate)(context)
+  }
 
   # initiate decoder layer
   decoder <- DecoderLayer()(d_model = d_model, num_heads = num_heads, dff = dff, dropout_rate = dropout_rate)
@@ -601,8 +684,23 @@ create_model_s2s <- function(x_train, num_heads = num_heads, d_model = output_di
     TokenAndPositionEmbedding_RemainingTrace()(maxlen = target_maxlen, vocab_size = vocab_size, d_model = d_model) %>%
     keras::layer_dropout(dropout_rate)
 
-  x <- decoder(x = x, context = context) %>%
+  for (i in 1:num_layers) {
+    x <- decoder(x = x, context = context)
+  }
+
+  # Remove the keras mask
+  tryCatch(
+    {
+      attr(x, "_keras_mask") <- NULL
+    },
+    error = function(e) {
+      # Empty block
+    }
+  )
+
+  x <- x %>%
     keras::layer_dense(vocab_size, activation = "linear")
+
 
   # instantiate model
   keras::keras_model(list(input_context, target_sequence), x) -> model
@@ -624,8 +722,65 @@ create_model_s2s <- function(x_train, num_heads = num_heads, d_model = output_di
 }
 
 
-
-
+# # Custom learning rate schedule
+# CustomSchedule <- R6Class("CustomSchedule",
+#                           public = list(
+#                             d_model = NULL,
+#                             warmup_steps = NULL,
+#
+#                             initialize = function(d_model, warmup_steps = 4000) {
+#                               self$d_model <- as.numeric(d_model)
+#                               self$warmup_steps <- warmup_steps
+#                             },
+#
+#                             call = function(step) {
+#                               step <- as.numeric(step)
+#                               arg1 <- sqrt(step)
+#                               arg2 <- step * (self$warmup_steps ^ -1.5)
+#
+#                               sqrt(self$d_model) * min(arg1, arg2)
+#                             }
+#                           )
+# )
+#
+# # Adam optimizer with custom learning rate
+# # learning_rate <- CustomSchedule$new(d_model)
+#
+# optimizer <- optimizer_adam(
+#   learning_rate = CustomSchedule$new(d_model),
+#   beta_1 = 0.9,
+#   beta_2 = 0.98,
+#   epsilon = 1e-9
+# )
+#
+# # Custom loss function
+# masked_loss <- function(label, pred) {
+#   mask <- label != 0
+#   loss_object <- sparse_categorical_crossentropy(
+#     from_logits = TRUE,
+#     reduction = "none"
+#   )
+#   loss <- loss_object(label, pred)
+#
+#   mask <- as.numeric(mask)
+#   loss <- loss * mask
+#
+#   sum(loss) / sum(mask)
+# }
+#
+# # Custom accuracy function
+# masked_accuracy <- function(label, pred) {
+#   pred <- argmax(pred, axis = 2)
+#   label <- as.numeric(label)
+#   match <- label == pred
+#
+#   mask <- label != 0
+#
+#   match <- match & mask
+#
+#   sum(match) / sum(mask)
+# }
+#
 
 
 
