@@ -60,14 +60,37 @@ event logs, the last occurring quarter of cases was chosen as a test set and the
 ## Prep
 Load the datasets
 ```{r}
+# READ
 # xesreadR::read_xes("data/BPI_Challenge_2012.xes.gz") -> raw_df_bpi2012
-# xesreadR::read_xes("data/BPI Challenge 2017.xes.gz") -> raw_df_bpi2017 # does not read (memory related issue)
-eventdataR::traffic_fines -> raw_df_traffic_fines
-readRDS(file = "/Users/ninaesina/Desktop/BIARU/ICPM23_RemainingTraceAndOutcomePredictionWithTransformers/data/saved/raw_df_bpi2012.Rds") -> raw_df_bpi2012
-# readRDS(file = "data/saved/raw_df_traffic_fines.Rds") -> raw_df_traffic_fines
-# saveRDS(raw_df_bpi2012, "data/saved/raw_df_bpi2012.Rds")
-# saveRDS(raw_df_traffic_fines, "data/saved/raw_df_traffic_fines.Rds")
+# readr::read_csv("/Users/ninaesina/Desktop/BIARU/ICPM23_RemainingTraceAndOutcomePredictionWithTransformers/data/BPI Challenge 2017.csv") -> raw_df_bpi2017
+# eventdataR::traffic_fines -> raw_df_traffic_fines
+
+# SAVE
+# saveRDS(raw_df_bpi2012, "/Users/ninaesina/Desktop/BIARU/ICPM23_RemainingTraceAndOutcomePredictionWithTransformers/data/saved/raw_df_bpi2012.Rds")
+# saveRDS(raw_df_bpi2017, "/Users/ninaesina/Desktop/BIARU/ICPM23_RemainingTraceAndOutcomePredictionWithTransformers/data/saved/raw_df_bpi2017.Rds")
+
+# LOAD
+# readRDS(file = "/Users/ninaesina/Desktop/BIARU/ICPM23_RemainingTraceAndOutcomePredictionWithTransformers/data/saved/raw_df_bpi2012.Rds") -> raw_df_bpi2012
+# readRDS(file = "/Users/ninaesina/Desktop/BIARU/ICPM23_RemainingTraceAndOutcomePredictionWithTransformers/data/saved/raw_df_bpi2017.Rds") -> raw_df_bpi2017
 ```
+
+Eventlog object
+```{r}
+raw_df_traffic_fines %>% is.eventlog()
+raw_df_bpi2012 %>% is.eventlog()
+raw_df_bpi2017 %>% is.eventlog()
+```
+
+bpi2017 to activity log.
+```{r}
+raw_df_bpi2017 %>%
+  dplyr::rename(start = 'Start Timestamp', complete = 'Complete Timestamp') %>%
+  bupaR::activitylog(case_id = 'Case ID',
+                     activity_id = 'Activity',
+                     resource_id = 'Resource',
+                     timestamps = c("start", "complete")) -> raw_df_bpi2017
+```
+
 
 Check for cases with trace length of 1 (and remove)
 ```{r}
@@ -511,6 +534,10 @@ Transform dataset into 'prefix' dataset using `prepare_examples()`. The first 6 
 processpredictR::prepare_examples(raw_df_bpi2012, task = "remaining_trace_s2s") -> ex_bpi2012
 ```
 
+```{r, echo=FALSE}
+ex_bpi2012 %>% head
+```
+
 #### Train-, test- and validation split
 Split dataset into train-, validation- (last occurring quarter of the train set) and test set (last occurring quarter of the full sample). How does `train_test_split()` works in `processpredictR`:
 ```{r}
@@ -608,6 +635,142 @@ Epoch 2/50
 
 
 
+### bpic2017 dataset
+Transform dataset into 'prefix' dataset using `prepare_examples()`. The first 6 rows are shown below.
+```{r}
+processpredictR::prepare_examples(raw_df_bpi2017, task = "remaining_trace_s2s") -> ex_bpi2017
+tmpbpi2017 <- ex_bpi2017
+```
+
+Shuffling the cases.
+```{r}
+# Generate a random permutation of unique ith_case values
+new_group_ids <- sample(unique(ex_bpi2017$ith_case))
+
+# Create a lookup table to map the original ith_case values to the new group identifiers
+lookup_table <- data.frame(ith_case = unique(ex_bpi2017$ith_case), new_group_id = new_group_ids)
+
+# Merge the new group identifier back into the original dataset
+ex_bpi2017 <- left_join(ex_bpi2017, lookup_table, by = "ith_case")
+
+# Sort the dataset by the new group identifier and start_time
+ex_bpi2017 <- arrange(ex_bpi2017, new_group_id, start_time)
+
+# Remove the new_group_id column if desired
+ex_bpi2017 <- select(ex_bpi2017, -new_group_id)
+```
+
+
+
+#### Train-, test- and validation split
+Split dataset into train-, validation- (last occurring quarter of the train set) and test set (last occurring quarter of the full sample). How does `train_test_split()` works in `processpredictR`:
+```{r}
+# Split the full 'prefix' dataset into train (0.75) and test (0.25) datasets
+ex_bpi2017 %>% split_train_test(split = 0.75) -> train_test_bpi2017
+
+# Split the train dataset into train (0.75) and validation (0.25) datasets
+train_test_bpi2017$train_df %>% split_train_test(split = 0.75) -> train_validation_bpi2017
+
+# Reassign for ease of readability
+bpi2017_train <- train_validation_bpi2017$train_df
+bpi2017_valid <- train_validation_bpi2017$test_df
+bpi2017_test <- train_test_bpi2017$test_df
+```
+
+Trace analysis.
+```{r, echo=F, message=F}
+cat("Number of unique prefixes:", "\n", 
+             "Train set - ", bpi2017_train$prefix %>% n_distinct(), "\n",
+             "Test set - ", bpi2017_test$prefix %>% n_distinct(),
+    sep = ""
+      )
+
+list(bpi2017_train=bpi2017_train, bpi2017_test=bpi2017_test) %>% 
+  map(~
+  group_by(.x, `Case ID`) %>% 
+  filter(k == max(k)) %>% # keep only the fullest prefix for each case (= trace)
+  ungroup() %>%
+  distinct(prefix)) -> list_unique_traces_bpi2017_train_test
+
+cat("\nNumber of unique traces:",
+    "\nTrain set - ", list_unique_traces_bpi2017_train_test$bpi2017_train %>% nrow,
+    "\nTest set - ", list_unique_traces_bpi2017_train_test$bpi2017_test %>% nrow,
+    "\nTotal traces - ", list_unique_traces_bpi2017_train_test$bpi2017_train %>%
+      mutate(set = "train") %>%
+      full_join(list_unique_traces_bpi2017_train_test$bpi2017_test) %>% nrow,
+    sep = "")
+
+list_unique_traces_bpi2017_train_test$bpi2017_train %>%
+  mutate(set = "train") %>%
+  full_join(list_unique_traces_bpi2017_train_test$bpi2017_test %>% 
+               mutate(set = "test"), by = "prefix") %>% 
+  mutate(set.x = if_else(is.na(set.x), "", set.x), 
+         set.y = if_else(is.na(set.y), "", set.y)) %>%
+  unite(col = set, c("set.x", "set.y"), sep = "") %>% 
+  group_by(set) %>% 
+  summarise(n = n()) -> tmp
+
+cat("\nNumber of exclusively unique traces:",
+    "\nTrain set - ", tmp %>% filter(set == "train") %>% pull(n),
+    "\nTest set - ", tmp %>% filter(set == "test") %>% pull(n),
+    "\nBoth sets - ", tmp %>% filter(set == "traintest") %>% pull(n))
+
+list_unique_traces_bpi2017_train_test$bpi2017_train %>%
+  mutate(set = "train") %>%
+  full_join(list_unique_traces_bpi2017_train_test$bpi2017_test %>% 
+               mutate(set = "test"), by = "prefix") %>% 
+  mutate(set.x = if_else(is.na(set.x), "", set.x), 
+         set.y = if_else(is.na(set.y), "", set.y)) %>%
+  unite(col = set, c("set.x", "set.y"), sep = "") %>% slice(2) %>%
+  pull(prefix) %in% bpi2017_train$prefix
+```
+
+Number of unique prefixes:
+Train set - 163771
+Test set - 79580
+Number of unique traces:
+Train set - 9632
+Test set - 4488
+Both sets - 13183
+Number of exclusively unique traces: 
+Train set -  8695 
+Test set -  3551 
+Both sets -  937
+
+
+#### Remaining trace transformer model
+* Base (0) config with 8 attention heads:
+  + num_layers = 1
+  + num_heads = 8
+  + d_model = 36
+  + dff = 64
+  + dropout_rate = 0.1
+  
+```{r, eval=T, echo=T, message=F}
+ex_bpi2017 %>% create_model(num_heads = 8, output_dim = 36, dim_ff = 64, num_layers = 1) -> model_0_8h_bpi2017
+model_0_8h_bpi2017
+```
+
+---
+
+Compile models.
+```{r, eval=T}
+# 1 layer (Base-Small) with varying number of attention heads
+compile(model_0_8h_bpi2017)
+# compile(model_0_4h_bpi2017)
+
+# # 2 layers
+# compile(model_0_8h_2l_bpi2017) # Small
+# compile(model_0_8h_2l_M_bpi2017) # Medium
+# compile(model_0_8h_2l_L_bpi2017) # Large
+```
+
+Train models.
+Model bpi2017_0_8h.
+```{r, eval=F}
+hist_bpi2017_0_8h <- fit(object = model_0_8h_bpi2017, train_data = bpi2017_train, epochs = 50,
+             callbacks = list(early_stopping))
+```
 
 
 
