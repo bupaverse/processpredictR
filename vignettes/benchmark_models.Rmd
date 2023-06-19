@@ -11,6 +11,17 @@ output:
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
+```{r, echo=F}
+# tensorflow and reticulate need to be installed
+# install.packages("tensorflow")
+# install.packages("keras")
+# install.packages("reticulate")
+
+# keras::install_keras()
+# reticulate::install_miniconda(force=T)
+# reticulate::use_miniconda0("r-reticulate") # do not touch python interpreter in global options settings
+```
+
 
 ```{r, message=F}
 library(processpredictR)
@@ -70,19 +81,20 @@ Load the datasets
 # saveRDS(raw_df_bpi2017, "/Users/ninaesina/Desktop/BIARU/ICPM23_RemainingTraceAndOutcomePredictionWithTransformers/data/saved/raw_df_bpi2017.Rds")
 
 # LOAD
-# readRDS(file = "/Users/ninaesina/Desktop/BIARU/ICPM23_RemainingTraceAndOutcomePredictionWithTransformers/data/saved/raw_df_bpi2012.Rds") -> raw_df_bpi2012
-# readRDS(file = "/Users/ninaesina/Desktop/BIARU/ICPM23_RemainingTraceAndOutcomePredictionWithTransformers/data/saved/raw_df_bpi2017.Rds") -> raw_df_bpi2017
+eventdataR::traffic_fines -> raw_df_traffic_fines
+readRDS(file = "C:/Users/Esin/Desktop/data benchmarks/raw_df_bpi2012.Rds") -> raw_df_bpi2012
+readRDS(file = "C:/Users/Esin/Desktop/data benchmarks/raw_df_bpi2017.Rds") -> raw_df_bpi2017
 ```
 
 Eventlog object
-```{r}
+```{r, eval=F}
 raw_df_traffic_fines %>% is.eventlog()
 raw_df_bpi2012 %>% is.eventlog()
 raw_df_bpi2017 %>% is.eventlog()
 ```
 
 bpi2017 to activity log.
-```{r}
+```{r, eval=F}
 raw_df_bpi2017 %>%
   dplyr::rename(start = 'Start Timestamp', complete = 'Complete Timestamp') %>%
   bupaR::activitylog(case_id = 'Case ID',
@@ -113,12 +125,12 @@ Split dataset into train-, validation- (last occurring quarter of the train set)
 # Split the full 'prefix' dataset into train (0.75) and test (0.25) datasets
 ex_traffic_fines %>% split_train_test(split = 0.75) -> train_test
 
-# Split the train dataset into train (0.75) and validation (0.25) datasets
-train_test$train_df %>% split_train_test(split = 0.75) -> train_validation
+# # Split the train dataset into train (0.75) and validation (0.25) datasets
+# train_test$train_df %>% split_train_test(split = 0.75) -> train_validation
 
 # Reassign for ease of readability
-TF_train <- train_validation$train_df
-TF_valid <- train_validation$test_df
+TF_train <- train_test$train_df
+# TF_valid <- train_validation$test_df
 TF_test <- train_test$test_df
 ```
 
@@ -169,13 +181,13 @@ cat("\nNumber of exclusively unique traces:",
 #### Remaining trace transformer model
 Setting the hyperparameters of the model, 5 different configurations: 
 
-* base (8h) w/ 1 layer
-* base (4h) w/ 1 layer
-* Small w/ 2 layer
-* Medium w/ 2 layer
-* Large w/ 2 layer
+* __base (8h) w/ 1 layer__
+* __base (4h) w/ 1 layer__
+* __Small w/ 2 layer__
+* __Medium w/ 2 layer__
+* __Large w/ 2 layer__
 
-__Added num_layers__ hyperparameter to `processpredictR`-package.
+> __Added num_layers__ hyperparameter to `processpredictR`-package.
 
 * Base (8h) config with 8 attention heads:
   + num_layers = 1
@@ -187,8 +199,31 @@ __Added num_layers__ hyperparameter to `processpredictR`-package.
 ```{r, eval=T, echo=T, message=F}
 ex_traffic_fines %>% create_model(num_heads = 8, output_dim = 36, dim_ff = 64, num_layers = 1) -> model_0_8h_traffic_fines
 model_0_8h_traffic_fines
+
+# reassign loaded model after keras::load_model_tf()
+# model_0_8h_traffic_fines$model <- keras::load_model_tf("checkpoints/TF/model/")
 ```
   
+```{r}
+# evaluate
+model_0_8h_traffic_fines %>% evaluate(TF_test)
+
+# predict
+model_0_8h_traffic_fines %>% predict(TF_test) -> tmp
+
+model_0_8h_traffic_fines$vocabulary$keys_x %>% unlist -> vocab
+
+tmp %>%
+  mutate(remaining_trace = strsplit(remaining_trace, " - ")) %>% pull(remaining_trace) %>% purrr::map(~match(.x, vocab)) -> remaining_trace_toks
+tmp %>%
+  mutate(pred_remaining_trace = strsplit(pred_remaining_trace, " - ")) %>% pull(pred_remaining_trace) %>% purrr::map(~match(.x, vocab)) -> pred_remaining_trace_toks
+
+stringdist::seq_dist(remaining_trace_toks, pred_remaining_trace_toks) -> lv_dist
+stringdist::seq_dist(remaining_trace_toks, pred_remaining_trace_toks, method = "dl") -> dl_dist
+
+```
+
+
 * Base (4h) config with 4 attention heads:
   + num_layers = 1
   + __num_heads = 4__
@@ -215,15 +250,15 @@ model_0_8h_2l_traffic_fines
 
 
 * Medium config (M):
-  + num_layers = 2
+  + __num_layers = 1__
   + num_heads = 8
   + __d_model = 128__
   + __dff = 512__
   + dropout_rate = 0.1
   
 ```{r, eval=T, echo=T, message=F}
-ex_traffic_fines %>% create_model(num_heads = 8, output_dim = 128, dim_ff = 512, num_layers = 2) -> model_0_8h_2l_M_traffic_fines
-model_0_8h_2l_M_traffic_fines
+ex_traffic_fines %>% create_model(num_heads = 8, output_dim = 128, dim_ff = 512, num_layers = 1) -> model_0_8h_M_traffic_fines
+model_0_8h_M_traffic_fines
 ```
   
 * Large config (L):
@@ -245,11 +280,13 @@ Compile models.
 # 1 layer (Base-Small) with varying number of attention heads
 compile(model_0_8h_traffic_fines)
 compile(model_0_4h_traffic_fines)
+compile(model_0_8h_M_traffic_fines) # Medium
 
 # 2 layers
 compile(model_0_8h_2l_traffic_fines) # Small
-compile(model_0_8h_2l_M_traffic_fines) # Medium
-compile(model_0_8h_2l_L_traffic_fines) # Large
+
+# compile(model_0_8h_M_traffic_fines) # Medium
+# compile(model_0_8h_2l_L_traffic_fines) # Large
 ```
 
 Train models.
@@ -544,12 +581,12 @@ Split dataset into train-, validation- (last occurring quarter of the train set)
 # Split the full 'prefix' dataset into train (0.75) and test (0.25) datasets
 ex_bpi2012 %>% split_train_test(split = 0.75) -> train_test_bpi2012
 
-# Split the train dataset into train (0.75) and validation (0.25) datasets
-train_test_bpi2012$train_df %>% split_train_test(split = 0.75) -> train_validation_bpi2012
+# # Split the train dataset into train (0.75) and validation (0.25) datasets
+# train_test_bpi2012$train_df %>% split_train_test(split = 0.75) -> train_validation_bpi2012
 
 # Reassign for ease of readability
-bpi2012_train <- train_validation_bpi2012$train_df
-bpi2012_valid <- train_validation_bpi2012$test_df
+bpi2012_train <- train_test_bpi2012$train_df
+# bpi2012_valid <- train_validation_bpi2012$test_df
 bpi2012_test <- train_test_bpi2012$test_df
 ```
 
@@ -604,36 +641,167 @@ cat("\nNumber of exclusively unique traces:",
 ex_bpi2012 %>% create_model(num_heads = 8, output_dim = 36, dim_ff = 64, num_layers = 1) -> model_0_8h_bpi2012
 model_0_8h_bpi2012
 ```
+* Base (4h) config with 4 attention heads:
+  + num_layers = 1
+  + __num_heads = 4__
+  + d_model = 36
+  + dff = 64
+  + dropout_rate = 0.1
+  
+```{r, eval=T, echo=T, message=F}
+ex_bpi2012 %>% create_model(num_heads = 4, output_dim = 36, dim_ff = 64, num_layers = 1) -> model_0_4h_bpi2012
+model_0_4h_bpi2012
+```
+  
+* Small config with 2 stacked layers (encoder-decoder):
+  + __num_layers = 2__
+  + num_heads = 8
+  + d_model = 36
+  + dff = 64
+  + dropout_rate = 0.1
+  
+```{r, eval=T, echo=T, message=F}
+ex_bpi2012 %>% create_model(num_heads = 8, output_dim = 36, dim_ff = 64, num_layers = 2) -> model_0_8h_2l_bpi2012
+model_0_8h_2l_bpi2012
+```
+
+
+* Medium config (M):
+  + __num_layers = 1__
+  + num_heads = 8
+  + __d_model = 128__
+  + __dff = 512__
+  + dropout_rate = 0.1
+  
+```{r, eval=T, echo=T, message=F}
+ex_bpi2012 %>% create_model(num_heads = 8, output_dim = 128, dim_ff = 512, num_layers = 1) -> model_0_8h_M_bpi2012
+model_0_8h_M_bpi2012
+```
+
+* Medium config (M) with 2 layers:
+  + __num_layers = 2__
+  + num_heads = 8
+  + __d_model = 128__
+  + __dff = 512__
+  + dropout_rate = 0.1
+  
+```{r, eval=T, echo=T, message=F}
+ex_bpi2012 %>% create_model(num_heads = 8, output_dim = 128, dim_ff = 512, num_layers = 2) -> model_0_8h_2l_M_bpi2012
+model_0_8h_2l_M_bpi2012
+```
+  
+* Large config (L):
+  + num_layers = 2
+  + num_heads = 8
+  + __d_model = 512__
+  + __dff = 2048__
+  + dropout_rate = 0.1
+
+<!-- # ```{r, eval=T, echo=T, message=F} -->
+<!-- # ex_bpi2012 %>% create_model(num_heads = 8, output_dim = 512, dim_ff = 2048, num_layers = 1) -> model_0_8h_2l_L_bpi2012 -->
+<!-- # model_0_8h_2l_L_bpi2012 -->
+<!-- # ``` -->
+
+```{r, eval=T, echo=T, message=F}
+ex_bpi2012 %>% create_model(num_heads = 16, output_dim = 512, dim_ff = 2048, num_layers = 1) -> model_0_16h_L_bpi2012
+model_0_16h_L_bpi2012
+```
+
+
 
 ---
 
 Compile models.
 ```{r, eval=T}
+# traffic fines
+# 1 layer (Base-Small) with varying number of attention heads
+compile(model_0_8h_traffic_fines)
+compile(model_0_4h_traffic_fines)
+compile(model_0_8h_M_traffic_fines) # Medium
+
+# 2 layers
+compile(model_0_8h_2l_traffic_fines) # Small
+
+
+# bpi2012
 # 1 layer (Base-Small) with varying number of attention heads
 compile(model_0_8h_bpi2012)
-# compile(model_0_4h_bpi2012)
+compile(model_0_4h_bpi2012)
 
-# # 2 layers
+compile(model_0_8h_M_bpi2012) # Medium
+
+# 2 layers
 # compile(model_0_8h_2l_bpi2012) # Small
-# compile(model_0_8h_2l_M_bpi2012) # Medium
-# compile(model_0_8h_2l_L_bpi2012) # Large
+compile(model_0_8h_2l_M_bpi2012) # Medium
+compile(model_0_16h_L_bpi2012) # Large
 ```
+
+---
 
 Train models.
-Model bpi2012_0_8h.
-```{r, eval=F}
-hist_bpi2012_0_8h <- fit(object = model_0_8h_bpi2012, train_data = bpi2012_train, epochs = 50,
-             callbacks = list(early_stopping))
+```{r}
+early_stopping <- keras::callback_early_stopping(patience = 5)
+chckpnt <- function(model) {
+  keras::callback_model_checkpoint(filepath = paste0("checkpoints/", model$model$name))
+  
+}
 ```
-Epoch 1/50
-11850/11850 [==============================] - 4663s 393ms/step - loss: 0.0796 - sparse_categorical_accuracy: 0.9757 - val_loss: 0.0620 - val_sparse_categorical_accuracy: 0.9806
-Epoch 2/50
- 1494/11850 [==>...........................] - ETA: 1:02:19 - loss: 0.0620 - sparse_categorical_accuracy: 0.9805
 
 
+```{r, eval=F}
+# Traffic fines
+histTF_0_8h_TF <- fit(object = model_0_8h_traffic_fines, train_data = TF_train, epochs = 50,
+             callbacks = list(early_stopping, chckpnt(model_0_8h_traffic_fines)))
+histTF_0_4h_TF <- fit(object = model_0_4h_traffic_fines, train_data = TF_train, epochs = 50,
+             callbacks = list(early_stopping, chckpnt(model_0_4h_traffic_fines)))
+histTF_0_8h_M_TF <- fit(object = model_0_8h_M_traffic_fines, train_data = TF_train, epochs = 50,
+             callbacks = list(early_stopping, chckpnt(model_0_8h_M_traffic_fines)))
+histTF_0_8h_2l_TF <- fit(object = model_0_8h_2l_traffic_fines, train_data = TF_train, epochs = 50,
+             callbacks = list(early_stopping, chckpnt(model_0_8h_2l_traffic_fines)))
+```
+
+```{r}
+# bpi2012
+hist_0_8h_bpi2012 <- fit(object = model_0_8h_bpi2012,
+                         train_data = bpi2012_train,
+                         epochs = 15,
+                         batch_size = 500,
+                         callbacks = list(early_stopping, chckpnt(model_0_8h_bpi2012)))
+hist_0_4h_bpi2012 <- fit(object = model_0_4h_bpi2012,
+                         train_data = bpi2012_train,
+                         epochs = 20,
+                         batch_size = 15,
+                         callbacks = list(early_stopping, chckpnt(model_0_4h_bpi2012)))
+```
 
 
+```{r}
+# bpi2012
 
+hist_0_8h_M_bpi2012 <- fit(object = model_0_8h_M_bpi2012, 
+                           train_data = bpi2012_train,
+                           epochs = 20,
+                           batch_size = 500,
+                           callbacks = list(early_stopping, chckpnt(model_0_8h_M_bpi2012)))
+# hist_0_8h_2l_bpi2012 <- fit(object = model_0_8h_2l_bpi2012, 
+#                             train_data = bpi2012_train, 
+#                             epochs = 20,
+#                             batch_size = 2000,
+#                             callbacks = list(early_stopping, chckpnt(model_0_8h_2l_bpi2012)))
+hist_0_8h_2l_M_bpi2012 <- fit(object = model_0_8h_2l_M_bpi2012, 
+                              train_data = bpi2012_train,
+                              epochs = 20,
+                              batch_size = 500,
+                              callbacks = list(early_stopping, chckpnt(model_0_8h_2l_M_bpi2012)))
+hist_0_16h_L_bpi2012 <- fit(object = model_0_16h_L_bpi2012, 
+                              train_data = bpi2012_train,
+                              epochs = 20,
+                              batch_size = 500,
+                              callbacks = list(early_stopping, chckpnt(model_0_16h_L_bpi2012)))
+```
+
+
+---
 
 ### bpic2017 dataset
 Transform dataset into 'prefix' dataset using `prepare_examples()`. The first 6 rows are shown below.
@@ -643,7 +811,7 @@ tmpbpi2017 <- ex_bpi2017
 ```
 
 Shuffling the cases.
-```{r}
+```{r, eval=F}
 # Generate a random permutation of unique ith_case values
 new_group_ids <- sample(unique(ex_bpi2017$ith_case))
 
@@ -668,12 +836,12 @@ Split dataset into train-, validation- (last occurring quarter of the train set)
 # Split the full 'prefix' dataset into train (0.75) and test (0.25) datasets
 ex_bpi2017 %>% split_train_test(split = 0.75) -> train_test_bpi2017
 
-# Split the train dataset into train (0.75) and validation (0.25) datasets
-train_test_bpi2017$train_df %>% split_train_test(split = 0.75) -> train_validation_bpi2017
+# # Split the train dataset into train (0.75) and validation (0.25) datasets
+# train_test_bpi2017$train_df %>% split_train_test(split = 0.75) -> train_validation_bpi2017
 
 # Reassign for ease of readability
-bpi2017_train <- train_validation_bpi2017$train_df
-bpi2017_valid <- train_validation_bpi2017$test_df
+bpi2017_train <- train_test_bpi2017$train_df
+# bpi2017_valid <- train_validation_bpi2017$test_df
 bpi2017_test <- train_test_bpi2017$test_df
 ```
 
