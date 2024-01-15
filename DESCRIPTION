@@ -10,6 +10,7 @@ Description: Means to predict process flow, such as process outcome, next activi
 License: MIT + file LICENSE
 Encoding: UTF-8
 RoxygenNote: 7.2.3
+URL: https://github.com/bupaverse/processpredictR
 Imports: 
     bupaR,
     edeaR,
